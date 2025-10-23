@@ -6,9 +6,9 @@ import Icon from "@/components/ui/icon";
 const Index = () => {
   const plans = [
     {
-      name: "Базовый",
-      price: "299",
-      period: "/месяц",
+      name: "1 Месяц",
+      price: "200",
+      period: "₽",
       features: [
         "Безлимитный трафик",
         "5 устройств",
