@@ -128,7 +128,7 @@ const Index = () => {
                 </div>
                 <CardTitle>Безопасность</CardTitle>
                 <CardDescription>
-                  Военное шифрование AES-256 защищает ваши данные от любых угроз
+                  Vless - Reality протокол с усиленной защитой обеспечивает максимальную конфиденциальность и обход любых блокировок
                 </CardDescription>
               </CardHeader>
             </Card>
