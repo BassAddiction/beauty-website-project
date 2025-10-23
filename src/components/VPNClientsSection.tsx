@@ -47,7 +47,7 @@ const VPNClientsSection = () => {
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-4xl md:text-6xl font-black mb-4">VPN-Клиент</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Выберите подходящее приложение для вашего устройства
+            Мы рекомендуем использовать проверенные и надежные клиенты
           </p>
         </div>
 
