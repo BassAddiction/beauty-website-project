@@ -17,9 +17,9 @@ const Index = () => {
       ]
     },
     {
-      name: "Про",
+      name: "3 Месяца",
       price: "599",
-      period: "/месяц",
+      period: "₽",
       popular: true,
       features: [
         "Безлимитный трафик",
