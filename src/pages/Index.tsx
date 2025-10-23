@@ -29,7 +29,7 @@ const Index = () => {
     },
     {
       name: "6 Месяцев",
-      price: "749",
+      price: "1000",
       period: "₽",
       popular: true,
       features: [
