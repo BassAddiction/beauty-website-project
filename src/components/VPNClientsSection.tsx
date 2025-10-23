@@ -6,7 +6,8 @@ import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 interface VPNClient {
   name: string;
   description: string;
-  icon: string;
+  icon?: string;
+  logo?: string;
   platforms: {
     playMarket?: string;
     appStore?: string;
@@ -21,7 +22,7 @@ const VPNClientsSection = () => {
     {
       name: "Happ",
       description: "Простой и удобный клиент с понятным интерфейсом для быстрого подключения",
-      icon: "Smartphone",
+      logo: "https://cdn.poehali.dev/projects/5d5f944e-3f0e-4f49-a90d-1ac4bad7db03/files/78a896fc-305b-40ef-b231-7cc7e75cfa90.jpg",
       platforms: {
         playMarket: "https://play.google.com/store/apps/details?id=com.happproxy",
         appStore: "https://apps.apple.com/ru/app/happ-proxy-utility-plus/id6746188973?platform=iphone",
@@ -31,7 +32,7 @@ const VPNClientsSection = () => {
     {
       name: "V2RayTun",
       description: "Мощный клиент с продвинутыми настройками и поддержкой всех протоколов",
-      icon: "Settings",
+      logo: "https://cdn.poehali.dev/projects/5d5f944e-3f0e-4f49-a90d-1ac4bad7db03/files/141a9320-aa9a-4847-b086-e2ec96a94315.jpg",
       platforms: {
         playMarket: "https://play.google.com/store/apps/details?id=com.v2raytun.android",
         appStore: "https://apps.apple.com/app/v2box-v2ray-client/id6446814690",
@@ -54,9 +55,15 @@ const VPNClientsSection = () => {
           {clients.map((client, index) => (
             <Card key={index} className="border-2 hover:border-primary transition-all duration-300 hover:scale-105">
               <CardHeader>
-                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-4">
-                  <Icon name={client.icon as any} size={32} className="text-primary" />
-                </div>
+                {client.logo ? (
+                  <div className="w-16 h-16 mb-4">
+                    <img src={client.logo} alt={client.name} className="w-full h-full rounded-2xl object-cover" />
+                  </div>
+                ) : (
+                  <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-4">
+                    <Icon name={client.icon as any} size={32} className="text-primary" />
+                  </div>
+                )}
                 <CardTitle className="text-2xl">{client.name}</CardTitle>
                 <CardDescription className="text-base">
                   {client.description}
