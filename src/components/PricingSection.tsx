@@ -8,6 +8,7 @@ interface Plan {
   price: string;
   period: string;
   popular?: boolean;
+  custom?: boolean;
   features: string[];
 }
 
@@ -59,6 +60,18 @@ const PricingSection = () => {
         "Любые локации",
         "VIP поддержка 24/7"
       ]
+    },
+    {
+      name: "Индивидуальный",
+      price: "От 2000",
+      period: "₽",
+      custom: true,
+      features: [
+        "Безлимитный трафик",
+        "Выделенный сервер",
+        "Персональные настройки",
+        "Личный менеджер 24/7"
+      ]
     }
   ];
 
@@ -72,12 +85,17 @@ const PricingSection = () => {
           </p>
         </div>
 
-        <div className={`grid md:grid-cols-2 lg:grid-cols-4 gap-8 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <div className={`grid md:grid-cols-2 lg:grid-cols-5 gap-6 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           {plans.map((plan, index) => (
-            <Card key={index} className={`relative border-2 transition-all duration-300 hover:scale-105 ${plan.popular ? 'border-primary shadow-xl' : 'hover:border-primary'}`}>
+            <Card key={index} className={`relative border-2 transition-all duration-300 hover:scale-105 ${plan.popular ? 'border-primary shadow-xl' : plan.custom ? 'border-purple-500 shadow-lg' : 'hover:border-primary'}`}>
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-bold">
                   Популярный
+                </div>
+              )}
+              {plan.custom && (
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-purple-500 text-white px-4 py-1 rounded-full text-sm font-bold">
+                  Премиум
                 </div>
               )}
               <CardHeader>
@@ -106,8 +124,8 @@ const PricingSection = () => {
               </CardContent>
               <CardFooter>
                 <Button className="w-full rounded-full button-glow" asChild>
-                  <a href="https://t.me/shopspeedvpn_bot" target="_blank" rel="noopener noreferrer">
-                    Выбрать план
+                  <a href={plan.custom ? "https://t.me/gospeedvpn" : "https://t.me/shopspeedvpn_bot"} target="_blank" rel="noopener noreferrer">
+                    {plan.custom ? "Связаться" : "Выбрать план"}
                   </a>
                 </Button>
               </CardFooter>
