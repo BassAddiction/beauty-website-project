@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 interface Plan {
   name: string;
@@ -11,6 +12,8 @@ interface Plan {
 }
 
 const PricingSection = () => {
+  const { ref, isVisible } = useScrollAnimation();
+
   const plans: Plan[] = [
     {
       name: "1 Месяц",
@@ -60,7 +63,7 @@ const PricingSection = () => {
   ];
 
   return (
-    <section className="py-20 px-4 bg-black/30" id="pricing">
+    <section ref={ref} className="py-20 px-4 bg-black/30" id="pricing">
       <div className="container mx-auto max-w-6xl">
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-4xl md:text-6xl font-black mb-4">Тарифы</h2>
@@ -69,7 +72,7 @@ const PricingSection = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className={`grid md:grid-cols-2 lg:grid-cols-4 gap-8 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           {plans.map((plan, index) => (
             <Card key={index} className={`relative border-2 transition-all duration-300 hover:scale-105 ${plan.popular ? 'border-primary shadow-xl' : 'hover:border-primary'}`}>
               {plan.popular && (

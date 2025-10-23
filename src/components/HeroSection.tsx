@@ -1,10 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const HeroSection = () => {
+  const { ref, isVisible } = useScrollAnimation();
+
   return (
-    <section className="pt-32 pb-20 px-4">
+    <section ref={ref} className="pt-32 pb-20 px-4">
       <div className="container mx-auto max-w-6xl">
         <div className="text-center mb-12 animate-fade-in">
           <h1 className="text-5xl md:text-7xl font-black mb-6 tracking-tight">
@@ -28,7 +31,7 @@ const HeroSection = () => {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 mt-20" id="features">
+        <div className={`grid md:grid-cols-3 gap-8 mt-20 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} id="features">
           <Card className="border-2 hover:border-primary transition-all duration-300 hover:shadow-lg">
             <CardHeader>
               <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">

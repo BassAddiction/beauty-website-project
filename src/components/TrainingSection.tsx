@@ -1,9 +1,12 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const TrainingSection = () => {
+  const { ref, isVisible } = useScrollAnimation();
+
   return (
-    <section className="py-20 px-4" id="training">
+    <section ref={ref} className="py-20 px-4" id="training">
       <div className="container mx-auto max-w-6xl">
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-4xl md:text-6xl font-black mb-4">Как начать</h2>
@@ -12,7 +15,7 @@ const TrainingSection = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className={`grid md:grid-cols-3 gap-8 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <Card className="border-2 hover:border-primary transition-all duration-300">
             <CardHeader>
               <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-4">
@@ -50,7 +53,7 @@ const TrainingSection = () => {
           </Card>
         </div>
 
-        <div className="mt-16 bg-gradient-to-r from-primary/10 to-purple-500/10 rounded-3xl p-8 md:p-12 border-2 border-primary/20">
+        <div className={`mt-16 bg-gradient-to-r from-primary/10 to-purple-500/10 rounded-3xl p-8 md:p-12 border-2 border-primary/20 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="flex-1">
               <h3 className="text-3xl md:text-4xl font-black mb-4">Готовы начать?</h3>
