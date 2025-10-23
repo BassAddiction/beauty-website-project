@@ -211,6 +211,102 @@ const Index = () => {
         </div>
       </section>
 
+      <section className="py-20 px-4 bg-muted/20">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-black mb-4">Нам доверяют тысячи пользователей</h2>
+            <p className="text-xl text-muted-foreground">
+              Реальная статистика нашего сервиса
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 mb-16">
+            <Card className="border-2 text-center p-8 hover:border-primary transition-all">
+              <div className="text-5xl font-black text-primary mb-2">10,000+</div>
+              <div className="text-lg text-muted-foreground">Активных пользователей</div>
+            </Card>
+            <Card className="border-2 text-center p-8 hover:border-primary transition-all">
+              <div className="text-5xl font-black text-primary mb-2">50+</div>
+              <div className="text-lg text-muted-foreground">Серверов по всему миру</div>
+            </Card>
+            <Card className="border-2 text-center p-8 hover:border-primary transition-all">
+              <div className="text-5xl font-black text-primary mb-2">99.9%</div>
+              <div className="text-lg text-muted-foreground">Время работы сервиса</div>
+            </Card>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            <Card className="border-2 p-6">
+              <div className="flex gap-4">
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Icon name="User" size={24} className="text-primary" />
+                </div>
+                <div>
+                  <div className="font-bold mb-2">Алексей М.</div>
+                  <div className="text-muted-foreground">
+                    "Лучший VPN который я пробовал. Быстрый, стабильный и доступная цена. Рекомендую!"
+                  </div>
+                  <div className="flex gap-1 mt-3">
+                    {[1,2,3,4,5].map(i => <Icon key={i} name="Star" size={16} className="text-primary fill-primary" />)}
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="border-2 p-6">
+              <div className="flex gap-4">
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Icon name="User" size={24} className="text-primary" />
+                </div>
+                <div>
+                  <div className="font-bold mb-2">Мария К.</div>
+                  <div className="text-muted-foreground">
+                    "Пользуюсь уже полгода. Отличная поддержка, всегда помогают. Скорость стабильная, без обрывов."
+                  </div>
+                  <div className="flex gap-1 mt-3">
+                    {[1,2,3,4,5].map(i => <Icon key={i} name="Star" size={16} className="text-primary fill-primary" />)}
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="border-2 p-6">
+              <div className="flex gap-4">
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Icon name="User" size={24} className="text-primary" />
+                </div>
+                <div>
+                  <div className="font-bold mb-2">Дмитрий П.</div>
+                  <div className="text-muted-foreground">
+                    "Доступ ко всем сайтам и сервисам без проблем. Vless Reality работает безупречно!"
+                  </div>
+                  <div className="flex gap-1 mt-3">
+                    {[1,2,3,4,5].map(i => <Icon key={i} name="Star" size={16} className="text-primary fill-primary" />)}
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="border-2 p-6">
+              <div className="flex gap-4">
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Icon name="User" size={24} className="text-primary" />
+                </div>
+                <div>
+                  <div className="font-bold mb-2">Анна С.</div>
+                  <div className="text-muted-foreground">
+                    "Просто настроить, быстро работает. Годовой тариф очень выгодный. Спасибо команде!"
+                  </div>
+                  <div className="flex gap-1 mt-3">
+                    {[1,2,3,4,5].map(i => <Icon key={i} name="Star" size={16} className="text-primary fill-primary" />)}
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       <section className="py-20 px-4" id="faq">
         <div className="container mx-auto max-w-3xl">
           <div className="text-center mb-12">
