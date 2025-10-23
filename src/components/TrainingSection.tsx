@@ -21,9 +21,9 @@ const TrainingSection = () => {
               <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-4">
                 <span className="text-3xl font-black text-primary">1</span>
               </div>
-              <CardTitle>Скачайте приложение</CardTitle>
+              <CardTitle>Выберите тариф</CardTitle>
               <CardDescription>
-                Установите приложение на ваше устройство. Поддерживаем iOS, Android, Windows, macOS и Linux
+                Оформите подписку через удобного бота в Telegram. Мгновенная активация после оплаты
               </CardDescription>
             </CardHeader>
           </Card>
@@ -33,9 +33,9 @@ const TrainingSection = () => {
               <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-4">
                 <span className="text-3xl font-black text-primary">2</span>
               </div>
-              <CardTitle>Выберите тариф</CardTitle>
+              <CardTitle>Скачайте приложение</CardTitle>
               <CardDescription>
-                Оформите подписку через удобного бота в Telegram. Мгновенная активация после оплаты
+                Установите приложение на ваше устройство. Поддерживаем iOS, Android, Windows, macOS и Linux
               </CardDescription>
             </CardHeader>
           </Card>
