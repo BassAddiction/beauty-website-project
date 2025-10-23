@@ -112,8 +112,10 @@ const Index = () => {
                   Попробовать бесплатно
                 </a>
               </Button>
-              <Button size="lg" variant="outline" className="rounded-full text-lg px-8 h-14">
-                Узнать больше
+              <Button size="lg" variant="outline" className="rounded-full text-lg px-8 h-14" asChild>
+                <a href="https://t.me/gospeedvpn" target="_blank" rel="noopener noreferrer">
+                  Support
+                </a>
               </Button>
             </div>
           </div>
