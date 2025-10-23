@@ -22,7 +22,7 @@ const VPNClientsSection = () => {
     {
       name: "Happ",
       description: "Простой и удобный клиент с понятным интерфейсом для быстрого подключения",
-      logo: "https://cdn.poehali.dev/projects/5d5f944e-3f0e-4f49-a90d-1ac4bad7db03/files/78a896fc-305b-40ef-b231-7cc7e75cfa90.jpg",
+      logo: "https://cdn.poehali.dev/files/ef467f96-b43a-4159-b874-f59e2545f7d7.png",
       platforms: {
         playMarket: "https://play.google.com/store/apps/details?id=com.happproxy",
         appStore: "https://apps.apple.com/ru/app/happ-proxy-utility-plus/id6746188973?platform=iphone",
