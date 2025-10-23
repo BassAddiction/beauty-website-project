@@ -187,8 +187,11 @@ const Index = () => {
                   <Button 
                     className={`w-full rounded-full ${plan.popular ? '' : 'variant-outline'}`}
                     variant={plan.popular ? 'default' : 'outline'}
+                    asChild
                   >
-                    Выбрать план
+                    <a href="https://t.me/shopspeedvpn_bot" target="_blank" rel="noopener noreferrer">
+                      Купить
+                    </a>
                   </Button>
                 </CardFooter>
               </Card>
