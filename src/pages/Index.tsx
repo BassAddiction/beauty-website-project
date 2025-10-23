@@ -86,6 +86,7 @@ const Index = () => {
           <nav className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-sm font-medium hover:text-primary transition-colors">Возможности</a>
             <a href="#pricing" className="text-sm font-medium hover:text-primary transition-colors">Тарифы</a>
+            <a href="#training" className="text-sm font-medium hover:text-primary transition-colors">Обучение</a>
             <a href="#faq" className="text-sm font-medium hover:text-primary transition-colors">FAQ</a>
           </nav>
           <Button className="rounded-full button-glow" asChild>
@@ -307,7 +308,7 @@ const Index = () => {
         </div>
       </section>
 
-      <section className="py-20 px-4">
+      <section className="py-20 px-4" id="training">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-black mb-4">Обучение</h2>
