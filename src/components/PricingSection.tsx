@@ -85,7 +85,7 @@ const PricingSection = () => {
                   <img 
                     src="https://cdn.poehali.dev/files/299c507f-f10f-4048-a927-9fa71def332e.jpg" 
                     alt="Speed VPN" 
-                    className="w-20 h-20 rounded-full object-cover border-2 border-primary/20"
+                    className="w-20 h-20 rounded-full object-cover border-2 border-primary logo-animated"
                   />
                 </div>
                 <CardTitle className="text-2xl">{plan.name}</CardTitle>

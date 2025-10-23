@@ -16,7 +16,7 @@ const HeroSection = () => {
             <img 
               src="https://cdn.poehali.dev/files/299c507f-f10f-4048-a927-9fa71def332e.jpg" 
               alt="Speed VPN" 
-              className="w-24 h-24 rounded-full object-cover border-2 border-primary"
+              className="w-24 h-24 rounded-full object-cover border-2 border-primary logo-animated"
             />
           </div>
           <h1 
