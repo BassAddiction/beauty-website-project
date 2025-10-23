@@ -23,7 +23,7 @@ const VPNClientsSection = () => {
       description: "Простой и удобный клиент с понятным интерфейсом для быстрого подключения",
       icon: "Smartphone",
       platforms: {
-        playMarket: "https://play.google.com/store/apps/details?id=com.happ.vpn",
+        playMarket: "https://play.google.com/store/apps/details?id=com.happproxy",
         appStore: "https://apps.apple.com/app/happ-vpn/id6451068444",
         windows: "https://github.com/hiddify/hiddify-next/releases"
       }
