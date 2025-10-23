@@ -201,7 +201,7 @@ const Index = () => {
                     asChild
                   >
                     <a href="https://t.me/shopspeedvpn_bot" target="_blank" rel="noopener noreferrer">
-                      Купить
+                      Подключить
                     </a>
                   </Button>
                 </CardFooter>
