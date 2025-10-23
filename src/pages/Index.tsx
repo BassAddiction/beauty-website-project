@@ -15,9 +15,9 @@ const Index = () => {
       <HeroSection />
       <PricingSection />
       <FeaturesSection />
-      <VPNClientsSection />
       <TrainingSection />
       <FAQSection />
+      <VPNClientsSection />
       <Footer />
       <ScrollToTop />
     </div>

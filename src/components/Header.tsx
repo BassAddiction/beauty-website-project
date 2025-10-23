@@ -18,6 +18,7 @@ const Header = () => {
           <a href="#pricing" className="text-sm font-medium hover:text-primary transition-colors">Тарифы</a>
           <a href="#training" className="text-sm font-medium hover:text-primary transition-colors">Обучение</a>
           <a href="#faq" className="text-sm font-medium hover:text-primary transition-colors">FAQ</a>
+          <a href="#clients" className="text-sm font-medium hover:text-primary transition-colors">VPN-Клиент</a>
         </nav>
         <div className="flex items-center gap-4">
           <Button className="hidden md:flex rounded-full button-glow" asChild>
@@ -60,6 +61,13 @@ const Header = () => {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   FAQ
+                </a>
+                <a 
+                  href="#clients" 
+                  className="text-lg font-medium hover:text-primary transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  VPN-Клиент
                 </a>
                 <Button className="rounded-full button-glow mt-4" asChild>
                   <a href="https://t.me/shopspeedvpn_bot" target="_blank" rel="noopener noreferrer">
