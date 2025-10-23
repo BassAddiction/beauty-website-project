@@ -88,7 +88,7 @@ const Index = () => {
             <a href="#pricing" className="text-sm font-medium hover:text-primary transition-colors">Тарифы</a>
             <a href="#faq" className="text-sm font-medium hover:text-primary transition-colors">FAQ</a>
           </nav>
-          <Button className="rounded-full" asChild>
+          <Button className="rounded-full button-glow" asChild>
             <a href="https://t.me/shopspeedvpn_bot" target="_blank" rel="noopener noreferrer">
               Начать
             </a>
@@ -107,7 +107,7 @@ const Index = () => {
               Защитите свою конфиденциальность в интернете. Высокая скорость, надёжное шифрование и доступ к любому контенту
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button size="lg" className="rounded-full text-lg px-8 h-14" asChild>
+              <Button size="lg" className="rounded-full text-lg px-8 h-14 button-glow" asChild>
                 <a href="https://t.me/shopspeedvpn_bot" target="_blank" rel="noopener noreferrer">
                   Попробовать бесплатно
                 </a>
@@ -196,7 +196,7 @@ const Index = () => {
                 </CardContent>
                 <CardFooter>
                   <Button 
-                    className={`w-full rounded-full ${plan.popular ? '' : 'variant-outline'}`}
+                    className={`w-full rounded-full button-glow ${plan.popular ? '' : 'variant-outline'}`}
                     variant={plan.popular ? 'default' : 'outline'}
                     asChild
                   >
@@ -243,7 +243,7 @@ const Index = () => {
           <p className="text-xl mb-8 opacity-90">
             Присоединяйтесь к миллионам пользователей, которые доверяют нам свою безопасность
           </p>
-          <Button size="lg" variant="secondary" className="rounded-full text-lg px-8 h-14 bg-black text-white hover:bg-black/80" asChild>
+          <Button size="lg" variant="secondary" className="rounded-full text-lg px-8 h-14 bg-black text-white hover:bg-black/80 button-glow" asChild>
             <a href="https://t.me/shopspeedvpn_bot" target="_blank" rel="noopener noreferrer">
               Попробовать бесплатно
             </a>
