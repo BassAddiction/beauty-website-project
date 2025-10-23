@@ -32,7 +32,7 @@ const VPNClientsSection = () => {
     {
       name: "V2RayTun",
       description: "Мощный клиент с продвинутыми настройками и поддержкой всех протоколов",
-      logo: "https://cdn.poehali.dev/projects/5d5f944e-3f0e-4f49-a90d-1ac4bad7db03/files/141a9320-aa9a-4847-b086-e2ec96a94315.jpg",
+      logo: "https://cdn.poehali.dev/files/063411ec-f9b3-487a-aeb1-e5717cf643c4.png",
       platforms: {
         playMarket: "https://play.google.com/store/apps/details?id=com.v2raytun.android",
         appStore: "https://apps.apple.com/app/v2box-v2ray-client/id6446814690",
