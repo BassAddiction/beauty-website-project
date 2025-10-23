@@ -12,19 +12,18 @@ const HeroSection = () => {
     <section ref={ref} className="pt-32 pb-20 px-4">
       <div className="container mx-auto max-w-6xl">
         <div className="text-center mb-12 animate-fade-in">
+          <div className="md:hidden mb-6 flex justify-center">
+            <img 
+              src="https://cdn.poehali.dev/files/299c507f-f10f-4048-a927-9fa71def332e.jpg" 
+              alt="Speed VPN" 
+              className="w-24 h-24 rounded-full object-cover border-2 border-primary"
+            />
+          </div>
           <h1 
             className="text-5xl md:text-7xl font-black mb-6 tracking-tight transition-transform duration-100"
             style={{ transform: `translateY(${offsetY * 0.3}px)` }}
           >
-            Быстрый и безопасный<br className="md:hidden" />
-            <div className="md:hidden my-4 flex justify-center">
-              <img 
-                src="https://cdn.poehali.dev/files/299c507f-f10f-4048-a927-9fa71def332e.jpg" 
-                alt="Speed VPN" 
-                className="w-20 h-20 rounded-full object-cover border-2 border-primary"
-              />
-            </div>
-            <br className="hidden md:block" />
+            <span className="hidden md:inline">Быстрый и безопасный<br /></span>
             <span className="text-primary">VPN-сервис</span>
           </h1>
           <p 
