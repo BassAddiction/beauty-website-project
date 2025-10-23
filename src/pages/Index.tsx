@@ -66,11 +66,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-border">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-border">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <Icon name="Zap" size={20} className="text-white" />
+              <Icon name="Zap" size={20} className="text-black" />
             </div>
             <span className="text-xl font-bold">SPEED VPN</span>
           </div>
@@ -156,7 +156,7 @@ const Index = () => {
             {plans.map((plan, index) => (
               <Card key={index} className={`relative ${plan.popular ? 'border-2 border-primary shadow-xl scale-105' : 'border-2'} hover:shadow-lg transition-all duration-300`}>
                 {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white px-4 py-1 rounded-full text-sm font-semibold">
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-black px-4 py-1 rounded-full text-sm font-semibold">
                     Популярный
                   </div>
                 )}
@@ -215,7 +215,7 @@ const Index = () => {
         </div>
       </section>
 
-      <section className="py-20 px-4 bg-primary text-white">
+      <section className="py-20 px-4 bg-primary text-black">
         <div className="container mx-auto max-w-4xl text-center">
           <h2 className="text-4xl md:text-5xl font-black mb-6">
             Готовы начать защищённый сёрфинг?
@@ -223,7 +223,7 @@ const Index = () => {
           <p className="text-xl mb-8 opacity-90">
             Присоединяйтесь к миллионам пользователей, которые доверяют нам свою безопасность
           </p>
-          <Button size="lg" variant="secondary" className="rounded-full text-lg px-8 h-14">
+          <Button size="lg" variant="secondary" className="rounded-full text-lg px-8 h-14 bg-black text-white hover:bg-black/80">
             Попробовать бесплатно
           </Button>
         </div>
@@ -235,7 +235,7 @@ const Index = () => {
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                  <Icon name="Zap" size={20} className="text-white" />
+                  <Icon name="Zap" size={20} className="text-black" />
                 </div>
                 <span className="text-lg font-bold">SPEED VPN</span>
               </div>
