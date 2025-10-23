@@ -62,7 +62,7 @@ const PricingSection = () => {
       ]
     },
     {
-      name: "Индивидуальный",
+      name: "Persona",
       price: "От 2000",
       period: "₽",
       custom: true,
