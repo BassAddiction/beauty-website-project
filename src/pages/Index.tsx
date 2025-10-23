@@ -41,7 +41,7 @@ const Index = () => {
     },
     {
       name: "12 Месяцев",
-      price: "899",
+      price: "1500",
       period: "₽",
       features: [
         "Безлимитный трафик",
