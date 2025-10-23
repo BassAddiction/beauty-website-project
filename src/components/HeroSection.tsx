@@ -16,7 +16,13 @@ const HeroSection = () => {
             className="text-5xl md:text-7xl font-black mb-6 tracking-tight transition-transform duration-100"
             style={{ transform: `translateY(${offsetY * 0.3}px)` }}
           >
-            Быстрый и безопасный<br />
+            Быстрый и безопасный<br className="md:hidden" />
+            <img 
+              src="https://cdn.poehali.dev/files/299c507f-f10f-4048-a927-9fa71def332e.jpg" 
+              alt="Speed VPN" 
+              className="w-16 h-16 rounded-full object-cover border-2 border-primary inline-block mx-2 md:hidden"
+            />
+            <br className="hidden md:block" />
             <span className="text-primary">VPN-сервис</span>
           </h1>
           <p 
