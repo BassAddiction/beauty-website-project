@@ -24,7 +24,7 @@ const VPNClientsSection = () => {
       icon: "Smartphone",
       platforms: {
         playMarket: "https://play.google.com/store/apps/details?id=com.happproxy",
-        appStore: "https://apps.apple.com/app/happ-vpn/id6451068444",
+        appStore: "https://apps.apple.com/ru/app/happ-proxy-utility-plus/id6746188973?platform=iphone",
         windows: "https://github.com/hiddify/hiddify-next/releases"
       }
     },
@@ -36,16 +36,6 @@ const VPNClientsSection = () => {
         playMarket: "https://play.google.com/store/apps/details?id=com.v2raytun.android",
         appStore: "https://apps.apple.com/app/v2box-v2ray-client/id6446814690",
         windows: "https://github.com/2dust/v2rayN/releases"
-      }
-    },
-    {
-      name: "Hiddify",
-      description: "Надёжный клиент с фокусом на безопасность и обход блокировок",
-      icon: "Shield",
-      platforms: {
-        playMarket: "https://play.google.com/store/apps/details?id=com.hiddify.android",
-        appStore: "https://apps.apple.com/app/hiddify-proxy-vpn/id6596777532",
-        windows: "https://github.com/hiddify/hiddify-next/releases"
       }
     }
   ];
@@ -60,7 +50,7 @@ const VPNClientsSection = () => {
           </p>
         </div>
 
-        <div className={`grid md:grid-cols-3 gap-8 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <div className={`grid md:grid-cols-2 gap-8 max-w-4xl mx-auto transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           {clients.map((client, index) => (
             <Card key={index} className="border-2 hover:border-primary transition-all duration-300 hover:scale-105">
               <CardHeader>

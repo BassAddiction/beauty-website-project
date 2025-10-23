@@ -46,7 +46,7 @@ const Footer = () => {
         </div>
 
         <div className="pt-8 border-t border-border text-center text-sm text-muted-foreground">
-          <p>© 2024 Speed VPN. Все права защищены.</p>
+          <p>© 2025 Speed VPN. Все права защищены.</p>
         </div>
       </div>
     </footer>
