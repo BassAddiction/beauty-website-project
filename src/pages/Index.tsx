@@ -79,7 +79,11 @@ const Index = () => {
             <a href="#pricing" className="text-sm font-medium hover:text-primary transition-colors">Тарифы</a>
             <a href="#faq" className="text-sm font-medium hover:text-primary transition-colors">FAQ</a>
           </nav>
-          <Button className="rounded-full">Начать</Button>
+          <Button className="rounded-full" asChild>
+            <a href="https://t.me/shopspeedvpn_bot" target="_blank" rel="noopener noreferrer">
+              Начать
+            </a>
+          </Button>
         </div>
       </header>
 
@@ -94,8 +98,10 @@ const Index = () => {
               Защитите свою конфиденциальность в интернете. Высокая скорость, надёжное шифрование и доступ к любому контенту
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button size="lg" className="rounded-full text-lg px-8 h-14">
-                Попробовать бесплатно
+              <Button size="lg" className="rounded-full text-lg px-8 h-14" asChild>
+                <a href="https://t.me/shopspeedvpn_bot" target="_blank" rel="noopener noreferrer">
+                  Попробовать бесплатно
+                </a>
               </Button>
               <Button size="lg" variant="outline" className="rounded-full text-lg px-8 h-14">
                 Узнать больше
@@ -223,8 +229,10 @@ const Index = () => {
           <p className="text-xl mb-8 opacity-90">
             Присоединяйтесь к миллионам пользователей, которые доверяют нам свою безопасность
           </p>
-          <Button size="lg" variant="secondary" className="rounded-full text-lg px-8 h-14 bg-black text-white hover:bg-black/80">
-            Попробовать бесплатно
+          <Button size="lg" variant="secondary" className="rounded-full text-lg px-8 h-14 bg-black text-white hover:bg-black/80" asChild>
+            <a href="https://t.me/shopspeedvpn_bot" target="_blank" rel="noopener noreferrer">
+              Попробовать бесплатно
+            </a>
           </Button>
         </div>
       </section>
