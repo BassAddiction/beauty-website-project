@@ -307,6 +307,106 @@ const Index = () => {
         </div>
       </section>
 
+      <section className="py-20 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-black mb-4">Обучение</h2>
+            <p className="text-xl text-muted-foreground">
+              Пошаговые инструкции по подключению и настройке
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <Card className="border-2 hover:border-primary transition-all duration-300 overflow-hidden group">
+              <div className="aspect-video bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                <Icon name="Smartphone" size={48} className="text-primary" />
+              </div>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <span className="bg-primary text-black w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">1</span>
+                  iOS / iPhone
+                </CardTitle>
+                <CardDescription>
+                  Подробная инструкция по установке и настройке VPN на устройствах Apple
+                </CardDescription>
+              </CardHeader>
+              <CardFooter>
+                <Button variant="outline" className="w-full button-glow" asChild>
+                  <a href="https://t.me/gospeedvpn" target="_blank" rel="noopener noreferrer">
+                    Смотреть инструкцию
+                  </a>
+                </Button>
+              </CardFooter>
+            </Card>
+
+            <Card className="border-2 hover:border-primary transition-all duration-300 overflow-hidden group">
+              <div className="aspect-video bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                <Icon name="Smartphone" size={48} className="text-primary" />
+              </div>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <span className="bg-primary text-black w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">2</span>
+                  Android
+                </CardTitle>
+                <CardDescription>
+                  Пошаговое руководство для установки VPN на Android-устройства
+                </CardDescription>
+              </CardHeader>
+              <CardFooter>
+                <Button variant="outline" className="w-full button-glow" asChild>
+                  <a href="https://t.me/gospeedvpn" target="_blank" rel="noopener noreferrer">
+                    Смотреть инструкцию
+                  </a>
+                </Button>
+              </CardFooter>
+            </Card>
+
+            <Card className="border-2 hover:border-primary transition-all duration-300 overflow-hidden group">
+              <div className="aspect-video bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                <Icon name="Monitor" size={48} className="text-primary" />
+              </div>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <span className="bg-primary text-black w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">3</span>
+                  Windows / macOS
+                </CardTitle>
+                <CardDescription>
+                  Инструкция для настройки VPN на компьютерах и ноутбуках
+                </CardDescription>
+              </CardHeader>
+              <CardFooter>
+                <Button variant="outline" className="w-full button-glow" asChild>
+                  <a href="https://t.me/gospeedvpn" target="_blank" rel="noopener noreferrer">
+                    Смотреть инструкцию
+                  </a>
+                </Button>
+              </CardFooter>
+            </Card>
+          </div>
+
+          <div className="mt-12 text-center">
+            <Card className="border-2 border-primary/50 p-8 bg-primary/5">
+              <div className="flex flex-col md:flex-row items-center gap-6 justify-center">
+                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center">
+                  <Icon name="HelpCircle" size={32} className="text-black" />
+                </div>
+                <div className="text-center md:text-left">
+                  <h3 className="text-2xl font-bold mb-2">Нужна помощь с настройкой?</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Наша служба поддержки готова помочь вам 24/7
+                  </p>
+                  <Button className="button-glow" asChild>
+                    <a href="https://t.me/gospeedvpn" target="_blank" rel="noopener noreferrer">
+                      Связаться с поддержкой
+                    </a>
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       <section className="py-20 px-4" id="faq">
         <div className="container mx-auto max-w-3xl">
           <div className="text-center mb-12">
