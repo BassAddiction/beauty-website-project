@@ -1,9 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Icon from "@/components/ui/icon";
+import { useState } from "react";
 
 const Index = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const plans = [
     {
       name: "1 Месяц",
@@ -89,11 +92,57 @@ const Index = () => {
             <a href="#training" className="text-sm font-medium hover:text-primary transition-colors">Обучение</a>
             <a href="#faq" className="text-sm font-medium hover:text-primary transition-colors">FAQ</a>
           </nav>
-          <Button className="rounded-full button-glow" asChild>
-            <a href="https://t.me/shopspeedvpn_bot" target="_blank" rel="noopener noreferrer">
-              Начать
-            </a>
-          </Button>
+          <div className="flex items-center gap-4">
+            <Button className="hidden md:flex rounded-full button-glow" asChild>
+              <a href="https://t.me/shopspeedvpn_bot" target="_blank" rel="noopener noreferrer">
+                Начать
+              </a>
+            </Button>
+            <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden">
+                  <Icon name="Menu" size={24} />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[300px] bg-black/95 border-border">
+                <nav className="flex flex-col gap-6 mt-8">
+                  <a 
+                    href="#features" 
+                    className="text-lg font-medium hover:text-primary transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Возможности
+                  </a>
+                  <a 
+                    href="#pricing" 
+                    className="text-lg font-medium hover:text-primary transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Тарифы
+                  </a>
+                  <a 
+                    href="#training" 
+                    className="text-lg font-medium hover:text-primary transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Обучение
+                  </a>
+                  <a 
+                    href="#faq" 
+                    className="text-lg font-medium hover:text-primary transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    FAQ
+                  </a>
+                  <Button className="rounded-full button-glow mt-4" asChild>
+                    <a href="https://t.me/shopspeedvpn_bot" target="_blank" rel="noopener noreferrer">
+                      Начать
+                    </a>
+                  </Button>
+                </nav>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
       </header>
 
