@@ -20,10 +20,21 @@ const Index = () => {
       name: "3 Месяца",
       price: "599",
       period: "₽",
-      popular: true,
       features: [
         "Безлимитный трафик",
         "10 устройств",
+        "Максимальная скорость",
+        "Приоритетная поддержка 24/7"
+      ]
+    },
+    {
+      name: "6 Месяцев",
+      price: "749",
+      period: "₽",
+      popular: true,
+      features: [
+        "Безлимитный трафик",
+        "Без ограничений устройств",
         "Максимальная скорость",
         "Приоритетная поддержка 24/7"
       ]
@@ -158,7 +169,7 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-4 gap-6">
             {plans.map((plan, index) => (
               <Card key={index} className={`relative ${plan.popular ? 'border-2 border-primary shadow-xl scale-105' : 'border-2'} hover:shadow-lg transition-all duration-300`}>
                 {plan.popular && (
