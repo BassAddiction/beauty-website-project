@@ -81,6 +81,13 @@ const PricingSection = () => {
                 </div>
               )}
               <CardHeader>
+                <div className="flex justify-center mb-4">
+                  <img 
+                    src="https://cdn.poehali.dev/files/299c507f-f10f-4048-a927-9fa71def332e.jpg" 
+                    alt="Speed VPN" 
+                    className="w-20 h-20 rounded-full object-cover border-2 border-primary/20"
+                  />
+                </div>
                 <CardTitle className="text-2xl">{plan.name}</CardTitle>
                 <div className="flex items-baseline gap-1 mt-4">
                   <span className="text-5xl font-black">{plan.price}</span>
