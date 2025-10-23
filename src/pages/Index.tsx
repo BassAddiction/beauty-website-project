@@ -9,6 +9,7 @@ const Index = () => {
       name: "1 Месяц",
       price: "200",
       period: "₽",
+      popular: true,
       features: [
         "Безлимитный трафик",
         "5 устройств",
@@ -31,7 +32,6 @@ const Index = () => {
       name: "6 Месяцев",
       price: "1000",
       period: "₽",
-      popular: true,
       features: [
         "Безлимитный трафик",
         "Без ограничений устройств",
