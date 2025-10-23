@@ -16,8 +16,8 @@ const Index = () => {
       <PricingSection />
       <FeaturesSection />
       <TrainingSection />
-      <FAQSection />
       <VPNClientsSection />
+      <FAQSection />
       <Footer />
       <ScrollToTop />
     </div>
