@@ -107,7 +107,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             }
             
             response = requests.post(
-                f'{api_url}/api/user',
+                f'{api_url}/api/users',
                 headers=headers,
                 json=user_payload,
                 timeout=10
