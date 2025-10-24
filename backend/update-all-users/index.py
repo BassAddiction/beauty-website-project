@@ -124,9 +124,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         }
                     }
                     
-                    print(f'📤 Sending PUT to: {remnawave_url}/api/user/{username}')
-                    update_response = requests.put(
-                        f'{remnawave_url}/api/user/{username}',
+                    print(f'📤 Sending PATCH to: {remnawave_url}/api/users/{username}')
+                    update_response = requests.patch(
+                        f'{remnawave_url}/api/users/{username}',
                         headers=headers,
                         json=update_payload,
                         timeout=10
