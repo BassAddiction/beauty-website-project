@@ -296,6 +296,87 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
+        {/* VPN Clients Section */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>VPN-Клиенты</CardTitle>
+            <CardDescription>Рекомендуемые приложения для подключения</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Happ */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <img 
+                    src="https://cdn.poehali.dev/files/ef467f96-b43a-4159-b874-f59e2545f7d7.png" 
+                    alt="Happ" 
+                    className="w-12 h-12 rounded-xl object-cover"
+                  />
+                  <div>
+                    <h3 className="font-semibold text-lg">Happ</h3>
+                    <p className="text-sm text-muted-foreground">Простой и удобный клиент</p>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Button variant="outline" className="w-full rounded-full" asChild>
+                    <a href="https://play.google.com/store/apps/details?id=com.happproxy" target="_blank" rel="noopener noreferrer">
+                      <Icon name="Smartphone" size={18} className="mr-2" />
+                      Play Market
+                    </a>
+                  </Button>
+                  <Button variant="outline" className="w-full rounded-full" asChild>
+                    <a href="https://apps.apple.com/ru/app/happ-proxy-utility-plus/id6746188973?platform=iphone" target="_blank" rel="noopener noreferrer">
+                      <Icon name="Apple" size={18} className="mr-2" />
+                      App Store
+                    </a>
+                  </Button>
+                  <Button variant="outline" className="w-full rounded-full" asChild>
+                    <a href="https://github.com/hiddify/hiddify-next/releases" target="_blank" rel="noopener noreferrer">
+                      <Icon name="Monitor" size={18} className="mr-2" />
+                      Windows
+                    </a>
+                  </Button>
+                </div>
+              </div>
+
+              {/* V2RayTun */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <img 
+                    src="https://cdn.poehali.dev/files/063411ec-f9b3-487a-aeb1-e5717cf643c4.png" 
+                    alt="V2RayTun" 
+                    className="w-12 h-12 rounded-xl object-cover"
+                  />
+                  <div>
+                    <h3 className="font-semibold text-lg">V2RayTun</h3>
+                    <p className="text-sm text-muted-foreground">Мощный клиент с настройками</p>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Button variant="outline" className="w-full rounded-full" asChild>
+                    <a href="https://play.google.com/store/apps/details?id=com.v2raytun.android" target="_blank" rel="noopener noreferrer">
+                      <Icon name="Smartphone" size={18} className="mr-2" />
+                      Play Market
+                    </a>
+                  </Button>
+                  <Button variant="outline" className="w-full rounded-full" asChild>
+                    <a href="https://apps.apple.com/app/v2box-v2ray-client/id6446814690" target="_blank" rel="noopener noreferrer">
+                      <Icon name="Apple" size={18} className="mr-2" />
+                      App Store
+                    </a>
+                  </Button>
+                  <Button variant="outline" className="w-full rounded-full" asChild>
+                    <a href="https://github.com/2dust/v2rayN/releases" target="_blank" rel="noopener noreferrer">
+                      <Icon name="Monitor" size={18} className="mr-2" />
+                      Windows
+                    </a>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Subscription Plans */}
         <Card>
           <CardHeader>
