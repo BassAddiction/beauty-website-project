@@ -14,20 +14,23 @@ const PaymentSuccess = () => {
 
   useEffect(() => {
     const checkPaymentAndActivate = async () => {
-      // Пытаемся получить данные из localStorage или URL параметров
-      let username = localStorage.getItem('vpn_username');
-      const email = localStorage.getItem('vpn_email') || searchParams.get('email');
+      // Получаем данные из URL параметров (после редиректа с YooKassa)
+      const emailFromUrl = searchParams.get('email');
+      const usernameFromUrl = searchParams.get('username');
       
-      // Если нет username, но есть email - используем email как username
-      if (!username && email) {
-        username = email;
-      }
+      // Пытаемся получить из localStorage как fallback
+      const email = emailFromUrl || localStorage.getItem('vpn_email');
+      const username = usernameFromUrl || localStorage.getItem('vpn_username');
       
-      if (!username) {
+      if (!username || !email) {
         setError('Не найдены данные пользователя. Перейдите на страницу восстановления доступа.');
         setLoading(false);
         return;
       }
+      
+      // Сохраняем в localStorage
+      localStorage.setItem('vpn_email', email);
+      localStorage.setItem('vpn_username', username);
 
       try {
         // Получаем данные пользователя из Remnawave

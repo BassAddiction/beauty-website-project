@@ -74,6 +74,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 }
             
             try:
+                email = body_data.get('email', 'noreply@speedvpn.ru')
                 payment_payload = {
                     'amount': {
                         'value': str(amount),
@@ -82,12 +83,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'capture': True,
                     'confirmation': {
                         'type': 'redirect',
-                        'return_url': f'https://beauty-website-project.poehali.app/payment-success'
+                        'return_url': f'https://beauty-website-project.poehali.app/payment-success?email={email}&username={username}'
                     },
                     'description': f'Speed VPN - {plan_name}',
                     'receipt': {
                         'customer': {
-                            'email': body_data.get('email', 'noreply@speedvpn.ru')
+                            'email': email
                         },
                         'items': [
                             {
