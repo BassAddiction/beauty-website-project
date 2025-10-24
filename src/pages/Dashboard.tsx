@@ -34,16 +34,45 @@ const Dashboard = () => {
   const fetchUserData = async (username: string) => {
     try {
       setLoading(true);
+      
+      // Получаем данные из localStorage (сохранены при регистрации/оплате)
+      const subscriptionUrl = localStorage.getItem('vpn_subscription_url');
+      const email = localStorage.getItem('vpn_email');
+      
+      if (subscriptionUrl) {
+        // Используем локальные данные
+        setUserData({
+          username: username,
+          status: 'active',
+          used_traffic: 0,
+          data_limit: 32212254720, // 30 ГБ
+          expire: 0, // Пока не знаем точную дату
+          sub_url: subscriptionUrl
+        });
+        setLoading(false);
+        return;
+      }
+      
+      // Если нет локальных данных - пытаемся получить с сервера
       const response = await fetch(
         `https://functions.poehali.dev/d8d680b3-23f3-481e-b8cf-ccb969e2f158?username=${username}`
       );
       
       if (!response.ok) {
-        throw new Error('Не удалось загрузить данные');
+        throw new Error('Не удалось загрузить данные. Используйте страницу восстановления доступа.');
       }
 
       const data = await response.json();
-      setUserData(data);
+      const responseData = data.response || data;
+      
+      setUserData({
+        username: responseData.username || username,
+        status: responseData.status || 'active',
+        used_traffic: responseData.usedTrafficBytes || 0,
+        data_limit: responseData.trafficLimitBytes || 32212254720,
+        expire: responseData.expireAt ? new Date(responseData.expireAt).getTime() / 1000 : 0,
+        sub_url: responseData.subscriptionUrl || subscriptionUrl || ''
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ошибка загрузки');
     } finally {

@@ -38,7 +38,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     
     resend_api_key = os.environ.get('RESEND_API_KEY', '')
     
+    print(f'📧 RESEND_API_KEY configured: {bool(resend_api_key)}')
+    
     if not resend_api_key:
+        print('❌ RESEND_API_KEY not found in environment')
         return {
             'statusCode': 500,
             'headers': cors_headers,
@@ -52,7 +55,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         subscription_url = body_data.get('subscription_url')
         username = body_data.get('username')
         
+        print(f'📧 Sending email to: {email}')
+        print(f'📧 Subscription URL: {subscription_url}')
+        print(f'📧 Username: {username}')
+        
         if not email or not subscription_url:
+            print('❌ Missing email or subscription_url')
             return {
                 'statusCode': 400,
                 'headers': cors_headers,
@@ -162,6 +170,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         '''
         
         # Отправка через Resend API
+        print('📧 Sending request to Resend API...')
         resend_response = requests.post(
             'https://api.resend.com/emails',
             headers={
@@ -177,7 +186,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             timeout=10
         )
         
+        print(f'📧 Resend response status: {resend_response.status_code}')
+        print(f'📧 Resend response body: {resend_response.text}')
+        
         if resend_response.status_code in [200, 201]:
+            print('✅ Email sent successfully!')
             return {
                 'statusCode': 200,
                 'headers': cors_headers,
@@ -189,6 +202,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         else:
+            print(f'❌ Failed to send email: {resend_response.text}')
             return {
                 'statusCode': resend_response.status_code,
                 'headers': cors_headers,
