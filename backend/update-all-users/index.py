@@ -109,11 +109,13 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             print(f'🔄 Starting to update {len(users)} users')
             for idx, user in enumerate(users, 1):
                 username = user.get('username')
-                if not username:
-                    print(f'⚠️ User {idx} has no username, skipping')
+                uuid = user.get('uuid')
+                
+                if not username or not uuid:
+                    print(f'⚠️ User {idx} has no username or uuid, skipping')
                     continue
                 
-                print(f'🔄 [{idx}/{len(users)}] Updating user: {username}')
+                print(f'🔄 [{idx}/{len(users)}] Updating user: {username} (UUID: {uuid})')
                 
                 try:
                     update_payload = {
@@ -124,9 +126,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         }
                     }
                     
-                    print(f'📤 Sending PATCH to: {remnawave_url}/api/users/{username}')
-                    update_response = requests.patch(
-                        f'{remnawave_url}/api/users/{username}',
+                    print(f'📤 Sending PUT to: {remnawave_url}/api/user/{uuid}')
+                    update_response = requests.put(
+                        f'{remnawave_url}/api/user/{uuid}',
                         headers=headers,
                         json=update_payload,
                         timeout=10
