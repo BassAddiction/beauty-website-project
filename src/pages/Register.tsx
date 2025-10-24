@@ -90,7 +90,8 @@ const Register = () => {
       );
 
       if (!paymentResponse.ok) {
-        throw new Error('Ошибка создания платежа');
+        const errorData = await paymentResponse.text();
+        throw new Error(`Ошибка создания платежа: ${errorData}`);
       }
 
       const paymentData = await paymentResponse.json();
