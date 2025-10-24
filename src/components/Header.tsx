@@ -21,6 +21,12 @@ const Header = () => {
           <a href="#clients" className="text-sm font-medium hover:text-primary transition-colors">VPN-Клиент</a>
         </nav>
         <div className="flex items-center gap-4">
+          <Button variant="ghost" className="hidden md:flex rounded-full" asChild>
+            <a href="/get-access">
+              <Icon name="Key" className="w-4 h-4 mr-2" />
+              Восстановить доступ
+            </a>
+          </Button>
           <Button variant="outline" className="hidden md:flex rounded-full" asChild>
             <a href="/login">
               <Icon name="User" className="w-4 h-4 mr-2" />
@@ -75,7 +81,13 @@ const Header = () => {
                 >
                   VPN-Клиент
                 </a>
-                <Button variant="outline" className="rounded-full mt-4" asChild>
+                <Button variant="ghost" className="rounded-full mt-4" asChild>
+                  <a href="/get-access">
+                    <Icon name="Key" className="w-4 h-4 mr-2" />
+                    Восстановить доступ
+                  </a>
+                </Button>
+                <Button variant="outline" className="rounded-full" asChild>
                   <a href="/login">
                     <Icon name="User" className="w-4 h-4 mr-2" />
                     Личный кабинет

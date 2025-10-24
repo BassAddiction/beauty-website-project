@@ -100,16 +100,27 @@ const Login = () => {
             </Button>
           </form>
 
-          <div className="mt-6 pt-6 border-t text-center">
-            <p className="text-sm text-muted-foreground mb-3">
-              Еще нет аккаунта?
-            </p>
-            <Button className="w-full button-glow" asChild>
-              <a href="/register">
-                <Icon name="UserPlus" className="w-4 h-4 mr-2" />
-                Создать аккаунт
-              </a>
+          <div className="mt-6 pt-6 border-t space-y-3">
+            <Button 
+              variant="outline" 
+              className="w-full" 
+              onClick={() => navigate('/get-access')}
+            >
+              <Icon name="Key" className="w-4 h-4 mr-2" />
+              Восстановить доступ по email
             </Button>
+            
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground mb-3">
+                Еще нет аккаунта?
+              </p>
+              <Button className="w-full button-glow" asChild>
+                <a href="/register">
+                  <Icon name="UserPlus" className="w-4 h-4 mr-2" />
+                  Создать аккаунт
+                </a>
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
