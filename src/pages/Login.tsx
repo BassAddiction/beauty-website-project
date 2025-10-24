@@ -23,28 +23,14 @@ const Login = () => {
     setLoading(true);
     setError('');
 
-    try {
-      const response = await fetch(
-        `https://functions.poehali.dev/d8d680b3-23f3-481e-b8cf-ccb969e2f158?username=${username.trim()}`
-      );
-
-      if (!response.ok) {
-        throw new Error('Пользователь не найден');
-      }
-
-      const data = await response.json();
-      
-      if (data.username) {
-        localStorage.setItem('vpn_username', username.trim());
-        navigate('/dashboard');
-      } else {
-        setError('Пользователь не найден');
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ошибка подключения');
-    } finally {
+    // Просто сохраняем username и переходим в кабинет
+    // Данные будут загружены из localStorage в Dashboard
+    localStorage.setItem('vpn_username', username.trim());
+    
+    setTimeout(() => {
       setLoading(false);
-    }
+      navigate('/dashboard');
+    }, 500);
   };
 
   return (
@@ -60,7 +46,7 @@ const Login = () => {
           </div>
           <CardTitle className="text-2xl">Вход в личный кабинет</CardTitle>
           <CardDescription>
-            Введите ваше имя пользователя для доступа к подписке
+            Введите имя пользователя из письма с подтверждением оплаты
           </CardDescription>
         </CardHeader>
         <CardContent>
