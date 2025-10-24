@@ -46,22 +46,30 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         
         try:
             # Получаем список всех пользователей
+            print(f'🔍 Fetching users from: {remnawave_url}/api/users')
             users_response = requests.get(
                 f'{remnawave_url}/api/users',
                 headers=headers,
                 timeout=15
             )
             
+            print(f'📡 Response status: {users_response.status_code}')
+            print(f'📡 Response body: {users_response.text[:500]}')
+            
             if users_response.status_code != 200:
                 return {
                     'statusCode': users_response.status_code,
                     'headers': cors_headers,
-                    'body': json.dumps({'error': 'Failed to fetch users'}),
+                    'body': json.dumps({'error': 'Failed to fetch users', 'response': users_response.text}),
                     'isBase64Encoded': False
                 }
             
             users_data = users_response.json()
-            users = users_data.get('users', [])
+            print(f'📊 Users data structure: {json.dumps(users_data, indent=2)[:500]}')
+            
+            # Пробуем разные структуры ответа
+            users = users_data.get('users', users_data.get('data', users_data if isinstance(users_data, list) else []))
+            print(f'👥 Found {len(users)} users')
             
             updated_count = 0
             failed_count = 0
