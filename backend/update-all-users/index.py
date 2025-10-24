@@ -106,10 +106,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             results = []
             
             # Обновляем каждого пользователя
-            for user in users:
+            print(f'🔄 Starting to update {len(users)} users')
+            for idx, user in enumerate(users, 1):
                 username = user.get('username')
                 if not username:
+                    print(f'⚠️ User {idx} has no username, skipping')
                     continue
+                
+                print(f'🔄 [{idx}/{len(users)}] Updating user: {username}')
                 
                 try:
                     update_payload = {
@@ -120,20 +124,24 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         }
                     }
                     
+                    print(f'📤 Sending PUT to: {remnawave_url}/api/user/{username}')
                     update_response = requests.put(
                         f'{remnawave_url}/api/user/{username}',
                         headers=headers,
                         json=update_payload,
                         timeout=10
                     )
+                    print(f'📥 Response status: {update_response.status_code}')
                     
                     if update_response.status_code == 200:
+                        print(f'✅ User {username} updated successfully')
                         updated_count += 1
                         results.append({
                             'username': username,
                             'status': 'success'
                         })
                     else:
+                        print(f'❌ User {username} failed: {update_response.status_code} - {update_response.text[:200]}')
                         failed_count += 1
                         results.append({
                             'username': username,
@@ -141,6 +149,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             'error': update_response.text
                         })
                 except Exception as e:
+                    print(f'💥 User {username} exception: {str(e)}')
                     failed_count += 1
                     results.append({
                         'username': username,
