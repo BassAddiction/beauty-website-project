@@ -242,12 +242,33 @@ const Register = () => {
                 </div>
               </form>
 
-              <div className="mt-6 pt-6 border-t">
+              <div className="mt-6 pt-6 border-t space-y-4">
                 <div className="flex items-start gap-2 text-xs text-muted-foreground">
-                  <Icon name="Info" className="w-4 h-4 mt-0.5" />
+                  <Icon name="Info" className="w-4 h-4 mt-0.5 flex-shrink-0" />
                   <p>
                     После оплаты вы получите доступ к личному кабинету с настройками подключения VPN
                   </p>
+                </div>
+                
+                <div className="bg-yellow-50 dark:bg-yellow-950 p-4 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                  <div className="flex items-start gap-2">
+                    <Icon name="AlertCircle" className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
+                    <div className="space-y-2 text-sm">
+                      <p className="font-medium text-yellow-800 dark:text-yellow-200">
+                        Не получили доступ после оплаты?
+                      </p>
+                      <p className="text-yellow-700 dark:text-yellow-300">
+                        Если после оплаты страница не загрузилась - не переживайте! Перейдите на страницу{' '}
+                        <a 
+                          href="/get-access" 
+                          className="font-semibold underline hover:no-underline"
+                        >
+                          Восстановить доступ
+                        </a>
+                        {' '}и введите ваш email. Вы сразу получите ссылку на VPN.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardContent>
