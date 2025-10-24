@@ -45,11 +45,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         }
         
         try:
-            # Получаем список всех пользователей
+            # Получаем список всех пользователей (limit=100 для получения всех)
             print(f'🔍 Fetching users from: {remnawave_url}/api/users')
             users_response = requests.get(
                 f'{remnawave_url}/api/users',
                 headers=headers,
+                params={'limit': 100},
                 timeout=15
             )
             
