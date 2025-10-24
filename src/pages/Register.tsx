@@ -14,7 +14,7 @@ interface Plan {
 }
 
 const PLANS: Plan[] = [
-  { name: '1 месяц', price: 200, days: 30, traffic: 30 },
+  { name: '1 месяц', price: 10, days: 30, traffic: 30 },
   { name: '3 месяца', price: 500, days: 90, traffic: 30 },
   { name: '6 месяцев', price: 900, days: 180, traffic: 30 }
 ];
