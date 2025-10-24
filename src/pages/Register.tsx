@@ -97,10 +97,13 @@ const Register = () => {
 
       const paymentData = await paymentResponse.json();
       
+      console.log('Payment data:', paymentData);
+      
       localStorage.setItem('vpn_username', username);
       localStorage.setItem('vpn_email', email);
       
       if (paymentData.confirmation_url) {
+        console.log('Redirecting to:', paymentData.confirmation_url);
         window.location.href = paymentData.confirmation_url;
       } else {
         throw new Error('Не получена ссылка на оплату');
