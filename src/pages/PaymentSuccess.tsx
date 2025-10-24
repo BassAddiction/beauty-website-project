@@ -75,8 +75,9 @@ const PaymentSuccess = () => {
         const userData = await userResponse.json();
         console.log('✅ User data from Remnawave:', userData);
         
-        // Remnawave может возвращать разные поля для subscription URL
-        const subLink = userData.subscription_url || userData.sub_url || userData.links?.[0] || '';
+        // Remnawave возвращает данные в поле response.subscriptionUrl
+        const responseData = userData.response || userData;
+        const subLink = responseData.subscriptionUrl || responseData.subscription_url || responseData.sub_url || userData.links?.[0] || '';
         
         if (!subLink) {
           console.error('No subscription URL found in response:', userData);
