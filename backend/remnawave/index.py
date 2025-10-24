@@ -98,35 +98,27 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         action = body_data.get('action')
         
         if action == 'create_user':
-            try:
-                user_payload = {
-                    'username': body_data.get('username'),
-                    'proxies': body_data.get('proxies', []),
-                    'data_limit': body_data.get('data_limit', 0),
-                    'expire': body_data.get('expire'),
-                    'data_limit_reset_strategy': body_data.get('data_limit_reset_strategy', 'no_reset')
-                }
-                
-                response = requests.post(
-                    f'{api_url}/api/user',
-                    headers=headers,
-                    json=user_payload,
-                    timeout=10
-                )
-                
-                return {
-                    'statusCode': response.status_code,
-                    'headers': cors_headers,
-                    'body': response.text,
-                    'isBase64Encoded': False
-                }
-            except Exception as e:
-                return {
-                    'statusCode': 500,
-                    'headers': cors_headers,
-                    'body': json.dumps({'error': str(e)}),
-                    'isBase64Encoded': False
-                }
+            user_payload = {
+                'username': body_data.get('username'),
+                'proxies': body_data.get('proxies', {}),
+                'data_limit': body_data.get('data_limit', 0),
+                'expire': body_data.get('expire'),
+                'data_limit_reset_strategy': body_data.get('data_limit_reset_strategy', 'no_reset')
+            }
+            
+            response = requests.post(
+                f'{api_url}/api/user',
+                headers=headers,
+                json=user_payload,
+                timeout=10
+            )
+            
+            return {
+                'statusCode': response.status_code,
+                'headers': cors_headers,
+                'body': response.text,
+                'isBase64Encoded': False
+            }
         
         if action == 'update_user':
             username = body_data.get('username')

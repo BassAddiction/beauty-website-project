@@ -59,7 +59,7 @@ const Register = () => {
           body: JSON.stringify({
             action: 'create_user',
             username: username,
-            proxies: [],
+            proxies: {},
             data_limit: 32212254720,
             expire: Math.floor(Date.now() / 1000) + (selectedPlan.days * 86400),
             data_limit_reset_strategy: 'day'
@@ -68,7 +68,8 @@ const Register = () => {
       );
 
       if (!createUserResponse.ok) {
-        throw new Error('Ошибка создания аккаунта');
+        const errorData = await createUserResponse.text();
+        throw new Error(`Ошибка создания аккаунта: ${errorData}`);
       }
 
       const paymentResponse = await fetch(
