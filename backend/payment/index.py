@@ -38,7 +38,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         return {
             'statusCode': 500,
             'headers': cors_headers,
-            'body': json.dumps({'error': 'Payment credentials not configured'}),
+            'body': json.dumps({
+                'error': 'Не настроены данные ЮKassa',
+                'message': 'Добавьте YOOKASSA_SHOP_ID и YOOKASSA_SECRET_KEY в секреты проекта'
+            }),
             'isBase64Encoded': False
         }
     
