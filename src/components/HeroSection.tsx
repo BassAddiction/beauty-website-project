@@ -33,8 +33,8 @@ const HeroSection = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button size="lg" className="rounded-full text-lg px-8 h-14 button-glow" asChild>
-              <a href="https://t.me/shopspeedvpn_bot" target="_blank" rel="noopener noreferrer">
-                Попробовать бесплатно
+              <a href="/register">
+                Начать работу
               </a>
             </Button>
             <Button size="lg" variant="outline" className="rounded-full text-lg px-8 h-14" asChild>

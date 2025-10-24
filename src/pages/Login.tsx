@@ -104,10 +104,10 @@ const Login = () => {
             <p className="text-sm text-muted-foreground mb-3">
               Еще нет аккаунта?
             </p>
-            <Button variant="outline" className="w-full" asChild>
-              <a href="https://t.me/shopspeedvpn_bot" target="_blank" rel="noopener noreferrer">
-                <Icon name="MessageCircle" className="w-4 h-4 mr-2" />
-                Купить подписку в Telegram
+            <Button className="w-full button-glow" asChild>
+              <a href="/register">
+                <Icon name="UserPlus" className="w-4 h-4 mr-2" />
+                Создать аккаунт
               </a>
             </Button>
           </div>
