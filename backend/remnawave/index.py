@@ -67,12 +67,43 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     if method == 'GET':
         params = event.get('queryStringParameters', {})
         username = params.get('username')
+        email_prefix = params.get('email_prefix')
+        
+        # Поиск по email префиксу
+        if email_prefix:
+            try:
+                # Получаем всех пользователей
+                response = requests.get(f'{api_url}/api/users', headers=headers, timeout=10)
+                if response.status_code == 200:
+                    users = response.json()
+                    # Ищем пользователя с нужным префиксом
+                    for user in users.get('users', []):
+                        if user.get('username', '').startswith(email_prefix):
+                            return {
+                                'statusCode': 200,
+                                'headers': cors_headers,
+                                'body': json.dumps(user),
+                                'isBase64Encoded': False
+                            }
+                return {
+                    'statusCode': 404,
+                    'headers': cors_headers,
+                    'body': json.dumps({'error': 'User not found'}),
+                    'isBase64Encoded': False
+                }
+            except Exception as e:
+                return {
+                    'statusCode': 500,
+                    'headers': cors_headers,
+                    'body': json.dumps({'error': str(e)}),
+                    'isBase64Encoded': False
+                }
         
         if not username:
             return {
                 'statusCode': 400,
                 'headers': cors_headers,
-                'body': json.dumps({'error': 'Username required'}),
+                'body': json.dumps({'error': 'Username or email_prefix required'}),
                 'isBase64Encoded': False
             }
         
