@@ -24,30 +24,12 @@ const GetAccess = () => {
       return;
     }
 
-    try {
-      // Отправляем запрос на восстановление доступа
-      const response = await fetch('https://functions.poehali.dev/02f41dd7-0d1d-4506-828c-64a917a7dda7', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: email,
-          action: 'recover_access'
-        })
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Ошибка отправки: ${errorText}`);
-      }
-
-      // Показываем успех
+    // Просто показываем инструкцию - реальная отправка email пока не работает
+    // так как нужно интегрировать поиск пользователя в Marzban
+    setTimeout(() => {
       setSubscriptionUrl('email_sent');
-      
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ошибка отправки письма. Попробуйте позже.');
-    } finally {
       setLoading(false);
-    }
+    }, 800);
   };
 
   const copyToClipboard = (text: string) => {
@@ -61,10 +43,10 @@ const GetAccess = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Icon name="Key" className="w-6 h-6" />
-            Получить доступ к VPN
+            Восстановить доступ
           </CardTitle>
           <CardDescription>
-            Мы отправим вам ссылку на подписку и инструкции
+            Найдите в письме с подтверждением оплаты ваш username и используйте его для входа
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -106,31 +88,38 @@ const GetAccess = () => {
             </form>
           ) : (
             <div className="space-y-4">
-              <div className="bg-green-50 dark:bg-green-950 p-4 rounded-lg space-y-3">
+              <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg space-y-3">
                 <div className="flex items-start gap-3">
-                  <Icon name="CheckCircle" className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5" />
-                  <div className="space-y-1">
-                    <p className="text-sm text-green-800 dark:text-green-200 font-medium">
-                      Инструкция отправлена!
+                  <Icon name="Info" className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />
+                  <div className="space-y-2">
+                    <p className="text-sm text-blue-800 dark:text-blue-200 font-medium">
+                      Как восстановить доступ:
                     </p>
-                    <p className="text-xs text-green-700 dark:text-green-300">
-                      Проверьте почту <strong>{email}</strong>
-                    </p>
-                    <p className="text-xs text-green-700 dark:text-green-300">
-                      В письме вы найдёте ссылку на подписку и инструкции по подключению.
-                    </p>
+                    <ol className="text-xs text-blue-700 dark:text-blue-300 space-y-1 list-decimal list-inside">
+                      <li>Найдите письмо с подтверждением оплаты на <strong>{email}</strong></li>
+                      <li>В письме найдите ваш <strong>username</strong> (например: pomytkinserdj_1761322601020)</li>
+                      <li>Используйте его для входа в личный кабинет</li>
+                    </ol>
                   </div>
                 </div>
               </div>
 
               <div className="space-y-2 text-sm text-muted-foreground">
-                <p className="font-medium text-foreground">Не пришло письмо?</p>
+                <p className="font-medium text-foreground">Не нашли письмо?</p>
                 <ul className="list-disc list-inside space-y-1">
                   <li>Проверьте папку "Спам"</li>
-                  <li>Подождите 2-3 минуты</li>
-                  <li>Проверьте правильность email</li>
+                  <li>Письмо приходит с адреса onboarding@resend.dev</li>
+                  <li>Тема письма: "Speed VPN - Ваша подписка активирована"</li>
                 </ul>
               </div>
+
+              <Button 
+                onClick={() => window.location.href = '/login'}
+                className="w-full button-glow"
+              >
+                <Icon name="LogIn" className="w-4 h-4 mr-2" />
+                Войти с username
+              </Button>
 
               <Button 
                 onClick={() => {
@@ -141,18 +130,8 @@ const GetAccess = () => {
                 className="w-full"
               >
                 <Icon name="ArrowLeft" className="w-4 h-4 mr-2" />
-                Попробовать снова
+                Попробовать другой email
               </Button>
-
-              <div className="pt-4 border-t">
-                <Button 
-                  onClick={() => window.location.href = '/register'}
-                  className="w-full button-glow"
-                >
-                  <Icon name="UserPlus" className="w-4 h-4 mr-2" />
-                  Создать новый аккаунт
-                </Button>
-              </div>
             </div>
           )}
         </CardContent>
