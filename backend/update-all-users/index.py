@@ -117,8 +117,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 
                 try:
                     update_payload = {
-                        'data_limit': 32212254720,
-                        'data_limit_reset_strategy': 'day',
+                        'dataLimit': 32212254720,
+                        'dataLimitResetStrategy': 'day',
                         'proxies': {
                             'vless-reality': {}
                         }
