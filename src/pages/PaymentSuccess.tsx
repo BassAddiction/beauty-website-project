@@ -40,18 +40,33 @@ const PaymentSuccess = () => {
       try {
         console.log('🔍 Запрашиваю данные для username:', username);
         
-        // Получаем данные пользователя из Remnawave
-        const userResponse = await fetch(
-          `https://functions.poehali.dev/d8d680b3-23f3-481e-b8cf-ccb969e2f158?username=${username}`,
-          {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
+        // Пытаемся получить данные с несколькими попытками (пользователь может создаваться)
+        let userResponse;
+        let attempts = 0;
+        const maxAttempts = 3;
+        
+        while (attempts < maxAttempts) {
+          userResponse = await fetch(
+            `https://functions.poehali.dev/d8d680b3-23f3-481e-b8cf-ccb969e2f158?username=${username}`,
+            {
+              method: 'GET',
+              headers: { 'Content-Type': 'application/json' }
+            }
+          );
+
+          console.log(`📡 Попытка ${attempts + 1}/${maxAttempts}, статус:`, userResponse.status);
+
+          if (userResponse.ok) {
+            break;
           }
-        );
-
-        console.log('📡 Ответ сервера, статус:', userResponse.status);
-
-        if (!userResponse.ok) {
+          
+          if (userResponse.status === 404 && attempts < maxAttempts - 1) {
+            console.log('⏳ Пользователь не найден, жду 2 секунды...');
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            attempts++;
+            continue;
+          }
+          
           const errorText = await userResponse.text();
           console.error('❌ Ошибка от сервера:', errorText);
           throw new Error(`Ошибка получения данных пользователя: ${errorText}`);
