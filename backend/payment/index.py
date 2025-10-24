@@ -216,7 +216,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                     'Authorization': f'Bearer {remnawave_token}',
                                     'Content-Type': 'application/json'
                                 },
-                                json={'expire': int(new_expire)},
+                                json={
+                                    'expire': int(new_expire),
+                                    'data_limit': 32212254720,
+                                    'data_limit_reset_strategy': 'day',
+                                    'proxies': {
+                                        'vless-reality': {}
+                                    }
+                                },
                                 timeout=10
                             )
                             
