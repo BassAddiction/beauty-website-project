@@ -45,41 +45,61 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         }
         
         try:
-            # Получаем список всех пользователей (limit=100 для получения всех)
-            users_url = f'{remnawave_url}/api/users?limit=100'
-            print(f'🔍 Fetching users from: {users_url}')
-            users_response = requests.get(
-                users_url,
-                headers=headers,
-                timeout=15
-            )
+            # Получаем всех пользователей с пагинацией
+            all_users = []
+            offset = 0
+            limit = 25  # API возвращает максимум 25 за раз
             
-            print(f'📡 Response status: {users_response.status_code}')
-            print(f'📡 Full URL: {users_response.url}')
-            print(f'📡 Response body: {users_response.text[:500]}')
+            while True:
+                users_url = f'{remnawave_url}/api/users?limit={limit}&offset={offset}'
+                print(f'🔍 Fetching users from: {users_url}')
+                users_response = requests.get(
+                    users_url,
+                    headers=headers,
+                    timeout=15
+                )
+                
+                print(f'📡 Response status: {users_response.status_code}')
+                
+                if users_response.status_code != 200:
+                    return {
+                        'statusCode': users_response.status_code,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Failed to fetch users', 'response': users_response.text}),
+                        'isBase64Encoded': False
+                    }
+                
+                users_data = users_response.json()
+                
+                # Извлекаем пользователей
+                if 'response' in users_data and 'users' in users_data['response']:
+                    page_users = users_data['response']['users']
+                    total = users_data['response'].get('total', 0)
+                elif 'users' in users_data:
+                    page_users = users_data['users']
+                    total = len(page_users)
+                elif isinstance(users_data, list):
+                    page_users = users_data
+                    total = len(page_users)
+                else:
+                    page_users = []
+                    total = 0
+                
+                all_users.extend(page_users)
+                print(f'📄 Page: {len(page_users)} users, Total collected: {len(all_users)}/{total}')
+                
+                # Если получили меньше чем limit, значит это последняя страница
+                if len(page_users) < limit:
+                    break
+                
+                # Если собрали всех пользователей
+                if len(all_users) >= total:
+                    break
+                
+                offset += limit
             
-            if users_response.status_code != 200:
-                return {
-                    'statusCode': users_response.status_code,
-                    'headers': cors_headers,
-                    'body': json.dumps({'error': 'Failed to fetch users', 'response': users_response.text}),
-                    'isBase64Encoded': False
-                }
-            
-            users_data = users_response.json()
-            print(f'📊 Users data structure: {json.dumps(users_data, indent=2)[:500]}')
-            
-            # Remnawave возвращает структуру {"response": {"users": [...]}}
-            if 'response' in users_data and 'users' in users_data['response']:
-                users = users_data['response']['users']
-            elif 'users' in users_data:
-                users = users_data['users']
-            elif isinstance(users_data, list):
-                users = users_data
-            else:
-                users = []
-            
-            print(f'👥 Found {len(users)} users')
+            users = all_users
+            print(f'👥 Total found {len(users)} users')
             
             updated_count = 0
             failed_count = 0
