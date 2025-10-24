@@ -10,6 +10,8 @@ const GetAccess = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [subscriptionUrl, setSubscriptionUrl] = useState('');
+  const [username, setUsername] = useState('');
+  const [sendingEmail, setSendingEmail] = useState(false);
 
   const handleGetAccess = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,6 +46,7 @@ const GetAccess = () => {
       }
 
       setSubscriptionUrl(subUrl);
+      setUsername(emailPrefix);
       localStorage.setItem('vpn_subscription_url', subUrl);
       localStorage.setItem('vpn_email', email);
 
@@ -163,9 +166,48 @@ const GetAccess = () => {
               </div>
 
               <Button 
+                onClick={async () => {
+                  if (!email || !subscriptionUrl || !username) return;
+                  
+                  setSendingEmail(true);
+                  try {
+                    await fetch('https://functions.poehali.dev/02f41dd7-0d1d-4506-828c-64a917a7dda7', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        email: email,
+                        subscription_url: subscriptionUrl,
+                        username: username
+                      })
+                    });
+                    alert('📧 Письмо отправлено! Проверьте почту.');
+                  } catch (err) {
+                    alert('Ошибка отправки письма. Попробуйте позже.');
+                  } finally {
+                    setSendingEmail(false);
+                  }
+                }}
+                disabled={sendingEmail}
+                className="w-full button-glow"
+              >
+                {sendingEmail ? (
+                  <>
+                    <Icon name="Loader2" className="w-4 h-4 mr-2 animate-spin" />
+                    Отправка...
+                  </>
+                ) : (
+                  <>
+                    <Icon name="Mail" className="w-4 h-4 mr-2" />
+                    Отправить инструкцию повторно
+                  </>
+                )}
+              </Button>
+
+              <Button 
                 onClick={() => {
                   setSubscriptionUrl('');
                   setEmail('');
+                  setUsername('');
                 }} 
                 variant="outline" 
                 className="w-full"

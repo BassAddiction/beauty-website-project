@@ -11,6 +11,9 @@ const PaymentSuccess = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [subscriptionLink, setSubscriptionLink] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const [userName, setUserName] = useState('');
+  const [sendingEmail, setSendingEmail] = useState(false);
 
   useEffect(() => {
     const checkPaymentAndActivate = async () => {
@@ -28,9 +31,11 @@ const PaymentSuccess = () => {
         return;
       }
       
-      // Сохраняем в localStorage
+      // Сохраняем в localStorage и state
       localStorage.setItem('vpn_email', email);
       localStorage.setItem('vpn_username', username);
+      setUserEmail(email);
+      setUserName(username);
 
       try {
         // Получаем данные пользователя из Remnawave
@@ -199,8 +204,47 @@ const PaymentSuccess = () => {
               </p>
             </div>
 
-            <div className="flex gap-3">
-              <Button onClick={() => navigate('/dashboard')} className="flex-1 button-glow">
+            <div className="flex flex-col gap-3">
+              <Button 
+                onClick={async () => {
+                  if (!userEmail || !subscriptionLink || !userName) return;
+                  
+                  setSendingEmail(true);
+                  try {
+                    await fetch('https://functions.poehali.dev/02f41dd7-0d1d-4506-828c-64a917a7dda7', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        email: userEmail,
+                        subscription_url: subscriptionLink,
+                        username: userName
+                      })
+                    });
+                    alert('📧 Письмо отправлено! Проверьте почту.');
+                  } catch (err) {
+                    alert('Ошибка отправки письма. Попробуйте позже.');
+                  } finally {
+                    setSendingEmail(false);
+                  }
+                }}
+                variant="outline"
+                disabled={sendingEmail}
+                className="w-full"
+              >
+                {sendingEmail ? (
+                  <>
+                    <Icon name="Loader2" className="w-4 h-4 mr-2 animate-spin" />
+                    Отправка...
+                  </>
+                ) : (
+                  <>
+                    <Icon name="Mail" className="w-4 h-4 mr-2" />
+                    Отправить инструкцию повторно
+                  </>
+                )}
+              </Button>
+              
+              <Button onClick={() => navigate('/dashboard')} className="w-full button-glow">
                 Перейти в личный кабинет
               </Button>
             </div>
