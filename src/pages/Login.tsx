@@ -12,7 +12,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!username.trim()) {
@@ -24,13 +24,12 @@ const Login = () => {
     setError('');
 
     // Просто сохраняем username и переходим в кабинет
-    // Данные будут загружены из localStorage в Dashboard
     localStorage.setItem('vpn_username', username.trim());
     
+    // Небольшая задержка для визуального эффекта
     setTimeout(() => {
-      setLoading(false);
       navigate('/dashboard');
-    }, 500);
+    }, 300);
   };
 
   return (
