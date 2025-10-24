@@ -46,15 +46,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         
         try:
             # Получаем список всех пользователей (limit=100 для получения всех)
-            print(f'🔍 Fetching users from: {remnawave_url}/api/users')
+            users_url = f'{remnawave_url}/api/users?limit=100'
+            print(f'🔍 Fetching users from: {users_url}')
             users_response = requests.get(
-                f'{remnawave_url}/api/users',
+                users_url,
                 headers=headers,
-                params={'limit': 100},
                 timeout=15
             )
             
             print(f'📡 Response status: {users_response.status_code}')
+            print(f'📡 Full URL: {users_response.url}')
             print(f'📡 Response body: {users_response.text[:500]}')
             
             if users_response.status_code != 200:
