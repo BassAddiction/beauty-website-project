@@ -178,7 +178,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'Content-Type': 'application/json'
             },
             json={
-                'from': 'Speed VPN <onboarding@resend.dev>',
+                'from': 'Speed VPN <noreply@speedvpn.io>',
                 'to': [email],
                 'subject': '🚀 Ваша подписка Speed VPN активирована!',
                 'html': html_content
