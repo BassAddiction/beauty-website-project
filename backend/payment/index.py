@@ -156,10 +156,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             if status == 'succeeded':
                 username = metadata.get('username')
                 plan_days = int(metadata.get('plan_days', 30))
+                email = webhook_data.get('receipt', {}).get('customer', {}).get('email', '')
                 
                 # Обновляем подписку пользователя через Remnawave API
                 remnawave_url = os.environ.get('REMNAWAVE_API_URL', '').rstrip('/')
                 remnawave_token = os.environ.get('REMNAWAVE_API_TOKEN', '')
+                subscription_url = ''
                 
                 if remnawave_url and remnawave_token:
                     try:
@@ -173,6 +175,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         if user_response.status_code == 200:
                             user_data = user_response.json()
                             current_expire = user_data.get('expire', 0)
+                            subscription_url = user_data.get('subscription_url', user_data.get('sub_url', ''))
                             
                             # Продлеваем подписку
                             now = datetime.now().timestamp()
@@ -192,14 +195,31 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             )
                             
                             if update_response.status_code == 200:
+                                # Отправляем email с данными доступа
+                                if email and subscription_url:
+                                    try:
+                                        email_response = requests.post(
+                                            'https://functions.poehali.dev/02f41dd7-0d1d-4506-828c-64a917a7dda7',
+                                            headers={'Content-Type': 'application/json'},
+                                            json={
+                                                'email': email,
+                                                'subscription_url': subscription_url,
+                                                'username': username
+                                            },
+                                            timeout=10
+                                        )
+                                        print(f'📧 Email sent: {email_response.status_code}')
+                                    except Exception as email_err:
+                                        print(f'❌ Email send failed: {str(email_err)}')
+                                
                                 return {
                                     'statusCode': 200,
                                     'headers': cors_headers,
-                                    'body': json.dumps({'status': 'subscription_updated'}),
+                                    'body': json.dumps({'status': 'subscription_updated', 'email_sent': bool(email and subscription_url)}),
                                     'isBase64Encoded': False
                                 }
                     except Exception as e:
-                        pass
+                        print(f'❌ Webhook processing error: {str(e)}')
             
             return {
                 'statusCode': 200,
