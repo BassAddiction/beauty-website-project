@@ -63,6 +63,24 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
     
+    # GET /inbounds - получить список inbounds (сквадов)
+    if method == 'GET' and event.get('queryStringParameters', {}).get('action') == 'inbounds':
+        try:
+            response = requests.get(f'{api_url}/api/inbounds', headers=headers, timeout=10)
+            return {
+                'statusCode': response.status_code,
+                'headers': cors_headers,
+                'body': response.text,
+                'isBase64Encoded': False
+            }
+        except Exception as e:
+            return {
+                'statusCode': 500,
+                'headers': cors_headers,
+                'body': json.dumps({'error': str(e)}),
+                'isBase64Encoded': False
+            }
+    
     # GET /user/:username - получить данные пользователя
     if method == 'GET':
         params = event.get('queryStringParameters', {})
