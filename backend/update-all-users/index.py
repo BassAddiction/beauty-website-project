@@ -101,6 +101,18 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             users = all_users
             print(f'👥 Total found {len(users)} users')
             
+            # Тестируем GET для первого пользователя
+            if len(users) > 0:
+                test_user = users[0]
+                test_username = test_user.get('username')
+                print(f'🧪 Testing GET /api/user/{test_username}')
+                test_response = requests.get(
+                    f'{remnawave_url}/api/user/{test_username}',
+                    headers=headers,
+                    timeout=10
+                )
+                print(f'🧪 GET response: {test_response.status_code} - {test_response.text[:200]}')
+            
             updated_count = 0
             failed_count = 0
             results = []
