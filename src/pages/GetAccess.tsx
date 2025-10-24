@@ -15,11 +15,19 @@ interface Payment {
   updated_at: string;
 }
 
+interface Subscription {
+  days_left: number | null;
+  expire_timestamp: number | null;
+  subscription_url: string;
+  is_active: boolean;
+}
+
 const GetAccess = () => {
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [payments, setPayments] = useState<Payment[]>([]);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [showPayments, setShowPayments] = useState(false);
 
   const handleGetAccess = async (e: React.FormEvent) => {
@@ -51,6 +59,7 @@ const GetAccess = () => {
       
       if (data.payments && data.payments.length > 0) {
         setPayments(data.payments);
+        setSubscription(data.subscription || null);
         setShowPayments(true);
       } else {
         setError('Подписки не найдены. Проверьте username или оформите новую подписку.');
@@ -117,12 +126,13 @@ const GetAccess = () => {
           ) : (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-lg">История подписок</h3>
+                <h3 className="font-semibold text-lg">Мои подписки</h3>
                 <Button 
                   onClick={() => {
                     setShowPayments(false);
                     setUsername('');
                     setPayments([]);
+                    setSubscription(null);
                   }} 
                   variant="outline"
                   size="sm"
@@ -131,6 +141,54 @@ const GetAccess = () => {
                   Назад
                 </Button>
               </div>
+
+              {subscription && (
+                <Card className={subscription.is_active ? 'border-green-500' : 'border-red-500'}>
+                  <CardContent className="pt-4">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <Icon 
+                            name={subscription.is_active ? 'Zap' : 'AlertCircle'} 
+                            className={`w-5 h-5 ${
+                              subscription.is_active
+                                ? 'text-green-600 dark:text-green-400'
+                                : 'text-red-600 dark:text-red-400'
+                            }`}
+                          />
+                          <h4 className="font-semibold text-lg">
+                            {subscription.is_active ? 'Подписка активна' : 'Подписка истекла'}
+                          </h4>
+                        </div>
+                        {subscription.is_active && subscription.days_left !== null && (
+                          <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+                            {subscription.days_left} {subscription.days_left === 1 ? 'день' : subscription.days_left < 5 ? 'дня' : 'дней'}
+                          </p>
+                        )}
+                        <p className="text-sm text-muted-foreground">
+                          {subscription.is_active ? 'до окончания подписки' : 'Продлите подписку для доступа'}
+                        </p>
+                      </div>
+                      {subscription.is_active && (
+                        <div className="text-right">
+                          <p className="text-xs text-muted-foreground">До</p>
+                          <p className="text-sm font-medium">
+                            {subscription.expire_timestamp
+                              ? new Date(subscription.expire_timestamp * 1000).toLocaleDateString('ru-RU', {
+                                  day: '2-digit',
+                                  month: '2-digit',
+                                  year: 'numeric'
+                                })
+                              : '—'}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              <h4 className="font-medium text-sm text-muted-foreground">История платежей</h4>
 
               <div className="space-y-3">
                 {payments.map((payment) => (
