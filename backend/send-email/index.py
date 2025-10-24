@@ -80,12 +80,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         <table width="600" cellpadding="0" cellspacing="0" style="background-color: #1e293b; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.4);">
                             <tr>
                                 <td style="background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); padding: 50px 30px; text-align: center;">
-                                    <svg width="80" height="80" viewBox="0 0 100 100" style="margin-bottom: 20px;">
-                                        <circle cx="50" cy="50" r="45" fill="#ffffff" opacity="0.1"/>
-                                        <path d="M50 20 L70 35 L70 65 L50 80 L30 65 L30 35 Z" fill="#ffffff" opacity="0.95"/>
-                                        <circle cx="50" cy="50" r="12" fill="#3b82f6"/>
-                                        <path d="M50 38 L50 32 M50 68 L50 62 M38 50 L32 50 M68 50 L62 50" stroke="#ffffff" stroke-width="3" opacity="0.8"/>
-                                    </svg>
+                                    <img src="https://cdn.poehali.dev/files/3a0045b1-8f62-461c-946f-ea67286d8040.png" alt="Speed VPN Logo" width="80" height="80" style="margin-bottom: 20px; border-radius: 12px;"/>
                                     <h1 style="color: #ffffff; margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -0.5px;">Speed VPN</h1>
                                     <p style="color: #e0e7ff; margin: 12px 0 0 0; font-size: 16px; font-weight: 500;">Подписка успешно активирована! 🎉</p>
                                 </td>
@@ -110,9 +105,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                             📱 Android
                                         </h3>
                                         <div style="margin-bottom: 15px;">
-                                            <p style="color: #cbd5e1; font-size: 15px; margin: 0 0 10px 0; font-weight: 600;">Вариант 1: Hiddify (рекомендуем)</p>
-                                            <a href="https://play.google.com/store/apps/details?id=app.hiddify.com" style="display: inline-block; background-color: #3b82f6; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; margin-top: 8px;">
-                                                📥 Скачать Hiddify
+                                            <p style="color: #cbd5e1; font-size: 15px; margin: 0 0 10px 0; font-weight: 600;">Вариант 1: Happ (рекомендуем)</p>
+                                            <a href="https://play.google.com/store/apps/details?id=com.happ.android" style="display: inline-block; background-color: #3b82f6; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; margin-top: 8px;">
+                                                📥 Скачать Happ
                                             </a>
                                         </div>
                                         <div style="border-top: 1px solid #475569; padding-top: 15px;">
@@ -128,9 +123,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                             🍎 iOS (iPhone / iPad)
                                         </h3>
                                         <div style="margin-bottom: 15px;">
-                                            <p style="color: #cbd5e1; font-size: 15px; margin: 0 0 10px 0; font-weight: 600;">Вариант 1: Hiddify (рекомендуем)</p>
-                                            <a href="https://apps.apple.com/app/hiddify-proxy-vpn/id6596777532" style="display: inline-block; background-color: #8b5cf6; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; margin-top: 8px;">
-                                                📥 Скачать Hiddify
+                                            <p style="color: #cbd5e1; font-size: 15px; margin: 0 0 10px 0; font-weight: 600;">Вариант 1: Happ (рекомендуем)</p>
+                                            <a href="https://apps.apple.com/app/happ-proxy-utility/id6738328087" style="display: inline-block; background-color: #8b5cf6; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; margin-top: 8px;">
+                                                📥 Скачать Happ
                                             </a>
                                         </div>
                                         <div style="border-top: 1px solid #475569; padding-top: 15px;">
