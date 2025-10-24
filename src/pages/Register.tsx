@@ -82,6 +82,7 @@ const Register = () => {
           body: JSON.stringify({
             action: 'create_payment',
             username: username,
+            email: email,
             amount: selectedPlan.price,
             plan_name: selectedPlan.name,
             plan_days: selectedPlan.days

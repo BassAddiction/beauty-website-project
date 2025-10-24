@@ -85,6 +85,24 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'return_url': f'https://beauty-website-project.poehali.app/dashboard?payment=success'
                     },
                     'description': f'Speed VPN - {plan_name}',
+                    'receipt': {
+                        'customer': {
+                            'email': body_data.get('email', 'noreply@speedvpn.ru')
+                        },
+                        'items': [
+                            {
+                                'description': f'Подписка Speed VPN - {plan_name}',
+                                'quantity': '1',
+                                'amount': {
+                                    'value': str(amount),
+                                    'currency': 'RUB'
+                                },
+                                'vat_code': 1,
+                                'payment_mode': 'full_payment',
+                                'payment_subject': 'service'
+                            }
+                        ]
+                    },
                     'metadata': {
                         'username': username,
                         'plan_name': plan_name,
