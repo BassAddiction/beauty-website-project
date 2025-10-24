@@ -139,14 +139,36 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'status': 'active'
                     }
                     
-                    print(f'📤 Sending PUT to: {remnawave_url}/api/user/{username}')
-                    print(f'📦 Payload: {json.dumps(update_payload)}')
-                    update_response = requests.put(
+                    # Попробуем удалить пользователя и создать заново с новыми настройками
+                    print(f'🗑️ Deleting user: {username}')
+                    delete_response = requests.delete(
                         f'{remnawave_url}/api/user/{username}',
                         headers=headers,
-                        json=update_payload,
                         timeout=10
                     )
+                    print(f'📥 Delete response: {delete_response.status_code}')
+                    
+                    if delete_response.status_code in [200, 204]:
+                        # Воссоздаём пользователя с новыми настройками
+                        create_payload = {
+                            'username': username,
+                            'data_limit': 32212254720,
+                            'data_limit_reset_strategy': 'day',
+                            'proxies': {
+                                'vless-reality': {}
+                            },
+                            'status': 'active'
+                        }
+                        
+                        print(f'➕ Creating user: {username}')
+                        update_response = requests.post(
+                            f'{remnawave_url}/api/users',
+                            headers=headers,
+                            json=create_payload,
+                            timeout=10
+                        )
+                    else:
+                        update_response = delete_response
                     print(f'📥 Response status: {update_response.status_code}')
                     
                     if update_response.status_code == 200:
