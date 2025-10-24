@@ -5,64 +5,92 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Icon from "@/components/ui/icon";
 
+interface Payment {
+  payment_id: string;
+  amount: number;
+  plan_name: string;
+  plan_days: number;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
 const GetAccess = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [subscriptionUrl, setSubscriptionUrl] = useState('');
-  const [username, setUsername] = useState('');
-  const [sendingEmail, setSendingEmail] = useState(false);
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [showPayments, setShowPayments] = useState(false);
 
   const handleGetAccess = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setShowPayments(false);
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError('Введите корректный email');
+    if (!username.trim()) {
+      setError('Введите username');
       setLoading(false);
       return;
     }
 
-    // Просто показываем инструкцию - реальная отправка email пока не работает
-    // так как нужно интегрировать поиск пользователя в Marzban
-    setTimeout(() => {
-      setSubscriptionUrl('email_sent');
-      setLoading(false);
-    }, 800);
-  };
+    try {
+      const response = await fetch(
+        `https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0?username=${encodeURIComponent(username)}`,
+        {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    alert('Ссылка скопирована!');
+      if (!response.ok) {
+        throw new Error('Пользователь не найден или нет подписок');
+      }
+
+      const data = await response.json();
+      
+      if (data.payments && data.payments.length > 0) {
+        setPayments(data.payments);
+        setShowPayments(true);
+      } else {
+        setError('Подписки не найдены. Проверьте username или оформите новую подписку.');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Ошибка загрузки данных');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4">
-      <Card className="max-w-md w-full">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
+      <Card className="max-w-2xl w-full">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Icon name="Key" className="w-6 h-6" />
-            Восстановить доступ
+            Мои подписки
           </CardTitle>
           <CardDescription>
-            Найдите в письме с подтверждением оплаты ваш username и используйте его для входа
+            Введите ваш username для просмотра истории подписок
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {!subscriptionUrl ? (
+          {!showPayments ? (
             <form onSubmit={handleGetAccess} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="username">Username</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="your@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  id="username"
+                  type="text"
+                  placeholder="pomytkinserdj_1761322601020"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   disabled={loading}
                   required
                 />
+                <p className="text-xs text-muted-foreground">
+                  Username указан в письме с подтверждением оплаты
+                </p>
               </div>
 
               {error && (
@@ -76,62 +104,89 @@ const GetAccess = () => {
                 {loading ? (
                   <>
                     <Icon name="Loader2" className="w-4 h-4 mr-2 animate-spin" />
-                    Поиск...
+                    Загрузка...
                   </>
                 ) : (
                   <>
                     <Icon name="Search" className="w-4 h-4 mr-2" />
-                    Получить доступ
+                    Показать подписки
                   </>
                 )}
               </Button>
             </form>
           ) : (
             <div className="space-y-4">
-              <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg space-y-3">
-                <div className="flex items-start gap-3">
-                  <Icon name="Info" className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />
-                  <div className="space-y-2">
-                    <p className="text-sm text-blue-800 dark:text-blue-200 font-medium">
-                      Как восстановить доступ:
-                    </p>
-                    <ol className="text-xs text-blue-700 dark:text-blue-300 space-y-1 list-decimal list-inside">
-                      <li>Найдите письмо с подтверждением оплаты на <strong>{email}</strong></li>
-                      <li>В письме найдите ваш <strong>username</strong> (например: pomytkinserdj_1761322601020)</li>
-                      <li>Используйте его для входа в личный кабинет</li>
-                    </ol>
-                  </div>
-                </div>
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-lg">История подписок</h3>
+                <Button 
+                  onClick={() => {
+                    setShowPayments(false);
+                    setUsername('');
+                    setPayments([]);
+                  }} 
+                  variant="outline"
+                  size="sm"
+                >
+                  <Icon name="ArrowLeft" className="w-4 h-4 mr-2" />
+                  Назад
+                </Button>
               </div>
 
-              <div className="space-y-2 text-sm text-muted-foreground">
-                <p className="font-medium text-foreground">Не нашли письмо?</p>
-                <ul className="list-disc list-inside space-y-1">
-                  <li>Проверьте папку "Спам"</li>
-                  <li>Письмо приходит с адреса onboarding@resend.dev</li>
-                  <li>Тема письма: "Speed VPN - Ваша подписка активирована"</li>
-                </ul>
+              <div className="space-y-3">
+                {payments.map((payment) => (
+                  <Card key={payment.payment_id} className={
+                    payment.status === 'succeeded' 
+                      ? 'border-green-500 bg-green-50 dark:bg-green-950' 
+                      : 'border-yellow-500 bg-yellow-50 dark:bg-yellow-950'
+                  }>
+                    <CardContent className="pt-4">
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <Icon 
+                              name={payment.status === 'succeeded' ? 'CheckCircle' : 'Clock'} 
+                              className={`w-5 h-5 ${
+                                payment.status === 'succeeded' 
+                                  ? 'text-green-600 dark:text-green-400' 
+                                  : 'text-yellow-600 dark:text-yellow-400'
+                              }`}
+                            />
+                            <h4 className="font-semibold">{payment.plan_name}</h4>
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {payment.plan_days} дней • {payment.amount} ₽
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Дата: {new Date(payment.created_at).toLocaleDateString('ru-RU', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </p>
+                        </div>
+                        <span className={`text-xs font-medium px-2 py-1 rounded ${
+                          payment.status === 'succeeded'
+                            ? 'bg-green-200 dark:bg-green-900 text-green-800 dark:text-green-200'
+                            : 'bg-yellow-200 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200'
+                        }`}>
+                          {payment.status === 'succeeded' ? 'Оплачено' : 'Ожидание'}
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
 
-              <Button 
-                onClick={() => window.location.href = '/login'}
-                className="w-full button-glow"
-              >
-                <Icon name="LogIn" className="w-4 h-4 mr-2" />
-                Войти с username
-              </Button>
-
-              <Button 
-                onClick={() => {
-                  setSubscriptionUrl('');
-                  setEmail('');
-                }} 
-                variant="outline" 
-                className="w-full"
-              >
-                <Icon name="ArrowLeft" className="w-4 h-4 mr-2" />
-                Попробовать другой email
-              </Button>
+              <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg">
+                <p className="text-sm text-blue-800 dark:text-blue-200">
+                  <strong>Username:</strong> {username}
+                </p>
+                <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                  Используйте этот username для входа в личный кабинет
+                </p>
+              </div>
             </div>
           )}
         </CardContent>

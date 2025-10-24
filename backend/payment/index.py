@@ -3,6 +3,7 @@ import os
 import uuid
 import base64
 import requests
+import psycopg2
 from typing import Dict, Any
 from datetime import datetime, timedelta
 
@@ -120,6 +121,31 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 
                 if response.status_code in [200, 201]:
                     payment_data = response.json()
+                    
+                    # Сохраняем платеж в БД
+                    try:
+                        db_url = os.environ.get('DATABASE_URL', '')
+                        if db_url:
+                            conn = psycopg2.connect(db_url)
+                            cursor = conn.cursor()
+                            cursor.execute(
+                                "INSERT INTO payments (payment_id, username, amount, status, plan_name, plan_days, metadata) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                                (
+                                    payment_data.get('id'),
+                                    username,
+                                    float(amount),
+                                    payment_data.get('status'),
+                                    plan_name,
+                                    plan_days,
+                                    json.dumps({'email': email})
+                                )
+                            )
+                            conn.commit()
+                            cursor.close()
+                            conn.close()
+                    except Exception as db_err:
+                        print(f'⚠️ DB save failed: {str(db_err)}')
+                    
                     return {
                         'statusCode': 200,
                         'headers': cors_headers,
@@ -195,6 +221,22 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             )
                             
                             if update_response.status_code == 200:
+                                # Обновляем статус платежа в БД
+                                try:
+                                    db_url = os.environ.get('DATABASE_URL', '')
+                                    if db_url:
+                                        conn = psycopg2.connect(db_url)
+                                        cursor = conn.cursor()
+                                        cursor.execute(
+                                            "UPDATE payments SET status = %s, updated_at = CURRENT_TIMESTAMP WHERE payment_id = %s",
+                                            ('succeeded', payment_id)
+                                        )
+                                        conn.commit()
+                                        cursor.close()
+                                        conn.close()
+                                except Exception as db_err:
+                                    print(f'⚠️ DB update failed: {str(db_err)}')
+                                
                                 # Отправляем email с данными доступа
                                 if email and subscription_url:
                                     try:
