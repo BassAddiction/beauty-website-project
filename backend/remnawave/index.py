@@ -144,19 +144,34 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'dataLimitResetStrategy': body_data.get('data_limit_reset_strategy', 'no_reset')
             }
             
-            response = requests.post(
-                f'{api_url}/api/users',
-                headers=headers,
-                json=user_payload,
-                timeout=10
-            )
+            print(f'🔹 Creating user with payload: {json.dumps(user_payload, indent=2)}')
+            print(f'🔹 API URL: {api_url}/api/users')
             
-            return {
-                'statusCode': response.status_code,
-                'headers': cors_headers,
-                'body': response.text,
-                'isBase64Encoded': False
-            }
+            try:
+                response = requests.post(
+                    f'{api_url}/api/users',
+                    headers=headers,
+                    json=user_payload,
+                    timeout=10
+                )
+                
+                print(f'🔹 Response status: {response.status_code}')
+                print(f'🔹 Response body: {response.text}')
+                
+                return {
+                    'statusCode': response.status_code,
+                    'headers': cors_headers,
+                    'body': response.text,
+                    'isBase64Encoded': False
+                }
+            except Exception as e:
+                print(f'❌ Error creating user: {str(e)}')
+                return {
+                    'statusCode': 500,
+                    'headers': cors_headers,
+                    'body': json.dumps({'error': f'Exception creating user: {str(e)}'}),
+                    'isBase64Encoded': False
+                }
         
         if action == 'update_user':
             username = body_data.get('username')
