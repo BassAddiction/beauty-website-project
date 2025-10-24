@@ -98,12 +98,19 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         action = body_data.get('action')
         
         if action == 'create_user':
+            # Вычисляем expireAt из timestamp expire
+            expire_timestamp = body_data.get('expire')
+            expire_at = None
+            if expire_timestamp:
+                from datetime import datetime
+                expire_at = datetime.fromtimestamp(expire_timestamp).isoformat() + 'Z'
+            
             user_payload = {
                 'username': body_data.get('username'),
                 'proxies': body_data.get('proxies', {}),
-                'data_limit': body_data.get('data_limit', 0),
-                'expire': body_data.get('expire'),
-                'data_limit_reset_strategy': body_data.get('data_limit_reset_strategy', 'no_reset')
+                'dataLimit': body_data.get('data_limit', 0),
+                'expireAt': expire_at,
+                'dataLimitResetStrategy': body_data.get('data_limit_reset_strategy', 'no_reset')
             }
             
             response = requests.post(

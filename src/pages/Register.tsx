@@ -49,7 +49,9 @@ const Register = () => {
     setError('');
 
     try {
-      const username = email.split('@')[0] + '_' + Date.now();
+      // Генерируем username только из букв, цифр, подчёркиваний и дефисов
+      const emailPrefix = email.split('@')[0].replace(/[^a-zA-Z0-9_-]/g, '');
+      const username = emailPrefix + '_' + Date.now();
       
       const createUserResponse = await fetch(
         'https://functions.poehali.dev/d8d680b3-23f3-481e-b8cf-ccb969e2f158',
