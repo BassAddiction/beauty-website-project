@@ -14,11 +14,17 @@ const PaymentSuccess = () => {
 
   useEffect(() => {
     const checkPaymentAndActivate = async () => {
-      const username = localStorage.getItem('vpn_username');
-      const email = localStorage.getItem('vpn_email');
+      // Пытаемся получить данные из localStorage или URL параметров
+      let username = localStorage.getItem('vpn_username');
+      const email = localStorage.getItem('vpn_email') || searchParams.get('email');
+      
+      // Если нет username, но есть email - используем email как username
+      if (!username && email) {
+        username = email;
+      }
       
       if (!username) {
-        setError('Не найдены данные пользователя');
+        setError('Не найдены данные пользователя. Перейдите на страницу восстановления доступа.');
         setLoading(false);
         return;
       }
@@ -98,9 +104,14 @@ const PaymentSuccess = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-muted-foreground">{error}</p>
-            <Button onClick={() => navigate('/register')} className="w-full">
-              Вернуться к регистрации
-            </Button>
+            <div className="space-y-3">
+              <Button onClick={() => navigate('/get-access')} className="w-full">
+                Восстановить доступ
+              </Button>
+              <Button onClick={() => navigate('/register')} variant="outline" className="w-full">
+                Вернуться к регистрации
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
