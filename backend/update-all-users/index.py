@@ -119,16 +119,18 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 
                 try:
                     update_payload = {
-                        'dataLimit': 32212254720,
-                        'dataLimitResetStrategy': 'day',
+                        'data_limit': 32212254720,
+                        'data_limit_reset_strategy': 'day',
                         'proxies': {
                             'vless-reality': {}
-                        }
+                        },
+                        'status': 'active'
                     }
                     
-                    print(f'📤 Sending PUT to: {remnawave_url}/api/user/{uuid}')
+                    print(f'📤 Sending PUT to: {remnawave_url}/api/user/{username}')
+                    print(f'📦 Payload: {json.dumps(update_payload)}')
                     update_response = requests.put(
-                        f'{remnawave_url}/api/user/{uuid}',
+                        f'{remnawave_url}/api/user/{username}',
                         headers=headers,
                         json=update_payload,
                         timeout=10
