@@ -38,6 +38,8 @@ const PaymentSuccess = () => {
       setUserName(username);
 
       try {
+        console.log('🔍 Запрашиваю данные для username:', username);
+        
         // Получаем данные пользователя из Remnawave
         const userResponse = await fetch(
           `https://functions.poehali.dev/d8d680b3-23f3-481e-b8cf-ccb969e2f158?username=${username}`,
@@ -47,12 +49,16 @@ const PaymentSuccess = () => {
           }
         );
 
+        console.log('📡 Ответ сервера, статус:', userResponse.status);
+
         if (!userResponse.ok) {
-          throw new Error('Ошибка получения данных пользователя');
+          const errorText = await userResponse.text();
+          console.error('❌ Ошибка от сервера:', errorText);
+          throw new Error(`Ошибка получения данных пользователя: ${errorText}`);
         }
 
         const userData = await userResponse.json();
-        console.log('User data from Remnawave:', userData);
+        console.log('✅ User data from Remnawave:', userData);
         
         // Remnawave может возвращать разные поля для subscription URL
         const subLink = userData.subscription_url || userData.sub_url || userData.links?.[0] || '';
