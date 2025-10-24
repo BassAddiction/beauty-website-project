@@ -67,8 +67,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             users_data = users_response.json()
             print(f'📊 Users data structure: {json.dumps(users_data, indent=2)[:500]}')
             
-            # Пробуем разные структуры ответа
-            users = users_data.get('users', users_data.get('data', users_data if isinstance(users_data, list) else []))
+            # Remnawave возвращает структуру {"response": {"users": [...]}}
+            if 'response' in users_data and 'users' in users_data['response']:
+                users = users_data['response']['users']
+            elif 'users' in users_data:
+                users = users_data['users']
+            elif isinstance(users_data, list):
+                users = users_data
+            else:
+                users = []
+            
             print(f'👥 Found {len(users)} users')
             
             updated_count = 0
