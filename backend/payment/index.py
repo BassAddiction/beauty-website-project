@@ -82,7 +82,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'capture': True,
                     'confirmation': {
                         'type': 'redirect',
-                        'return_url': f'https://beauty-website-project.poehali.app/dashboard?payment=success'
+                        'return_url': f'https://beauty-website-project.poehali.app/payment-success'
                     },
                     'description': f'Speed VPN - {plan_name}',
                     'receipt': {
