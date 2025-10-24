@@ -74,6 +74,16 @@ const Register = () => {
         throw new Error(`Ошибка создания аккаунта: ${errorData}`);
       }
 
+      // Получаем данные созданного пользователя
+      const createUserData = await createUserResponse.json();
+      const responseData = createUserData.response || createUserData;
+      const subscriptionUrl = responseData.subscriptionUrl || responseData.subscription_url || '';
+      
+      // Сохраняем subscriptionUrl сразу после создания
+      if (subscriptionUrl) {
+        localStorage.setItem('vpn_subscription_url', subscriptionUrl);
+      }
+
       const paymentResponse = await fetch(
         'https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c',
         {

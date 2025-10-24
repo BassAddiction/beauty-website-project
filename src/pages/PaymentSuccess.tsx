@@ -38,74 +38,98 @@ const PaymentSuccess = () => {
       setUserName(username);
 
       try {
-        console.log('🔍 Запрашиваю данные для username:', username);
+        // Сначала проверяем есть ли subscriptionUrl в localStorage (сохранен при регистрации)
+        const cachedSubLink = localStorage.getItem('vpn_subscription_url');
         
-        // Пытаемся получить данные с несколькими попытками (пользователь может создаваться)
-        let userResponse;
-        let attempts = 0;
-        const maxAttempts = 3;
-        
-        while (attempts < maxAttempts) {
-          userResponse = await fetch(
-            `https://functions.poehali.dev/d8d680b3-23f3-481e-b8cf-ccb969e2f158?username=${username}`,
-            {
-              method: 'GET',
-              headers: { 'Content-Type': 'application/json' }
+        if (cachedSubLink) {
+          console.log('✅ Использую сохраненную ссылку подписки:', cachedSubLink);
+          setSubscriptionLink(cachedSubLink);
+          setSuccess(true);
+          
+          // Отправляем email с данными доступа
+          if (email && cachedSubLink) {
+            try {
+              await fetch('https://functions.poehali.dev/02f41dd7-0d1d-4506-828c-64a917a7dda7', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  email: email,
+                  subscription_url: cachedSubLink,
+                  username: username
+                })
+              });
+            } catch (emailErr) {
+              console.error('Failed to send email:', emailErr);
             }
-          );
+          }
+        } else {
+          console.log('🔍 Запрашиваю данные для username:', username);
+          
+          // Пытаемся получить данные с несколькими попытками
+          let userResponse;
+          let attempts = 0;
+          const maxAttempts = 3;
+          
+          while (attempts < maxAttempts) {
+            userResponse = await fetch(
+              `https://functions.poehali.dev/d8d680b3-23f3-481e-b8cf-ccb969e2f158?username=${username}`,
+              {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+              }
+            );
 
-          console.log(`📡 Попытка ${attempts + 1}/${maxAttempts}, статус:`, userResponse.status);
+            console.log(`📡 Попытка ${attempts + 1}/${maxAttempts}, статус:`, userResponse.status);
 
-          if (userResponse.ok) {
-            break;
+            if (userResponse.ok) {
+              break;
+            }
+            
+            if (userResponse.status === 404 && attempts < maxAttempts - 1) {
+              console.log('⏳ Пользователь не найден, жду 2 секунды...');
+              await new Promise(resolve => setTimeout(resolve, 2000));
+              attempts++;
+              continue;
+            }
+            
+            const errorText = await userResponse.text();
+            console.error('❌ Ошибка от сервера:', errorText);
+            throw new Error(`Ошибка получения данных пользователя: ${errorText}`);
+          }
+
+          const userData = await userResponse.json();
+          console.log('✅ User data from Remnawave:', userData);
+          
+          const responseData = userData.response || userData;
+          const subLink = responseData.subscriptionUrl || responseData.subscription_url || responseData.sub_url || userData.links?.[0] || '';
+          
+          if (!subLink) {
+            console.error('No subscription URL found in response:', userData);
           }
           
-          if (userResponse.status === 404 && attempts < maxAttempts - 1) {
-            console.log('⏳ Пользователь не найден, жду 2 секунды...');
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            attempts++;
-            continue;
+          setSubscriptionLink(subLink);
+          setSuccess(true);
+
+          // Сохраняем ссылку на подписку
+          if (subLink) {
+            localStorage.setItem('vpn_subscription_url', subLink);
           }
-          
-          const errorText = await userResponse.text();
-          console.error('❌ Ошибка от сервера:', errorText);
-          throw new Error(`Ошибка получения данных пользователя: ${errorText}`);
-        }
 
-        const userData = await userResponse.json();
-        console.log('✅ User data from Remnawave:', userData);
-        
-        // Remnawave возвращает данные в поле response.subscriptionUrl
-        const responseData = userData.response || userData;
-        const subLink = responseData.subscriptionUrl || responseData.subscription_url || responseData.sub_url || userData.links?.[0] || '';
-        
-        if (!subLink) {
-          console.error('No subscription URL found in response:', userData);
-        }
-        
-        setSubscriptionLink(subLink);
-        setSuccess(true);
-
-        // Сохраняем ссылку на подписку
-        if (subLink) {
-          localStorage.setItem('vpn_subscription_url', subLink);
-        }
-
-        // Отправляем email с данными доступа
-        if (email && subLink) {
-          try {
-            await fetch('https://functions.poehali.dev/02f41dd7-0d1d-4506-828c-64a917a7dda7', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                email: email,
-                subscription_url: subLink,
-                username: username
-              })
-            });
-          } catch (emailErr) {
-            console.error('Failed to send email:', emailErr);
-            // Не показываем ошибку пользователю - email это дополнительная функция
+          // Отправляем email с данными доступа
+          if (email && subLink) {
+            try {
+              await fetch('https://functions.poehali.dev/02f41dd7-0d1d-4506-828c-64a917a7dda7', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  email: email,
+                  subscription_url: subLink,
+                  username: username
+                })
+              });
+            } catch (emailErr) {
+              console.error('Failed to send email:', emailErr);
+            }
           }
         }
       } catch (err) {
