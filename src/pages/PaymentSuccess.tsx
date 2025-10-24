@@ -60,6 +60,24 @@ const PaymentSuccess = () => {
         if (subLink) {
           localStorage.setItem('vpn_subscription_url', subLink);
         }
+
+        // Отправляем email с данными доступа
+        if (email && subLink) {
+          try {
+            await fetch('https://functions.poehali.dev/02f41dd7-0d1d-4506-828c-64a917a7dda7', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email: email,
+                subscription_url: subLink,
+                username: username
+              })
+            });
+          } catch (emailErr) {
+            console.error('Failed to send email:', emailErr);
+            // Не показываем ошибку пользователю - email это дополнительная функция
+          }
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Ошибка активации');
       } finally {

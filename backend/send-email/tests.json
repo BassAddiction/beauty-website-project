@@ -1,0 +1,25 @@
+{
+  "tests": [
+    {
+      "name": "Send VPN access email",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "email": "test@example.com",
+        "subscription_url": "vmess://test-subscription-url",
+        "username": "testuser"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Handle OPTIONS request",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    }
+  ]
+}

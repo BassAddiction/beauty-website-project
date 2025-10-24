@@ -46,6 +46,22 @@ const GetAccess = () => {
       setSubscriptionUrl(subUrl);
       localStorage.setItem('vpn_subscription_url', subUrl);
       localStorage.setItem('vpn_email', email);
+
+      // Отправляем email с данными доступа
+      try {
+        await fetch('https://functions.poehali.dev/02f41dd7-0d1d-4506-828c-64a917a7dda7', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: email,
+            subscription_url: subUrl,
+            username: emailPrefix
+          })
+        });
+      } catch (emailErr) {
+        console.error('Failed to send email:', emailErr);
+        // Не показываем ошибку - email это бонус
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ошибка получения доступа');
     } finally {
@@ -109,9 +125,12 @@ const GetAccess = () => {
             </form>
           ) : (
             <div className="space-y-4">
-              <div className="bg-green-50 dark:bg-green-950 p-4 rounded-lg">
+              <div className="bg-green-50 dark:bg-green-950 p-4 rounded-lg space-y-2">
                 <p className="text-sm text-green-800 dark:text-green-200 font-medium">
                   ✅ Доступ найден!
+                </p>
+                <p className="text-xs text-green-700 dark:text-green-300">
+                  📧 Инструкция отправлена на {email}
                 </p>
               </div>
 
