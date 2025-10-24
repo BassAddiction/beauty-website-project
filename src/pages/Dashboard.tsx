@@ -19,6 +19,7 @@ const Dashboard = () => {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [paymentLoading, setPaymentLoading] = useState(false);
 
   useEffect(() => {
     const username = localStorage.getItem('vpn_username');
@@ -80,6 +81,44 @@ const Dashboard = () => {
       case 'limited': return 'Ограничена';
       case 'expired': return 'Истекла';
       default: return status;
+    }
+  };
+
+  const handlePayment = async (plan: { name: string; price: number; days: number }) => {
+    if (!userData) return;
+    
+    setPaymentLoading(true);
+    
+    try {
+      const response = await fetch('https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          action: 'create_payment',
+          username: userData.username,
+          amount: plan.price,
+          plan_name: plan.name,
+          plan_days: plan.days
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Ошибка создания платежа');
+      }
+
+      const data = await response.json();
+      
+      if (data.confirmation_url) {
+        window.location.href = data.confirmation_url;
+      } else {
+        throw new Error('Не получена ссылка на оплату');
+      }
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Ошибка при создании платежа');
+    } finally {
+      setPaymentLoading(false);
     }
   };
 
@@ -250,8 +289,19 @@ const Dashboard = () => {
                         <span>Любые локации</span>
                       </div>
                     </div>
-                    <Button className="w-full" variant="outline">
-                      Выбрать тариф
+                    <Button 
+                      className="w-full" 
+                      onClick={() => handlePayment(plan)}
+                      disabled={paymentLoading}
+                    >
+                      {paymentLoading ? (
+                        <>
+                          <Icon name="Loader2" className="w-4 h-4 mr-2 animate-spin" />
+                          Загрузка...
+                        </>
+                      ) : (
+                        'Оплатить'
+                      )}
                     </Button>
                   </CardContent>
                 </Card>
