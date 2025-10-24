@@ -244,8 +244,8 @@ const Register = () => {
                       </>
                     ) : (
                       <>
-                        <Icon name="CreditCard" className="w-4 h-4 mr-2" />
-                        Оплатить {selectedPlan.price}₽
+                        <Icon name="ShoppingCart" className="w-4 h-4 mr-2" />
+                        Купить
                       </>
                     )}
                   </Button>
