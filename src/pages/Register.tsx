@@ -61,7 +61,9 @@ const Register = () => {
           body: JSON.stringify({
             action: 'create_user',
             username: username,
-            proxies: {},
+            proxies: {
+              'vless-reality': {}
+            },
             data_limit: 32212254720,
             expire: Math.floor(Date.now() / 1000) + (selectedPlan.days * 86400),
             data_limit_reset_strategy: 'day'
