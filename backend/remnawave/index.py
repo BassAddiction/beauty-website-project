@@ -199,58 +199,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 print(f'🔹 Response status: {response.status_code}')
                 print(f'🔹 Response body: {response.text}')
                 
-                # Если создание успешно - обновляем лимиты и сквады
-                if response.status_code == 201:
-                    created_user = response.json()
-                    # UUID находится внутри response
-                    response_data = created_user.get('response', created_user)
-                    user_uuid = response_data.get('uuid')
-                    
-                    # Читаем сквады из переменных окружения
-                    squad_uuids_str = os.environ.get('USER_SQUAD_UUIDS', '')
-                    squad_uuids = [uuid.strip() for uuid in squad_uuids_str.split(',') if uuid.strip()]
-                    
-                    # Формируем payload для обновления
-                    update_payload = {}
-                    
-                    if data_limit > 0:
-                        update_payload['trafficLimitBytes'] = data_limit
-                        
-                    traffic_strategy = body_data.get('data_limit_reset_strategy', 'day').upper()
-                    if traffic_strategy == 'DAY':
-                        update_payload['trafficLimitStrategy'] = 'DAILY'
-                    elif traffic_strategy == 'WEEK':
-                        update_payload['trafficLimitStrategy'] = 'WEEKLY'
-                    elif traffic_strategy == 'MONTH':
-                        update_payload['trafficLimitStrategy'] = 'MONTHLY'
-                    else:
-                        update_payload['trafficLimitStrategy'] = 'NO_RESET'
-                    
-                    if squad_uuids:
-                        update_payload['activeInternalSquads'] = squad_uuids
-                    
-                    print(f'🔹 Updating user {user_uuid} with: {json.dumps(update_payload, indent=2)}')
-                    
-                    # Отправляем PUT запрос (PATCH не работает - возвращает 404)
-                    update_response = requests.put(
-                        f'{api_url}/api/user/{user_uuid}',
-                        headers=headers,
-                        json=update_payload,
-                        timeout=10
-                    )
-                    
-                    print(f'🔹 Update response status: {update_response.status_code}')
-                    print(f'🔹 Update response body: {update_response.text}')
-                    
-                    # Возвращаем обновленные данные пользователя
-                    if update_response.status_code in [200, 201]:
-                        return {
-                            'statusCode': 201,
-                            'headers': cors_headers,
-                            'body': update_response.text,
-                            'isBase64Encoded': False
-                        }
-                
                 return {
                     'statusCode': response.status_code,
                     'headers': cors_headers,
@@ -283,7 +231,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 if not user_uuid:
                     get_response = requests.get(f'{api_url}/api/user/{username}', headers=headers, timeout=10)
                     if get_response.status_code == 200:
-                        user_uuid = get_response.json().get('uuid')
+                        user_data = get_response.json()
+                        # UUID может быть в response или напрямую
+                        response_data = user_data.get('response', user_data)
+                        user_uuid = response_data.get('uuid')
                     else:
                         return {
                             'statusCode': 404,
