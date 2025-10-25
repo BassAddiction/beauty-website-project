@@ -126,18 +126,21 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             print(f'🔗 User UUID: {user_uuid}')
                             print(f'🔗 Subscription URL: {subscription_url}')
                             
-                            # Теперь вызываем функцию remnawave для добавления в squad
+                            # Теперь вызываем функцию remnawave для добавления в squad (передаём UUID!)
                             remnawave_function_url = 'https://functions.poehali.dev/d8d680b3-23f3-481e-b8cf-ccb969e2f158'
                             
                             print(f'🔧 Calling remnawave function to update squads')
                             
                             remnawave_payload = {
                                 'action': 'update_user',
-                                'username': username,
-                                'inbounds': {
-                                    'vless-reality': ['6afd8de3-00d5-41db-aa52-f259fb98b2c8', '9ef43f96-83c9-4252-ae57-bb17dc9b60a9']
-                                }
+                                'uuid': user_uuid,  # Передаём UUID вместо username!
+                                'internalSquads': [
+                                    '6afd8de3-00d5-41db-aa52-f259fb98b2c8',
+                                    '9ef43f96-83c9-4252-ae57-bb17dc9b60a9'
+                                ]
                             }
+                            
+                            print(f'📦 Remnawave payload: {json.dumps(remnawave_payload, ensure_ascii=False)}')
                             
                             remnawave_resp = requests.post(
                                 remnawave_function_url,
