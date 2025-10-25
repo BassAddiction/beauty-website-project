@@ -92,6 +92,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             timeout=10
                         )
                         
+                        print(f'🔍 User check: GET /api/user/{username} -> {user_response.status_code}')
+                        
                         now = datetime.now().timestamp()
                         new_expire = now + (plan_days * 86400)
                         
