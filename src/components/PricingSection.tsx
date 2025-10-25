@@ -23,31 +23,45 @@ const PricingSection = () => {
     setIsCreatingDemo(true);
     try {
       const username = `test_${Date.now()}`;
-      const response = await fetch('https://functions.poehali.dev/d8d680b3-23f3-481e-b8cf-ccb969e2f158', {
+      
+      const fakeWebhook = {
+        type: 'notification',
+        event: 'payment.succeeded',
+        object: {
+          id: `test_${Date.now()}`,
+          status: 'succeeded',
+          amount: { value: '1.00', currency: 'RUB' },
+          metadata: {
+            username: username,
+            plan_days: '1',
+            plan_name: 'Test 1d'
+          },
+          receipt: {
+            customer: { email: 'test@demo.com' }
+          }
+        }
+      };
+      
+      const response = await fetch('https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'create_user',
-          username: username,
-          days: 1
-        })
+        body: JSON.stringify(fakeWebhook)
       });
 
       const data = await response.json();
       
-      if (response.ok && data.subscription_url) {
-        navigator.clipboard.writeText(data.subscription_url);
+      if (response.ok) {
         toast({
-          title: "🎉 Тестовый доступ создан!",
-          description: `Username: ${username}\nСсылка скопирована в буфер обмена`
+          title: "🎉 Тестовый webhook отправлен!",
+          description: `Username: ${username}\nПроверяй логи backend/payment`
         });
       } else {
-        throw new Error(data.error || 'Ошибка создания');
+        throw new Error(data.error || 'Ошибка webhook');
       }
     } catch (error) {
       toast({
         title: "❌ Ошибка",
-        description: error instanceof Error ? error.message : 'Не удалось создать доступ',
+        description: error instanceof Error ? error.message : 'Не удалось отправить webhook',
         variant: "destructive"
       });
     } finally {
@@ -180,7 +194,7 @@ const PricingSection = () => {
                     onClick={handleDemoRegistration}
                     disabled={isCreatingDemo}
                   >
-                    {isCreatingDemo ? "Создаём..." : "Бесплатный тест"}
+                    {isCreatingDemo ? "Отправка..." : "🧪 Тест Webhook"}
                   </Button>
                 ) : (
                   <Button className="w-full rounded-full button-glow" asChild>
