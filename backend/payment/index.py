@@ -133,6 +133,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                     users_data = users_response.json()
                                     users_list = users_data.get('users', [])
                                     
+                                    print(f'📋 Total users: {len(users_list)}')
+                                    print(f'🔍 Looking for: {username}')
+                                    print(f'📝 Usernames in list: {[u.get("username") for u in users_list[:5]]}')
+                                    
                                     # Ищем нашего пользователя
                                     user_data = None
                                     for user in users_list:
@@ -141,7 +145,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                             break
                                     
                                     if not user_data:
-                                        raise Exception(f'User {username} not found in users list')
+                                        raise Exception(f'User {username} not found in users list. Total users: {len(users_list)}')
                                     
                                     current_expire = user_data.get('expire', 0)
                                     subscription_url = user_data.get('subscription_url', user_data.get('sub_url', ''))
