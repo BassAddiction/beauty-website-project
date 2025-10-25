@@ -180,6 +180,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'username': body_data.get('username'),
                 'proxies': proxies,
                 'inbounds': inbounds,
+                'expireAt': expire_at,
                 'expire': expire_timestamp,
                 'data_limit_reset_strategy': body_data.get('data_limit_reset_strategy', 'day')
             }
