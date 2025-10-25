@@ -65,21 +65,31 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     
     # GET /inbounds - получить список inbounds (сквадов)
     if method == 'GET' and event.get('queryStringParameters', {}).get('action') == 'inbounds':
-        try:
-            response = requests.get(f'{api_url}/api/core/inbounds', headers=headers, timeout=10)
-            return {
-                'statusCode': response.status_code,
-                'headers': cors_headers,
-                'body': response.text,
-                'isBase64Encoded': False
-            }
-        except Exception as e:
-            return {
-                'statusCode': 500,
-                'headers': cors_headers,
-                'body': json.dumps({'error': str(e)}),
-                'isBase64Encoded': False
-            }
+        endpoints_to_try = [
+            '/api/inbounds',
+            '/api/core/inbounds', 
+            '/api/nodes',
+            '/api/core/nodes',
+            '/api/system/inbounds'
+        ]
+        
+        results = {}
+        for endpoint in endpoints_to_try:
+            try:
+                response = requests.get(f'{api_url}{endpoint}', headers=headers, timeout=5)
+                results[endpoint] = {
+                    'status': response.status_code,
+                    'data': response.json() if response.status_code == 200 else response.text
+                }
+            except Exception as e:
+                results[endpoint] = {'error': str(e)}
+        
+        return {
+            'statusCode': 200,
+            'headers': cors_headers,
+            'body': json.dumps(results, ensure_ascii=False),
+            'isBase64Encoded': False
+        }
     
     # GET /user/:username - получить данные пользователя
     if method == 'GET':
