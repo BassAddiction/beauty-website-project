@@ -215,7 +215,29 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             print(f'📊 Active squads after creation: {active_squads}')
                             
                             if len(active_squads) == 0:
-                                print(f'⚠️ No squads assigned - inbounds in payload do not auto-assign squads')
+                                print(f'⚠️ No squads - trying to add via GET user info first')
+                                
+                                # Получаем полную информацию о пользователе
+                                get_response = requests.get(
+                                    f'{remnawave_url}/api/user/{username}',
+                                    headers={
+                                        'Authorization': f'Bearer {remnawave_token}',
+                                        'Content-Type': 'application/json'
+                                    },
+                                    timeout=10
+                                )
+                                
+                                print(f'📥 GET user response: {get_response.status_code}')
+                                
+                                if get_response.status_code == 200:
+                                    full_user_data = get_response.json().get('response', {})
+                                    current_squads = full_user_data.get('activeInternalSquads', [])
+                                    print(f'📊 Current squads from GET: {current_squads}')
+                                    
+                                    # Если squad всё ещё пустой - значит API действительно не поддерживает автоматическое назначение
+                                    if len(current_squads) == 0:
+                                        print(f'❌ Remnawave API does not support squad assignment via inbounds')
+                                        print(f'💡 User needs to manually assign squads via panel UI')
                             else:
                                 print(f'✅ Squads assigned successfully: {len(active_squads)} squads')
                             
