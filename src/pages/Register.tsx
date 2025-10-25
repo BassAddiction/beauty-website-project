@@ -66,7 +66,8 @@ const Register = () => {
             },
             data_limit: 32212254720,
             expire: Math.floor(Date.now() / 1000) + (selectedPlan.days * 86400),
-            data_limit_reset_strategy: 'day'
+            data_limit_reset_strategy: 'day',
+            internalSquads: ['e742f30b-82fb-431a-918b-1b4d22d6ba4d']
           })
         }
       );
