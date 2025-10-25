@@ -55,7 +55,7 @@ const Dashboard = () => {
       
       // Если нет локальных данных - пытаемся получить с сервера
       const response = await fetch(
-        `https://functions.poehali.dev/d8d680b3-23f3-481e-b8cf-ccb969e2f158?username=${username}`
+        `https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0?username=${username}`
       );
       
       if (!response.ok) {
@@ -63,15 +63,15 @@ const Dashboard = () => {
       }
 
       const data = await response.json();
-      const responseData = data.response || data;
+      console.log('📊 Subscription data:', data);
       
       setUserData({
-        username: responseData.username || username,
-        status: responseData.status || 'active',
-        used_traffic: responseData.usedTrafficBytes || 0,
-        data_limit: responseData.trafficLimitBytes || 32212254720,
-        expire: responseData.expireAt ? new Date(responseData.expireAt).getTime() / 1000 : 0,
-        sub_url: responseData.subscriptionUrl || subscriptionUrl || ''
+        username: data.username || username,
+        status: data.subscription?.is_active ? 'active' : 'expired',
+        used_traffic: 0,
+        data_limit: 32212254720,
+        expire: data.subscription?.expire_timestamp || 0,
+        sub_url: data.subscription?.subscription_url || subscriptionUrl || ''
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ошибка загрузки');
