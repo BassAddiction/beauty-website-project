@@ -133,24 +133,48 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             if error_data.get('errorCode') == 'A019':
                                 print(f'🔄 User exists (A019), trying direct update for {username}')
                                 
-                                # Раз API говорит что пользователь существует - пробуем обновить напрямую
-                                # используя стандартное время expire (30 дней от сейчас)
+                                # Обновляем пользователя и добавляем в оба squad
+                                update_payload = {
+                                    'expire': int(new_expire),
+                                    'data_limit': 32212254720,
+                                    'data_limit_reset_strategy': 'day'
+                                }
+                                
+                                print(f'📦 Update payload: {json.dumps(update_payload, ensure_ascii=False)}')
+                                
                                 update_response = requests.put(
                                     f'{remnawave_url}/api/user/{username}',
                                     headers={
                                         'Authorization': f'Bearer {remnawave_token}',
                                         'Content-Type': 'application/json'
                                     },
-                                    json={
-                                        'expire': int(new_expire),
-                                        'data_limit': 32212254720,
-                                        'data_limit_reset_strategy': 'day',
+                                    json=update_payload,
+                                    timeout=10
+                                )
+                                
+                                print(f'📝 Update user response: {update_response.status_code}')
+                                
+                                # Теперь добавляем в squad через отдельный запрос
+                                if update_response.status_code == 200:
+                                    squad_payload = {
                                         'inbounds': {
                                             'vless-reality': ['6afd8de3-00d5-41db-aa52-f259fb98b2c8', '9ef43f96-83c9-4252-ae57-bb17dc9b60a9']
                                         }
-                                    },
-                                    timeout=10
-                                )
+                                    }
+                                    
+                                    print(f'🔧 Adding to squads: {json.dumps(squad_payload, ensure_ascii=False)}')
+                                    
+                                    squad_response = requests.put(
+                                        f'{remnawave_url}/api/user/{username}',
+                                        headers={
+                                            'Authorization': f'Bearer {remnawave_token}',
+                                            'Content-Type': 'application/json'
+                                        },
+                                        json=squad_payload,
+                                        timeout=10
+                                    )
+                                    
+                                    print(f'✅ Squad update response: {squad_response.status_code}')
                                 
                                 print(f'📝 Update response: {update_response.status_code}')
                                 
