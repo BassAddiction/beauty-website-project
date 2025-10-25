@@ -202,7 +202,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 # Если создание успешно - обновляем лимиты и сквады
                 if response.status_code == 201:
                     created_user = response.json()
-                    user_uuid = created_user.get('uuid')
+                    # UUID находится внутри response
+                    response_data = created_user.get('response', created_user)
+                    user_uuid = response_data.get('uuid')
                     
                     # Читаем сквады из переменных окружения
                     squad_uuids_str = os.environ.get('USER_SQUAD_UUIDS', '')
