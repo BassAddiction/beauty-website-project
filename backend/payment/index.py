@@ -156,11 +156,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                 },
                                 timeout=10
                             )
+                            
+                            print(f'✅ User updated: {update_response.status_code}')
+                            
+                            if update_response.status_code != 200:
+                                raise Exception(f'Failed to update user: {update_response.text}')
                         
                         else:
                             raise Exception(f'Unexpected status: {user_response.status_code}')
-                            
-                            if update_response.status_code == 200:
+                        
+                        if update_response.status_code in [200, 201]:
                                 # Обновляем статус платежа в БД
                                 try:
                                     db_url = os.environ.get('DATABASE_URL', '')
@@ -321,150 +326,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'body': json.dumps({'error': str(e)}),
                     'isBase64Encoded': False
                 }
-        
-        # Старый webhook handler (не используется, вместо него используется проверка notification_type выше)
-        if action == 'webhook_deprecated':
-            webhook_data = body_data.get('object', {})
-            payment_id = webhook_data.get('id')
-            status = webhook_data.get('status')
-            metadata = webhook_data.get('metadata', {})
-            
-            if status == 'succeeded':
-                username = metadata.get('username')
-                plan_days = int(metadata.get('plan_days', 30))
-                email = webhook_data.get('receipt', {}).get('customer', {}).get('email', '')
-                
-                # Обновляем подписку пользователя через Remnawave API
-                remnawave_url = os.environ.get('REMNAWAVE_API_URL', '').rstrip('/')
-                remnawave_token = os.environ.get('REMNAWAVE_API_TOKEN', '')
-                subscription_url = ''
-                
-                if remnawave_url and remnawave_token:
-                    try:
-                        # Получаем текущие данные пользователя
-                        user_response = requests.get(
-                            f'{remnawave_url}/api/user/{username}',
-                            headers={'Authorization': f'Bearer {remnawave_token}'},
-                            timeout=10
-                        )
-                        
-                        now = datetime.now().timestamp()
-                        new_expire = now + (plan_days * 86400)
-                        
-                        # Если пользователь НЕ существует (404) - создаём его
-                        if user_response.status_code == 404:
-                            print(f'🆕 Creating NEW user {username}')
-                            
-                            expire_iso = datetime.fromtimestamp(new_expire, tz=timezone.utc).isoformat().replace('+00:00', 'Z')
-                            
-                            create_response = requests.post(
-                                f'{remnawave_url}/api/users',
-                                headers={
-                                    'Authorization': f'Bearer {remnawave_token}',
-                                    'Content-Type': 'application/json'
-                                },
-                                json={
-                                    'username': username,
-                                    'dataLimit': 32212254720,
-                                    'expireAt': expire_iso,
-                                    'dataLimitResetStrategy': 'day',
-                                    'proxies': {
-                                        'vless-reality': {}
-                                    }
-                                },
-                                timeout=10
-                            )
-                            
-                            print(f'✅ User created: {create_response.status_code} - {create_response.text[:200]}')
-                            
-                            if create_response.status_code in [200, 201]:
-                                user_data = create_response.json()
-                                subscription_url = user_data.get('subscription_url', user_data.get('sub_url', ''))
-                                update_response = create_response
-                            else:
-                                raise Exception(f'Failed to create user: {create_response.text}')
-                        
-                        # Если пользователь существует - продлеваем подписку
-                        elif user_response.status_code == 200:
-                            user_data = user_response.json()
-                            current_expire = user_data.get('expire', 0)
-                            subscription_url = user_data.get('subscription_url', user_data.get('sub_url', ''))
-                            
-                            # Продлеваем подписку
-                            if current_expire > now:
-                                new_expire = current_expire + (plan_days * 86400)
-                            
-                            print(f'🔄 Updating existing user {username}')
-                            
-                            update_response = requests.put(
-                                f'{remnawave_url}/api/user/{username}',
-                                headers={
-                                    'Authorization': f'Bearer {remnawave_token}',
-                                    'Content-Type': 'application/json'
-                                },
-                                json={
-                                    'expire': int(new_expire),
-                                    'data_limit': 32212254720,
-                                    'data_limit_reset_strategy': 'day',
-                                    'proxies': {
-                                        'vless-reality': {}
-                                    }
-                                },
-                                timeout=10
-                            )
-                        
-                        else:
-                            raise Exception(f'Unexpected status: {user_response.status_code}')
-                            
-                            if update_response.status_code == 200:
-                                # Обновляем статус платежа в БД
-                                try:
-                                    db_url = os.environ.get('DATABASE_URL', '')
-                                    if db_url:
-                                        conn = psycopg2.connect(db_url)
-                                        cursor = conn.cursor()
-                                        cursor.execute(
-                                            "UPDATE payments SET status = %s, updated_at = CURRENT_TIMESTAMP WHERE payment_id = %s",
-                                            ('succeeded', payment_id)
-                                        )
-                                        conn.commit()
-                                        cursor.close()
-                                        conn.close()
-                                except Exception as db_err:
-                                    print(f'⚠️ DB update failed: {str(db_err)}')
-                                
-                                # Отправляем email с данными доступа
-                                if email and subscription_url:
-                                    try:
-                                        email_response = requests.post(
-                                            'https://functions.poehali.dev/02f41dd7-0d1d-4506-828c-64a917a7dda7',
-                                            headers={'Content-Type': 'application/json'},
-                                            json={
-                                                'email': email,
-                                                'subscription_url': subscription_url,
-                                                'username': username
-                                            },
-                                            timeout=10
-                                        )
-                                        print(f'📧 Email sent: {email_response.status_code}')
-                                    except Exception as email_err:
-                                        print(f'❌ Email send failed: {str(email_err)}')
-                                
-                                return {
-                                    'statusCode': 200,
-                                    'headers': cors_headers,
-                                    'body': json.dumps({'status': 'subscription_updated', 'email_sent': bool(email and subscription_url)}),
-                                    'isBase64Encoded': False
-                                }
-                    except Exception as e:
-                        print(f'❌ Webhook processing error: {str(e)}')
-            
-            return {
-                'statusCode': 200,
-                'headers': cors_headers,
-                'body': json.dumps({'status': 'received'}),
-                'isBase64Encoded': False
-            }
     
     # GET - проверить статус платежа
     if method == 'GET':
