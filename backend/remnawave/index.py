@@ -166,23 +166,13 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 from datetime import datetime
                 expire_at = datetime.fromtimestamp(expire_timestamp).isoformat() + 'Z'
             
-            # Формируем inbounds с лимитами
-            inbounds = {}
             proxies = body_data.get('proxies', {})
-            data_limit = body_data.get('data_limit', 0)
-            
-            for proxy_type in proxies.keys():
-                inbounds[proxy_type] = {
-                    'data_limit': data_limit
-                }
             
             user_payload = {
                 'username': body_data.get('username'),
                 'proxies': proxies,
-                'inbounds': inbounds,
                 'expireAt': expire_at,
-                'expire': expire_timestamp,
-                'data_limit_reset_strategy': body_data.get('data_limit_reset_strategy', 'day')
+                'expire': expire_timestamp
             }
             
             print(f'🔹 Creating user with payload: {json.dumps(user_payload, indent=2)}')
