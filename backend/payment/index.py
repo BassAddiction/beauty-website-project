@@ -97,11 +97,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             'trafficLimitBytes': 32212254720,
                             'trafficLimitStrategy': 'DAY',
                             'expireAt': expire_iso,
-                            'inbounds': [
-                                {
-                                    'uuid': '9ef43f96-83c9-4252-ae57-bb17dc9b60a9'
-                                }
-                            ]
+                            'inboundUuids': ['9ef43f96-83c9-4252-ae57-bb17dc9b60a9']
                         }
                         
                         print(f'📦 Payload: {payload}')
