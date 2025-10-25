@@ -99,6 +99,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             'expireAt': expire_iso,
                             'inbounds': [
                                 {
+                                    'uuid': '6afd8de3-00d5-41db-aa52-f259fb98b2c8'
+                                },
+                                {
                                     'uuid': '9ef43f96-83c9-4252-ae57-bb17dc9b60a9'
                                 }
                             ]
@@ -134,6 +137,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                 },
                                 json={
                                     'inbounds': [
+                                        {
+                                            'uuid': '6afd8de3-00d5-41db-aa52-f259fb98b2c8'
+                                        },
                                         {
                                             'uuid': '9ef43f96-83c9-4252-ae57-bb17dc9b60a9'
                                         }
