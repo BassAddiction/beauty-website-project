@@ -134,7 +134,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'data_limit': 32212254720,
                         'data_limit_reset_strategy': 'day',
                         'proxies': {
-                            'vless-reality': {}
+                            '9ef43f96-83c9-4252-ae57-bb17dc9b60a9': {}
                         },
                         'status': 'active'
                     }
@@ -155,7 +155,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             'data_limit': 32212254720,
                             'data_limit_reset_strategy': 'day',
                             'proxies': {
-                                'vless-reality': {}
+                                '9ef43f96-83c9-4252-ae57-bb17dc9b60a9': {}
                             },
                             'status': 'active'
                         }
