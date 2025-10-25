@@ -124,7 +124,7 @@ const PricingSection = () => {
     },
     {
       name: "1 Месяц",
-      price: "200",
+      price: "5",
       period: "₽",
       popular: true,
       features: [
