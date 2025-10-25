@@ -160,7 +160,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 print(f'🔹 Step 2: Updating user {user_uuid}')
                 print(f'🔹 Update payload: {json.dumps(update_payload, indent=2)}')
                 
-                update_response = requests.patch(
+                update_response = requests.put(
                     f'{api_url}/api/users/{user_uuid}',
                     headers=headers,
                     json=update_payload,
