@@ -189,39 +189,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 print(f'🔹 Response status: {response.status_code}')
                 print(f'🔹 Response body: {response.text}')
                 
-                # Если юзер создан - обновляем с правильными параметрами через UUID
-                if response.status_code == 201:
-                    user_data = response.json().get('response', {})
-                    user_uuid = user_data.get('uuid')
-                    
-                    if user_uuid:
-                        print(f'🔹 User created with UUID: {user_uuid}, updating settings...')
-                        
-                        # Обновляем лимиты и сквады через UUID
-                        update_payload = {
-                            'trafficLimitBytes': body_data.get('data_limit', 0),
-                            'trafficLimitStrategy': body_data.get('data_limit_reset_strategy', 'day').upper().replace('_', '_'),
-                            'activeInternalSquads': body_data.get('internalSquads', [])
-                        }
-                        
-                        update_response = requests.patch(
-                            f'{api_url}/api/user/{user_uuid}',
-                            headers=headers,
-                            json=update_payload,
-                            timeout=10
-                        )
-                        
-                        print(f'🔹 Update response: {update_response.status_code} - {update_response.text[:200]}')
-                        
-                        # Возвращаем обновлённые данные
-                        if update_response.status_code in [200, 201]:
-                            return {
-                                'statusCode': 200,
-                                'headers': cors_headers,
-                                'body': update_response.text,
-                                'isBase64Encoded': False
-                            }
-                
+                # Просто возвращаем результат создания без обновления
                 return {
                     'statusCode': response.status_code,
                     'headers': cors_headers,
