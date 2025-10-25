@@ -22,35 +22,32 @@ const PricingSection = () => {
   const handleDemoRegistration = async () => {
     setIsCreatingDemo(true);
     try {
-      const username = `demo_${Date.now()}`;
-      const response = await fetch('https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c', {
+      const username = `test_${Date.now()}`;
+      const response = await fetch('https://functions.poehali.dev/d8d680b3-23f3-481e-b8cf-ccb969e2f158', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action: 'create_payment',
+          action: 'create_user',
           username: username,
-          amount: 1,
-          plan_name: 'Демо 1 день',
-          plan_days: 1,
-          email: 'demo@test.com'
+          days: 1
         })
       });
 
       const data = await response.json();
       
-      if (response.ok && data.confirmation_url) {
-        window.open(data.confirmation_url, '_blank');
+      if (response.ok && data.subscription_url) {
+        navigator.clipboard.writeText(data.subscription_url);
         toast({
-          title: "✅ Демо-ссылка создана",
-          description: "Откройте новую вкладку для оплаты 1₽"
+          title: "🎉 Тестовый доступ создан!",
+          description: `Username: ${username}\nСсылка скопирована в буфер обмена`
         });
       } else {
-        throw new Error(data.error || 'Ошибка создания демо');
+        throw new Error(data.error || 'Ошибка создания');
       }
     } catch (error) {
       toast({
         title: "❌ Ошибка",
-        description: error instanceof Error ? error.message : 'Не удалось создать демо',
+        description: error instanceof Error ? error.message : 'Не удалось создать доступ',
         variant: "destructive"
       });
     } finally {
@@ -60,14 +57,14 @@ const PricingSection = () => {
 
   const plans: Plan[] = [
     {
-      name: "Демо 1 день",
-      price: "1",
-      period: "₽",
+      name: "Тест 24ч",
+      price: "Free",
+      period: "",
       features: [
         "30 ГБ трафика в сутки",
         "Без ограничений устройств",
         "Любые локации",
-        "Тест на 24 часа"
+        "Доступ на 24 часа"
       ]
     },
     {
@@ -177,13 +174,13 @@ const PricingSection = () => {
                 </ul>
               </CardContent>
               <CardFooter>
-                {plan.price === "1" ? (
+                {plan.price === "Free" ? (
                   <Button 
                     className="w-full rounded-full button-glow" 
                     onClick={handleDemoRegistration}
                     disabled={isCreatingDemo}
                   >
-                    {isCreatingDemo ? "Создаём..." : "Попробовать за 1₽"}
+                    {isCreatingDemo ? "Создаём..." : "Бесплатный тест"}
                   </Button>
                 ) : (
                   <Button className="w-full rounded-full button-glow" asChild>

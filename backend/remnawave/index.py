@@ -159,32 +159,28 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         print(f'🔹 POST request - action: {action}, body keys: {list(body_data.keys())}')
         
         if action == 'create_user':
-            from datetime import datetime
+            from datetime import datetime, timezone
             
-            expire_timestamp = body_data.get('expire')
-            expire_at = None
-            if expire_timestamp:
-                expire_at = datetime.fromtimestamp(expire_timestamp).isoformat() + 'Z'
+            username = body_data.get('username')
+            days = int(body_data.get('days', 1))
             
-            # Формируем массив inbounds
-            squad_uuids = body_data.get('internalSquads', [])
-            inbounds = []
-            for squad_uuid in squad_uuids:
-                inbounds.append({
-                    'uuid': squad_uuid,
-                    'dataLimit': body_data.get('data_limit', 0)
-                })
+            now = datetime.now(timezone.utc)
+            expire_timestamp = now.timestamp() + (days * 86400)
+            expire_at = datetime.fromtimestamp(expire_timestamp, timezone.utc).isoformat().replace('+00:00', 'Z')
+            
+            traffic_limit_gb = 30
+            traffic_limit_bytes = traffic_limit_gb * 1024 * 1024 * 1024
             
             user_payload = {
-                'username': body_data.get('username'),
-                'proxies': body_data.get('proxies', {}),
+                'username': username,
+                'trafficLimitBytes': traffic_limit_bytes,
+                'trafficLimitStrategy': 'MONTH',
                 'expireAt': expire_at,
-                'inbounds': inbounds,
-                'dataLimitResetStrategy': body_data.get('data_limit_reset_strategy', 'no_reset')
+                'inboundUuids': ['9ef43f96-83c9-4252-ae57-bb17dc9b60a9']
             }
             
-            print(f'🔹 Creating user with payload: {json.dumps(user_payload, indent=2)}')
-            print(f'🔹 API URL: {api_url}/api/users')
+            print(f'🆕 Creating test user: {username} for {days} days')
+            print(f'📦 Payload: {json.dumps(user_payload, indent=2)}')
             
             try:
                 response = requests.post(
@@ -194,21 +190,39 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     timeout=10
                 )
                 
-                print(f'🔹 Response status: {response.status_code}')
-                print(f'🔹 Response body: {response.text}')
+                print(f'✅ Response: {response.status_code}')
+                print(f'📥 Body: {response.text[:500]}')
                 
-                return {
-                    'statusCode': response.status_code,
-                    'headers': cors_headers,
-                    'body': response.text,
-                    'isBase64Encoded': False
-                }
+                if response.status_code in [200, 201]:
+                    data = response.json()
+                    user_data = data.get('response', {})
+                    subscription_url = user_data.get('subscription_url', user_data.get('sub_url', ''))
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': cors_headers,
+                        'body': json.dumps({
+                            'success': True,
+                            'username': username,
+                            'subscription_url': subscription_url,
+                            'days': days,
+                            'expire_at': expire_at
+                        }),
+                        'isBase64Encoded': False
+                    }
+                else:
+                    return {
+                        'statusCode': response.status_code,
+                        'headers': cors_headers,
+                        'body': response.text,
+                        'isBase64Encoded': False
+                    }
             except Exception as e:
-                print(f'❌ Error creating user: {str(e)}')
+                print(f'❌ Error: {str(e)}')
                 return {
                     'statusCode': 500,
                     'headers': cors_headers,
-                    'body': json.dumps({'error': f'Exception creating user: {str(e)}'}),
+                    'body': json.dumps({'error': str(e)}),
                     'isBase64Encoded': False
                 }
         
