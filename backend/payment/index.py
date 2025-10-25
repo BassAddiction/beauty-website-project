@@ -134,11 +134,39 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 }
             
             result = response.json()
+            yookassa_payment_id = result.get('id')
+            
+            db_url = os.environ.get('DATABASE_URL', '')
+            if db_url:
+                try:
+                    conn = psycopg2.connect(db_url)
+                    cursor = conn.cursor()
+                    cursor.execute("""
+                        INSERT INTO payments (payment_id, username, email, amount, currency, status, plan_name, plan_days, created_at, updated_at)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
+                        ON CONFLICT (payment_id) DO NOTHING
+                    """, (
+                        yookassa_payment_id,
+                        username,
+                        email,
+                        float(amount),
+                        'RUB',
+                        'pending',
+                        plan_name,
+                        int(plan_days)
+                    ))
+                    conn.commit()
+                    cursor.close()
+                    conn.close()
+                    print(f'💾 Payment saved to DB: {yookassa_payment_id}')
+                except Exception as db_err:
+                    print(f'⚠️ Failed to save payment to DB: {str(db_err)}')
+            
             return {
                 'statusCode': 200,
                 'headers': cors_headers,
                 'body': json.dumps({
-                    'payment_id': result.get('id'),
+                    'payment_id': yookassa_payment_id,
                     'confirmation_url': result.get('confirmation', {}).get('confirmation_url'),
                     'status': result.get('status')
                 }),
