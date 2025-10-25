@@ -48,7 +48,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     # GET /users - получить список пользователей
     if method == 'GET' and event.get('queryStringParameters', {}).get('action') == 'users':
         try:
-            response = requests.get(f'{api_url}/users', headers=headers, timeout=10)
+            response = requests.get(f'{api_url}/api/users', headers=headers, timeout=10)
             return {
                 'statusCode': response.status_code,
                 'headers': cors_headers,
@@ -77,7 +77,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             }
         
         try:
-            response = requests.get(f'{api_url}/user/{username}', headers=headers, timeout=10)
+            response = requests.get(f'{api_url}/api/user/{username}', headers=headers, timeout=10)
             return {
                 'statusCode': response.status_code,
                 'headers': cors_headers,
@@ -126,7 +126,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             try:
                 create_response = requests.post(
-                    f'{api_url}/users',
+                    f'{api_url}/api/users',
                     headers=headers,
                     json=create_payload,
                     timeout=10
@@ -161,7 +161,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 print(f'🔹 Update payload: {json.dumps(update_payload, indent=2)}')
                 
                 update_response = requests.patch(
-                    f'{api_url}/users/{user_uuid}',
+                    f'{api_url}/api/users/{user_uuid}',
                     headers=headers,
                     json=update_payload,
                     timeout=10
@@ -210,7 +210,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             try:
                 # Если UUID не передан - получаем по username
                 if not user_uuid:
-                    get_response = requests.get(f'{api_url}/user/{username}', headers=headers, timeout=10)
+                    get_response = requests.get(f'{api_url}/api/user/{username}', headers=headers, timeout=10)
                     if get_response.status_code == 200:
                         user_data = get_response.json()
                         response_data = user_data.get('response', user_data)
@@ -236,7 +236,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 print(f'🔹 Updating user {user_uuid} with payload: {json.dumps(update_payload, indent=2)}')
                 
                 response = requests.patch(
-                    f'{api_url}/users/{user_uuid}',
+                    f'{api_url}/api/users/{user_uuid}',
                     headers=headers,
                     json=update_payload,
                     timeout=10
