@@ -5,12 +5,13 @@ from typing import Dict, Any
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     '''
-    Business: Batch update all Remnawave VPN users - 30GB limit, daily reset, VLESS-Reality inbound
+    Business: TEST API endpoints to find correct update method
     Args: event - dict with httpMethod, context - Cloud Function execution context  
-    Returns: HTTP response dict with update results and API endpoint tests
-    Version: 2.0.1 - With API endpoint tests
+    Returns: HTTP response dict with API test results
+    Version: 3.0.0 - TESTING ONLY
     '''
-    print(f'🚀 Function version: 2.0.1 | Method: {event.get("httpMethod", "NONE")}')
+    print(f'🚨 NEW VERSION 3.0.0 - TESTING API ENDPOINTS')
+    print(f'🔧 Method: {event.get("httpMethod", "NONE")}')
     method: str = event.get('httpMethod', 'POST')
     
     cors_headers = {
@@ -47,177 +48,175 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         }
         
         try:
-            # Получаем всех пользователей с пагинацией
-            all_users = []
-            offset = 0
-            limit = 25  # API возвращает максимум 25 за раз
+            # Получаем ПЕРВОГО пользователя
+            print('🔍 Fetching first user...')
+            users_response = requests.get(
+                f'{remnawave_url}/api/users?limit=1',
+                headers=headers,
+                timeout=15
+            )
             
-            while True:
-                users_url = f'{remnawave_url}/api/users?limit={limit}&offset={offset}'
-                print(f'🔍 Fetching users from: {users_url}')
-                users_response = requests.get(
-                    users_url,
-                    headers=headers,
-                    timeout=15
-                )
-                
-                print(f'📡 Response status: {users_response.status_code}')
-                
-                if users_response.status_code != 200:
-                    return {
-                        'statusCode': users_response.status_code,
-                        'headers': cors_headers,
-                        'body': json.dumps({'error': 'Failed to fetch users', 'response': users_response.text}),
-                        'isBase64Encoded': False
-                    }
-                
-                users_data = users_response.json()
-                
-                # Извлекаем пользователей
-                if 'response' in users_data and 'users' in users_data['response']:
-                    page_users = users_data['response']['users']
-                    total = users_data['response'].get('total', 0)
-                elif 'users' in users_data:
-                    page_users = users_data['users']
-                    total = len(page_users)
-                elif isinstance(users_data, list):
-                    page_users = users_data
-                    total = len(page_users)
-                else:
-                    page_users = []
-                    total = 0
-                
-                all_users.extend(page_users)
-                print(f'📄 Page: {len(page_users)} users, Total collected: {len(all_users)}/{total}')
-                
-                # Если получили меньше чем limit, значит это последняя страница
-                if len(page_users) < limit:
-                    break
-                
-                # Если собрали всех пользователей
-                if len(all_users) >= total:
-                    break
-                
-                offset += limit
+            print(f'📡 Users API Response: {users_response.status_code}')
+            users_data = users_response.json()
+            print(f'📦 Full Response: {json.dumps(users_data, indent=2)}')
             
-            users = all_users
-            print(f'👥 Total found {len(users)} users')
+            # Извлекаем первого пользователя
+            if 'response' in users_data and 'users' in users_data['response']:
+                first_user = users_data['response']['users'][0] if users_data['response']['users'] else None
+            elif 'users' in users_data:
+                first_user = users_data['users'][0] if users_data['users'] else None
+            elif isinstance(users_data, list):
+                first_user = users_data[0] if users_data else None
+            else:
+                first_user = None
             
-            # Выводим первого пользователя для отладки
-            if len(users) > 0:
-                print(f'🔍 First user sample: {json.dumps(users[0], indent=2)}')
+            if not first_user:
+                return {
+                    'statusCode': 500,
+                    'headers': cors_headers,
+                    'body': json.dumps({'error': 'No users found'}),
+                    'isBase64Encoded': False
+                }
             
             print('=' * 80)
-            print('🧪 STARTING API ENDPOINT TESTS')
+            print('👤 FIRST USER DATA:')
+            print(json.dumps(first_user, indent=2))
             print('=' * 80)
             
-            # Тестируем разные endpoints для первого пользователя
-            if len(users) > 0:
-                try:
-                    test_user = users[0]
-                    test_username = test_user.get('username')
-                    test_uuid = test_user.get('uuid')
-                    
-                    print(f'🧪 Test User: {test_username}')
-                    print(f'🧪 Test UUID: {test_uuid}')
-                    print('-' * 80)
-                    
-                    # Test 1: GET /api/user/{username}
-                    print('🧪 Test 1: GET /api/user/{username}')
-                    test1 = requests.get(f'{remnawave_url}/api/user/{test_username}', headers=headers, timeout=10)
-                    print(f'🧪 Result: {test1.status_code} - {test1.text[:150]}')
-                    print('-' * 80)
-                    
-                    # Test 2: PUT /api/user/{username}
-                    print('🧪 Test 2: PUT /api/user/{username}')
-                    test_payload = {'data_limit': 32212254720}
-                    test2 = requests.put(f'{remnawave_url}/api/user/{test_username}', headers=headers, json=test_payload, timeout=10)
-                    print(f'🧪 Result: {test2.status_code} - {test2.text[:150]}')
-                    print('-' * 80)
-                    
-                    # Test 3: PUT /api/user/{uuid}
-                    print('🧪 Test 3: PUT /api/user/{uuid}')
-                    test3 = requests.put(f'{remnawave_url}/api/user/{test_uuid}', headers=headers, json=test_payload, timeout=10)
-                    print(f'🧪 Result: {test3.status_code} - {test3.text[:150]}')
-                    print('=' * 80)
-                except Exception as test_error:
-                    print(f'🧪 TEST ERROR: {str(test_error)}')
-                    print('=' * 80)
+            test_username = first_user.get('username')
+            test_uuid = first_user.get('uuid')
             
-            updated_count = 0
-            failed_count = 0
-            results = []
+            print(f'🧪 Test username: {test_username}')
+            print(f'🧪 Test UUID: {test_uuid}')
             
-            # Обновляем каждого пользователя
-            print(f'🔄 Starting to update {len(users)} users')
-            for idx, user in enumerate(users, 1):
-                username = user.get('username')
-                uuid = user.get('uuid')
-                
-                if not username or not uuid:
-                    print(f'⚠️ User {idx} has no username or uuid, skipping')
-                    continue
-                
-                print(f'🔄 [{idx}/{len(users)}] Updating user: {username} (UUID: {uuid})')
-                
-                try:
-                    update_payload = {
-                        'dataLimit': 32212254720,
-                        'dataLimitResetStrategy': 'day',
-                        'proxies': {
-                            '6afd8de3-00d5-41db-aa52-f259fb98b2c8': [],
-                            '9ef43f96-83c9-4252-ae57-bb17dc9b60a9': []
-                        },
-                        'status': 'active'
-                    }
-                    
-                    # Прямой PUT запрос к Marzban API по username
-                    print(f'📝 Updating user: {username}')
-                    update_response = requests.put(
-                        f'{remnawave_url}/api/users/{username}',
-                        headers=headers,
-                        json=update_payload,
-                        timeout=10
-                    )
-                    print(f'📥 Response status: {update_response.status_code}')
-                    
-                    if update_response.status_code == 200:
-                        print(f'✅ User {username} updated successfully')
-                        updated_count += 1
-                        results.append({
-                            'username': username,
-                            'status': 'success'
-                        })
-                    else:
-                        print(f'❌ User {username} failed: {update_response.status_code} - {update_response.text[:200]}')
-                        failed_count += 1
-                        results.append({
-                            'username': username,
-                            'status': 'failed',
-                            'error': update_response.text
-                        })
-                except Exception as e:
-                    print(f'💥 User {username} exception: {str(e)}')
-                    failed_count += 1
-                    results.append({
-                        'username': username,
-                        'status': 'error',
-                        'error': str(e)
-                    })
+            # Тестовый payload
+            test_payload = {
+                'data_limit': 32212254720,
+                'data_limit_reset_strategy': 'day'
+            }
+            
+            test_results = []
+            
+            # Test 1: GET /api/user/{username}
+            print('\n' + '=' * 80)
+            print('🧪 TEST 1: GET /api/user/{username}')
+            print('=' * 80)
+            try:
+                r1 = requests.get(f'{remnawave_url}/api/user/{test_username}', headers=headers, timeout=10)
+                print(f'Status: {r1.status_code}')
+                print(f'Response: {r1.text[:300]}')
+                test_results.append({
+                    'test': 'GET /api/user/{username}',
+                    'status': r1.status_code,
+                    'response': r1.text[:300]
+                })
+            except Exception as e:
+                print(f'ERROR: {str(e)}')
+                test_results.append({
+                    'test': 'GET /api/user/{username}',
+                    'error': str(e)
+                })
+            
+            # Test 2: PUT /api/user/{username}
+            print('\n' + '=' * 80)
+            print('🧪 TEST 2: PUT /api/user/{username}')
+            print('=' * 80)
+            try:
+                r2 = requests.put(f'{remnawave_url}/api/user/{test_username}', headers=headers, json=test_payload, timeout=10)
+                print(f'Status: {r2.status_code}')
+                print(f'Response: {r2.text[:300]}')
+                test_results.append({
+                    'test': 'PUT /api/user/{username}',
+                    'status': r2.status_code,
+                    'response': r2.text[:300]
+                })
+            except Exception as e:
+                print(f'ERROR: {str(e)}')
+                test_results.append({
+                    'test': 'PUT /api/user/{username}',
+                    'error': str(e)
+                })
+            
+            # Test 3: PUT /api/users/{username} (with 's')
+            print('\n' + '=' * 80)
+            print('🧪 TEST 3: PUT /api/users/{username} (with s)')
+            print('=' * 80)
+            try:
+                r3 = requests.put(f'{remnawave_url}/api/users/{test_username}', headers=headers, json=test_payload, timeout=10)
+                print(f'Status: {r3.status_code}')
+                print(f'Response: {r3.text[:300]}')
+                test_results.append({
+                    'test': 'PUT /api/users/{username}',
+                    'status': r3.status_code,
+                    'response': r3.text[:300]
+                })
+            except Exception as e:
+                print(f'ERROR: {str(e)}')
+                test_results.append({
+                    'test': 'PUT /api/users/{username}',
+                    'error': str(e)
+                })
+            
+            # Test 4: PATCH /api/user/{username}
+            print('\n' + '=' * 80)
+            print('🧪 TEST 4: PATCH /api/user/{username}')
+            print('=' * 80)
+            try:
+                r4 = requests.patch(f'{remnawave_url}/api/user/{test_username}', headers=headers, json=test_payload, timeout=10)
+                print(f'Status: {r4.status_code}')
+                print(f'Response: {r4.text[:300]}')
+                test_results.append({
+                    'test': 'PATCH /api/user/{username}',
+                    'status': r4.status_code,
+                    'response': r4.text[:300]
+                })
+            except Exception as e:
+                print(f'ERROR: {str(e)}')
+                test_results.append({
+                    'test': 'PATCH /api/user/{username}',
+                    'error': str(e)
+                })
+            
+            # Test 5: PUT /api/user/{uuid}
+            print('\n' + '=' * 80)
+            print('🧪 TEST 5: PUT /api/user/{uuid}')
+            print('=' * 80)
+            try:
+                r5 = requests.put(f'{remnawave_url}/api/user/{test_uuid}', headers=headers, json=test_payload, timeout=10)
+                print(f'Status: {r5.status_code}')
+                print(f'Response: {r5.text[:300]}')
+                test_results.append({
+                    'test': 'PUT /api/user/{uuid}',
+                    'status': r5.status_code,
+                    'response': r5.text[:300]
+                })
+            except Exception as e:
+                print(f'ERROR: {str(e)}')
+                test_results.append({
+                    'test': 'PUT /api/user/{uuid}',
+                    'error': str(e)
+                })
+            
+            print('\n' + '=' * 80)
+            print('✅ ALL TESTS COMPLETED')
+            print('=' * 80)
             
             return {
                 'statusCode': 200,
                 'headers': cors_headers,
                 'body': json.dumps({
-                    'total_users': len(users),
-                    'updated': updated_count,
-                    'failed': failed_count,
-                    'results': results
-                }),
+                    'message': 'API endpoint tests completed',
+                    'test_user': {
+                        'username': test_username,
+                        'uuid': test_uuid
+                    },
+                    'test_results': test_results
+                }, indent=2),
                 'isBase64Encoded': False
             }
             
         except Exception as e:
+            print(f'💥 CRITICAL ERROR: {str(e)}')
             return {
                 'statusCode': 500,
                 'headers': cors_headers,
