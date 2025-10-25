@@ -142,7 +142,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     # Прямой PUT запрос к Marzban API
                     print(f'📝 Updating user: {username}')
                     update_response = requests.put(
-                        f'{remnawave_url}/api/users/{username}',
+                        f'{remnawave_url}/api/user/{username}',
                         headers=headers,
                         json=update_payload,
                         timeout=10
