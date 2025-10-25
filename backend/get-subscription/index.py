@@ -94,15 +94,23 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         timeout=10
                     )
                     
+                    print(f'📡 Remnawave response status: {user_response.status_code}')
+                    print(f'📄 Remnawave response: {user_response.text[:500]}')
+                    
                     if user_response.status_code == 200:
                         user_data = user_response.json().get('response', {})
                         expire_at_str = user_data.get('expireAt', '')
                         subscription_url = user_data.get('subscriptionUrl', '')
                         
+                        print(f'📅 expireAt string: {expire_at_str}')
+                        print(f'🔗 subscriptionUrl: {subscription_url}')
+                        
                         # Парсим дату из ISO формата
                         if expire_at_str:
                             expire_dt = datetime.fromisoformat(expire_at_str.replace('Z', '+00:00'))
                             expire_timestamp = int(expire_dt.timestamp())
+                            
+                            print(f'⏰ expire_timestamp: {expire_timestamp}')
                             
                             # Вычисляем количество дней до окончания
                             now = datetime.now().timestamp()
@@ -111,6 +119,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                 days_left = int(seconds_left / 86400)
                             else:
                                 days_left = 0
+                            
+                            print(f'📆 days_left: {days_left}')
                 except Exception as e:
                     print(f'⚠️ Failed to fetch Remnawave data: {str(e)}')
             
