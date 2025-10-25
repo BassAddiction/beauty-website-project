@@ -18,6 +18,20 @@ const AdminUpdate = () => {
     results: UpdateResult[];
   } | null>(null);
   const [error, setError] = useState('');
+  const [inbounds, setInbounds] = useState<any>(null);
+
+  const handleGetInbounds = async () => {
+    try {
+      const response = await fetch(
+        'https://functions.poehali.dev/d8d680b3-23f3-481e-b8cf-ccb969e2f158?action=inbounds'
+      );
+      const data = await response.json();
+      setInbounds(data);
+      console.log('Inbounds:', data);
+    } catch (err) {
+      console.error('Ошибка получения inbounds:', err);
+    }
+  };
 
   const handleUpdate = async () => {
     setLoading(true);
@@ -59,6 +73,23 @@ const AdminUpdate = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          <Button 
+            onClick={handleGetInbounds} 
+            variant="outline"
+            className="w-full mb-4"
+          >
+            <Icon name="List" className="w-5 h-5 mr-2" />
+            Показать список Inbounds (сквадов)
+          </Button>
+
+          {inbounds && (
+            <div className="p-4 bg-muted rounded-md mb-4">
+              <pre className="text-xs overflow-auto max-h-96">
+                {JSON.stringify(inbounds, null, 2)}
+              </pre>
+            </div>
+          )}
+
           {!results && !error && (
             <Button 
               onClick={handleUpdate} 
