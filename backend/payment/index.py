@@ -127,29 +127,27 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             print(f'🔗 User UUID: {user_uuid}')
                             print(f'🔗 Subscription URL: {subscription_url}')
                             
-                            # ВАЖНО: Добавляем в squad через PATCH /api/users/{UUID}
-                            squad_payload = {
-                                'activeInternalSquads': [
-                                    '6afd8de3-00d5-41db-aa52-f259fb98b2c8',
-                                    '9ef43f96-83c9-4252-ae57-bb17dc9b60a9'
-                                ]
-                            }
+                            # ВАЖНО: Добавляем в каждый squad отдельными POST запросами
+                            squads = [
+                                '6afd8de3-00d5-41db-aa52-f259fb98b2c8',
+                                '9ef43f96-83c9-4252-ae57-bb17dc9b60a9'
+                            ]
                             
-                            print(f'🔧 Adding to squads: {json.dumps(squad_payload, ensure_ascii=False)}')
-                            
-                            squad_response = requests.patch(
-                                f'{remnawave_url}/api/users/{user_uuid}',
-                                headers={
-                                    'Authorization': f'Bearer {remnawave_token}',
-                                    'Content-Type': 'application/json'
-                                },
-                                json=squad_payload,
-                                timeout=10
-                            )
-                            
-                            print(f'✅ Squad add response: {squad_response.status_code}')
-                            if squad_response.status_code != 200:
-                                print(f'⚠️ Squad add failed: {squad_response.text}')
+                            for squad_uuid in squads:
+                                print(f'🔧 Adding to squad: {squad_uuid}')
+                                
+                                squad_response = requests.post(
+                                    f'{remnawave_url}/api/users/{user_uuid}/internal-squads/{squad_uuid}',
+                                    headers={
+                                        'Authorization': f'Bearer {remnawave_token}',
+                                        'Content-Type': 'application/json'
+                                    },
+                                    timeout=10
+                                )
+                                
+                                print(f'✅ Squad {squad_uuid[:8]} response: {squad_response.status_code}')
+                                if squad_response.status_code not in [200, 201, 204]:
+                                    print(f'⚠️ Squad add failed: {squad_response.text}')
                             
                             update_response = create_response
                         
