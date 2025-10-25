@@ -86,6 +86,24 @@ const Register = () => {
         localStorage.setItem('vpn_subscription_url', subscriptionUrl);
       }
 
+      // Добавляем пользователя в squad сразу после создания
+      try {
+        await fetch(
+          'https://functions.poehali.dev/d8d680b3-23f3-481e-b8cf-ccb969e2f158',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'update_user',
+              username: username,
+              internalSquads: ['e742f30b-82fb-431a-918b-1b4d22d6ba4d']
+            })
+          }
+        );
+      } catch (squadError) {
+        console.error('Не удалось добавить в squad:', squadError);
+      }
+
       const paymentResponse = await fetch(
         'https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c',
         {

@@ -220,8 +220,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'dataLimit': body_data.get('data_limit'),
                     'expire': body_data.get('expire'),
                     'dataLimitResetStrategy': body_data.get('data_limit_reset_strategy', 'no_reset'),
-                    'status': body_data.get('status', 'active')
+                    'status': body_data.get('status', 'active'),
+                    'activeInternalSquads': body_data.get('internalSquads')
                 }
+                
+                # Удаляем None значения из payload
+                update_payload = {k: v for k, v in update_payload.items() if v is not None}
                 
                 print(f'🔹 Updating user {username} with payload: {json.dumps(update_payload, indent=2)}')
                 
