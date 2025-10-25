@@ -5,7 +5,7 @@ import base64
 import requests
 import psycopg2
 from typing import Dict, Any
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     '''
@@ -99,7 +99,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         if user_response.status_code == 404:
                             print(f'🆕 Creating NEW user {username}')
                             
-                            from datetime import timezone
                             expire_iso = datetime.fromtimestamp(new_expire, tz=timezone.utc).isoformat().replace('+00:00', 'Z')
                             
                             create_response = requests.post(
