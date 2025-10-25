@@ -171,7 +171,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'proxies': body_data.get('proxies', {}),
                 'dataLimit': body_data.get('data_limit', 0),
                 'expireAt': expire_at,
-                'dataLimitResetStrategy': body_data.get('data_limit_reset_strategy', 'no_reset'),
+                'dataLimitResetStrategy': body_data.get('data_limit_reset_strategy', 'day'),
                 'activeInternalSquads': body_data.get('internalSquads', [])
             }
             
@@ -219,7 +219,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'proxies': body_data.get('proxies'),
                     'dataLimit': body_data.get('data_limit'),
                     'expire': body_data.get('expire'),
-                    'dataLimitResetStrategy': body_data.get('data_limit_reset_strategy', 'no_reset'),
+                    'dataLimitResetStrategy': body_data.get('data_limit_reset_strategy', 'day'),
                     'status': body_data.get('status', 'active'),
                     'activeInternalSquads': body_data.get('internalSquads')
                 }
@@ -229,7 +229,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 
                 print(f'🔹 Updating user {username} with payload: {json.dumps(update_payload, indent=2)}')
                 
-                response = requests.put(
+                response = requests.patch(
                     f'{api_url}/api/users/{username}',
                     headers=headers,
                     json=update_payload,
