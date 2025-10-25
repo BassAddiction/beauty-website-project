@@ -136,6 +136,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                     'Content-Type': 'application/json'
                                 },
                                 json={
+                                    'trafficLimitBytes': 32212254720,
+                                    'trafficLimitStrategy': 'DAY',
                                     'inbounds': [
                                         {
                                             'uuid': '6afd8de3-00d5-41db-aa52-f259fb98b2c8'
