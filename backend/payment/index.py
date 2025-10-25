@@ -120,61 +120,34 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         elif create_response.status_code == 400:
                             error_data = create_response.json()
                             if error_data.get('errorCode') == 'A019':
-                                print(f'🔄 User exists, updating {username}')
+                                print(f'🔄 User exists (A019), trying direct update for {username}')
                                 
-                                # Получаем список всех пользователей
-                                users_response = requests.get(
-                                    f'{remnawave_url}/api/users',
-                                    headers={'Authorization': f'Bearer {remnawave_token}'},
+                                # Раз API говорит что пользователь существует - пробуем обновить напрямую
+                                # используя стандартное время expire (30 дней от сейчас)
+                                update_response = requests.put(
+                                    f'{remnawave_url}/api/user/{username}',
+                                    headers={
+                                        'Authorization': f'Bearer {remnawave_token}',
+                                        'Content-Type': 'application/json'
+                                    },
+                                    json={
+                                        'expire': int(new_expire),
+                                        'data_limit': 32212254720,
+                                        'data_limit_reset_strategy': 'day'
+                                    },
                                     timeout=10
                                 )
                                 
-                                if users_response.status_code == 200:
-                                    users_data = users_response.json()
-                                    users_list = users_data.get('users', [])
-                                    
-                                    print(f'📋 Total users: {len(users_list)}')
-                                    print(f'🔍 Looking for: {username}')
-                                    print(f'📝 Usernames in list: {[u.get("username") for u in users_list[:5]]}')
-                                    
-                                    # Ищем нашего пользователя
-                                    user_data = None
-                                    for user in users_list:
-                                        if user.get('username') == username:
-                                            user_data = user
-                                            break
-                                    
-                                    if not user_data:
-                                        raise Exception(f'User {username} not found in users list. Total users: {len(users_list)}')
-                                    
-                                    current_expire = user_data.get('expire', 0)
-                                    subscription_url = user_data.get('subscription_url', user_data.get('sub_url', ''))
-                                    
-                                    # Продлеваем если ещё действует
-                                    if current_expire > now:
-                                        new_expire = current_expire + (plan_days * 86400)
-                                    
-                                    # Обновляем пользователя через PUT /api/user/{username}
-                                    update_response = requests.put(
-                                        f'{remnawave_url}/api/user/{username}',
-                                        headers={
-                                            'Authorization': f'Bearer {remnawave_token}',
-                                            'Content-Type': 'application/json'
-                                        },
-                                        json={
-                                            'expire': int(new_expire),
-                                            'data_limit': 32212254720,
-                                            'data_limit_reset_strategy': 'day'
-                                        },
-                                        timeout=10
-                                    )
-                                    
-                                    print(f'✅ User updated: {update_response.status_code}')
-                                    
-                                    if update_response.status_code != 200:
-                                        raise Exception(f'Failed to update: {update_response.text}')
+                                print(f'📝 Update response: {update_response.status_code}')
+                                
+                                if update_response.status_code == 200:
+                                    print(f'✅ User updated successfully')
+                                    # Успешно обновили
+                                    pass
                                 else:
-                                    raise Exception(f'Failed to get users: {users_response.text}')
+                                    error_text = update_response.text
+                                    print(f'❌ Update failed: {error_text}')
+                                    raise Exception(f'Failed to update user: {error_text}')
                             else:
                                 raise Exception(f'Creation failed: {create_response.text}')
                         else:
