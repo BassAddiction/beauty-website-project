@@ -198,17 +198,54 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             timeout=10
                         )
                         
-                        if user_response.status_code == 200:
+                        now = datetime.now().timestamp()
+                        new_expire = now + (plan_days * 86400)
+                        
+                        # Если пользователь НЕ существует (404) - создаём его
+                        if user_response.status_code == 404:
+                            print(f'🆕 Creating NEW user {username}')
+                            
+                            from datetime import datetime, timezone
+                            expire_iso = datetime.fromtimestamp(new_expire, tz=timezone.utc).isoformat().replace('+00:00', 'Z')
+                            
+                            create_response = requests.post(
+                                f'{remnawave_url}/api/users',
+                                headers={
+                                    'Authorization': f'Bearer {remnawave_token}',
+                                    'Content-Type': 'application/json'
+                                },
+                                json={
+                                    'username': username,
+                                    'dataLimit': 32212254720,
+                                    'expireAt': expire_iso,
+                                    'dataLimitResetStrategy': 'day',
+                                    'proxies': {
+                                        'vless-reality': {}
+                                    }
+                                },
+                                timeout=10
+                            )
+                            
+                            print(f'✅ User created: {create_response.status_code} - {create_response.text[:200]}')
+                            
+                            if create_response.status_code in [200, 201]:
+                                user_data = create_response.json()
+                                subscription_url = user_data.get('subscription_url', user_data.get('sub_url', ''))
+                                update_response = create_response
+                            else:
+                                raise Exception(f'Failed to create user: {create_response.text}')
+                        
+                        # Если пользователь существует - продлеваем подписку
+                        elif user_response.status_code == 200:
                             user_data = user_response.json()
                             current_expire = user_data.get('expire', 0)
                             subscription_url = user_data.get('subscription_url', user_data.get('sub_url', ''))
                             
                             # Продлеваем подписку
-                            now = datetime.now().timestamp()
                             if current_expire > now:
                                 new_expire = current_expire + (plan_days * 86400)
-                            else:
-                                new_expire = now + (plan_days * 86400)
+                            
+                            print(f'🔄 Updating existing user {username}')
                             
                             update_response = requests.put(
                                 f'{remnawave_url}/api/user/{username}',
@@ -226,6 +263,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                 },
                                 timeout=10
                             )
+                        
+                        else:
+                            raise Exception(f'Unexpected status: {user_response.status_code}')
                             
                             if update_response.status_code == 200:
                                 # Обновляем статус платежа в БД
