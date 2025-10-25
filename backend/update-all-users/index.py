@@ -89,10 +89,15 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             print(f'🧪 Test username: {test_username}')
             print(f'🧪 Test UUID: {test_uuid}')
             
-            # Тестовый payload
-            test_payload = {
+            # Тестовый payload (разные варианты названий полей)
+            test_payload_v1 = {
                 'data_limit': 32212254720,
                 'data_limit_reset_strategy': 'day'
+            }
+            
+            test_payload_v2 = {
+                'trafficLimitBytes': 32212254720,
+                'trafficLimitStrategy': 'DAY'
             }
             
             test_results = []
@@ -122,7 +127,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             print('🧪 TEST 2: PUT /api/user/{username}')
             print('=' * 80)
             try:
-                r2 = requests.put(f'{remnawave_url}/api/user/{test_username}', headers=headers, json=test_payload, timeout=10)
+                r2 = requests.put(f'{remnawave_url}/api/user/{test_username}', headers=headers, json=test_payload_v1, timeout=10)
                 print(f'Status: {r2.status_code}')
                 print(f'Response: {r2.text[:300]}')
                 test_results.append({
@@ -142,7 +147,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             print('🧪 TEST 3: PUT /api/users/{username} (with s)')
             print('=' * 80)
             try:
-                r3 = requests.put(f'{remnawave_url}/api/users/{test_username}', headers=headers, json=test_payload, timeout=10)
+                r3 = requests.put(f'{remnawave_url}/api/users/{test_username}', headers=headers, json=test_payload_v1, timeout=10)
                 print(f'Status: {r3.status_code}')
                 print(f'Response: {r3.text[:300]}')
                 test_results.append({
@@ -162,7 +167,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             print('🧪 TEST 4: PATCH /api/user/{username}')
             print('=' * 80)
             try:
-                r4 = requests.patch(f'{remnawave_url}/api/user/{test_username}', headers=headers, json=test_payload, timeout=10)
+                r4 = requests.patch(f'{remnawave_url}/api/user/{test_username}', headers=headers, json=test_payload_v1, timeout=10)
                 print(f'Status: {r4.status_code}')
                 print(f'Response: {r4.text[:300]}')
                 test_results.append({
@@ -182,7 +187,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             print('🧪 TEST 5: PUT /api/user/{uuid}')
             print('=' * 80)
             try:
-                r5 = requests.put(f'{remnawave_url}/api/user/{test_uuid}', headers=headers, json=test_payload, timeout=10)
+                r5 = requests.put(f'{remnawave_url}/api/user/{test_uuid}', headers=headers, json=test_payload_v1, timeout=10)
                 print(f'Status: {r5.status_code}')
                 print(f'Response: {r5.text[:300]}')
                 test_results.append({
@@ -197,23 +202,43 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'error': str(e)
                 })
             
-            # Test 6: PATCH /api/users/{uuid}
+            # Test 6: PATCH /api/users/{uuid} with v2 payload
             print('\n' + '=' * 80)
-            print('🧪 TEST 6: PATCH /api/users/{uuid}')
+            print('🧪 TEST 6: PATCH /api/users/{uuid} (trafficLimitBytes/trafficLimitStrategy)')
             print('=' * 80)
             try:
-                r6 = requests.patch(f'{remnawave_url}/api/users/{test_uuid}', headers=headers, json=test_payload, timeout=10)
+                r6 = requests.patch(f'{remnawave_url}/api/users/{test_uuid}', headers=headers, json=test_payload_v2, timeout=10)
                 print(f'Status: {r6.status_code}')
                 print(f'Response: {r6.text[:300]}')
                 test_results.append({
-                    'test': 'PATCH /api/users/{uuid}',
+                    'test': 'PATCH /api/users/{uuid} (v2 payload)',
                     'status': r6.status_code,
                     'response': r6.text[:300]
                 })
             except Exception as e:
                 print(f'ERROR: {str(e)}')
                 test_results.append({
-                    'test': 'PATCH /api/users/{uuid}',
+                    'test': 'PATCH /api/users/{uuid} (v2 payload)',
+                    'error': str(e)
+                })
+            
+            # Test 7: GET /api/users (список пользователей работает, значит токен валидный)
+            print('\n' + '=' * 80)
+            print('🧪 TEST 7: Verify token - GET /api/users')
+            print('=' * 80)
+            try:
+                r7 = requests.get(f'{remnawave_url}/api/users?limit=1', headers=headers, timeout=10)
+                print(f'Status: {r7.status_code}')
+                print(f'Token is: {"✅ VALID" if r7.status_code == 200 else "❌ INVALID"}')
+                test_results.append({
+                    'test': 'GET /api/users (token check)',
+                    'status': r7.status_code,
+                    'response': f'Token validation: {"VALID" if r7.status_code == 200 else "INVALID"}'
+                })
+            except Exception as e:
+                print(f'ERROR: {str(e)}')
+                test_results.append({
+                    'test': 'GET /api/users (token check)',
                     'error': str(e)
                 })
             
