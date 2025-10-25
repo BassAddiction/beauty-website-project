@@ -210,15 +210,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             print(f'🔗 User UUID: {user_uuid}')
                             print(f'🔗 Subscription URL: {subscription_url}')
                             
-                            # Добавляем в squad через PATCH /api/users/{uuid}
+                            # Добавляем в squad через PATCH /api/users/{uuid} с activeInternalSquads
+                            squad_uuids = ['6afd8de3-00d5-41db-aa52-f259fb98b2c8', '9ef43f96-83c9-4252-ae57-bb17dc9b60a9']
                             squad_payload = {
-                                'inbounds': {
-                                    'vless-reality': ['6afd8de3-00d5-41db-aa52-f259fb98b2c8', '9ef43f96-83c9-4252-ae57-bb17dc9b60a9']
-                                }
+                                'activeInternalSquads': squad_uuids
                             }
                             
-                            print(f'🔧 Adding new user to squads via PATCH /api/users/{user_uuid}')
-                            print(f'🔧 Squad payload: {json.dumps(squad_payload, ensure_ascii=False)}')
+                            print(f'🔧 Adding user to squads via PATCH /api/users/{user_uuid}')
+                            print(f'🔧 Squad UUIDs: {squad_uuids}')
                             
                             squad_response = requests.patch(
                                 f'{remnawave_url}/api/users/{user_uuid}',
@@ -231,9 +230,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             )
                             
                             print(f'✅ Squad PATCH response: {squad_response.status_code}')
-                            print(f'📝 Squad response body: {squad_response.text[:500]}')
+                            print(f'📝 Response: {squad_response.text[:500]}')
                             
-                            if squad_response.status_code != 200:
+                            if squad_response.status_code == 200:
+                                print(f'🎉 Successfully added to squads!')
+                            else:
                                 print(f'⚠️ Squad assignment failed')
                             
                             update_response = create_response
