@@ -222,18 +222,38 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'error': str(e)
                 })
             
-            # Test 7: GET /api/users (список пользователей работает, значит токен валидный)
+            # Test 7: PATCH /users/{uuid} (without /api/)
             print('\n' + '=' * 80)
-            print('🧪 TEST 7: Verify token - GET /api/users')
+            print('🧪 TEST 7: PATCH /users/{uuid} (NO /api/ prefix)')
             print('=' * 80)
             try:
-                r7 = requests.get(f'{remnawave_url}/api/users?limit=1', headers=headers, timeout=10)
+                r7 = requests.patch(f'{remnawave_url}/users/{test_uuid}', headers=headers, json=test_payload_v2, timeout=10)
                 print(f'Status: {r7.status_code}')
-                print(f'Token is: {"✅ VALID" if r7.status_code == 200 else "❌ INVALID"}')
+                print(f'Response: {r7.text[:300]}')
+                test_results.append({
+                    'test': 'PATCH /users/{uuid} (no /api/)',
+                    'status': r7.status_code,
+                    'response': r7.text[:300]
+                })
+            except Exception as e:
+                print(f'ERROR: {str(e)}')
+                test_results.append({
+                    'test': 'PATCH /users/{uuid} (no /api/)',
+                    'error': str(e)
+                })
+            
+            # Test 8: GET /api/users (token check - уже работает)
+            print('\n' + '=' * 80)
+            print('🧪 TEST 8: Token validity - GET /api/users')
+            print('=' * 80)
+            try:
+                r8 = requests.get(f'{remnawave_url}/api/users?limit=1', headers=headers, timeout=10)
+                print(f'Status: {r8.status_code}')
+                print(f'Token is: {"✅ VALID" if r8.status_code == 200 else "❌ INVALID"}')
                 test_results.append({
                     'test': 'GET /api/users (token check)',
-                    'status': r7.status_code,
-                    'response': f'Token validation: {"VALID" if r7.status_code == 200 else "INVALID"}'
+                    'status': r8.status_code,
+                    'response': f'Token: {"VALID ✅" if r8.status_code == 200 else "INVALID ❌"}'
                 })
             except Exception as e:
                 print(f'ERROR: {str(e)}')
