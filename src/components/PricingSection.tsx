@@ -191,27 +191,30 @@ const PricingSection = () => {
           </p>
         </div>
 
-        <div className="max-w-md mx-auto mb-12 space-y-4">
+        <div className="max-w-md mx-auto mb-12 space-y-4 p-6 border-2 border-primary/30 rounded-xl bg-black/20">
+          <h3 className="text-xl font-bold text-center mb-4">📝 Заполните данные для оплаты</h3>
           <div>
-            <Label htmlFor="username">Username для подписки *</Label>
+            <Label htmlFor="username" className="text-lg">1️⃣ Username для VPN *</Label>
             <Input
               id="username"
-              placeholder="ivanov_vpn"
+              placeholder="Например: ivan_123"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="mt-2"
+              className="mt-2 text-lg h-12"
             />
+            <p className="text-sm text-muted-foreground mt-1">Этот username будет использоваться для входа в VPN</p>
           </div>
           <div>
-            <Label htmlFor="email">Email (для чека)</Label>
+            <Label htmlFor="email" className="text-lg">2️⃣ Email для чека</Label>
             <Input
               id="email"
               type="email"
               placeholder="ivan@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-2"
+              className="mt-2 text-lg h-12"
             />
+            <p className="text-sm text-muted-foreground mt-1">На этот email придёт чек об оплате</p>
           </div>
         </div>
 
