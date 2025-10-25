@@ -104,7 +104,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'description': f'VPN подписка {plan_name}',
                         'quantity': '1',
                         'amount': {'value': amount_formatted, 'currency': 'RUB'},
-                        'vat_code': 1
+                        'vat_code': 1,
+                        'payment_subject': 'service',
+                        'payment_mode': 'full_payment'
                     }]
                 }
             
