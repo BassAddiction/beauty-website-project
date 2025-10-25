@@ -66,7 +66,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     # GET /inbounds - получить список inbounds (сквадов)
     if method == 'GET' and event.get('queryStringParameters', {}).get('action') == 'inbounds':
         try:
-            response = requests.get(f'{api_url}/api/inbounds', headers=headers, timeout=10)
+            response = requests.get(f'{api_url}/api/core/inbounds', headers=headers, timeout=10)
             return {
                 'statusCode': response.status_code,
                 'headers': cors_headers,
