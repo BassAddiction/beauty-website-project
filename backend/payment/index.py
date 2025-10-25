@@ -126,7 +126,29 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             print(f'🔗 User UUID: {user_uuid}')
                             print(f'🔗 Subscription URL: {subscription_url}')
                             
-                            print(f'✅ User created with inbounds already assigned')
+                            # Теперь вызываем функцию remnawave для добавления в squad
+                            remnawave_function_url = 'https://functions.poehali.dev/d8d680b3-23f3-481e-b8cf-ccb969e2f158'
+                            
+                            print(f'🔧 Calling remnawave function to update squads')
+                            
+                            remnawave_payload = {
+                                'action': 'update_user',
+                                'username': username,
+                                'inbounds': {
+                                    'vless-reality': ['6afd8de3-00d5-41db-aa52-f259fb98b2c8', '9ef43f96-83c9-4252-ae57-bb17dc9b60a9']
+                                }
+                            }
+                            
+                            remnawave_resp = requests.post(
+                                remnawave_function_url,
+                                headers={'Content-Type': 'application/json'},
+                                json=remnawave_payload,
+                                timeout=15
+                            )
+                            
+                            print(f'✅ Remnawave response: {remnawave_resp.status_code}')
+                            if remnawave_resp.status_code != 200:
+                                print(f'⚠️ Remnawave failed: {remnawave_resp.text[:500]}')
                             
                             update_response = create_response
                         
