@@ -122,6 +122,22 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             print(f'📥 Response: {create_response.text[:500]}')
                             user_data = create_response.json().get('response', {})
                             subscription_url = user_data.get('subscription_url', user_data.get('sub_url', ''))
+                            
+                            # Теперь привяжем inbound отдельным запросом
+                            print(f'🔗 Binding inbound to user {username}')
+                            inbound_response = requests.post(
+                                f'{remnawave_url}/api/user/{username}/inbounds',
+                                headers={
+                                    'Authorization': f'Bearer {remnawave_token}',
+                                    'Content-Type': 'application/json'
+                                },
+                                json={
+                                    'inboundUuids': ['9ef43f96-83c9-4252-ae57-bb17dc9b60a9']
+                                },
+                                timeout=10
+                            )
+                            print(f'🔗 Inbound binding: {inbound_response.status_code} - {inbound_response.text[:200]}')
+                            
                             update_response = create_response
                         
                         # Если пользователь уже существует (400 + errorCode A019)
