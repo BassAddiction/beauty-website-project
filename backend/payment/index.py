@@ -80,6 +80,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             amount_formatted = f'{float(amount):.2f}'
             
+            print(f'💳 Creating payment: amount={amount} -> {amount_formatted}, plan={plan_name}, days={plan_days}, user={username}')
+            
             payment_data = {
                 'amount': {'value': amount_formatted, 'currency': 'RUB'},
                 'confirmation': {
@@ -106,6 +108,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     }]
                 }
             
+            print(f'📦 Payment data: {json.dumps(payment_data, indent=2)}')
+            
             response = requests.post(
                 'https://api.yookassa.ru/v3/payments',
                 json=payment_data,
@@ -113,6 +117,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 headers={'Idempotence-Key': payment_id, 'Content-Type': 'application/json'},
                 timeout=10
             )
+            
+            print(f'🔔 YooKassa response: status={response.status_code}, body={response.text[:300]}')
             
             if response.status_code != 200:
                 return {
