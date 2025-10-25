@@ -159,18 +159,27 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         print(f'🔹 POST request - action: {action}, body keys: {list(body_data.keys())}')
         
         if action == 'create_user':
-            # Вычисляем expireAt из timestamp expire
+            from datetime import datetime
+            
             expire_timestamp = body_data.get('expire')
             expire_at = None
             if expire_timestamp:
-                from datetime import datetime
                 expire_at = datetime.fromtimestamp(expire_timestamp).isoformat() + 'Z'
+            
+            # Формируем массив inbounds
+            squad_uuids = body_data.get('internalSquads', [])
+            inbounds = []
+            for squad_uuid in squad_uuids:
+                inbounds.append({
+                    'uuid': squad_uuid,
+                    'dataLimit': body_data.get('data_limit', 0)
+                })
             
             user_payload = {
                 'username': body_data.get('username'),
                 'proxies': body_data.get('proxies', {}),
-                'dataLimit': body_data.get('data_limit', 0),
                 'expireAt': expire_at,
+                'inbounds': inbounds,
                 'dataLimitResetStrategy': body_data.get('data_limit_reset_strategy', 'no_reset')
             }
             
