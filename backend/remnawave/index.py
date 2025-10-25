@@ -157,11 +157,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'activeInternalSquads': internal_squads
                 }
                 
-                print(f'🔹 Step 2: Updating user {user_uuid}')
+                print(f'🔹 Step 2: Updating user {username} (UUID: {user_uuid})')
                 print(f'🔹 Update payload: {json.dumps(update_payload, indent=2)}')
                 
-                update_response = requests.put(
-                    f'{api_url}/api/users/{user_uuid}',
+                update_response = requests.patch(
+                    f'{api_url}/api/user/{username}',
                     headers=headers,
                     json=update_payload,
                     timeout=10
