@@ -126,8 +126,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             # Если Remnawave не вернул данные, но есть платежи - вычисляем из БД
             if expire_timestamp is None and payments:
-                # Берем последний успешный платеж
-                last_payment = next((p for p in payments if p['status'] == 'succeeded'), None)
+                # Берем последний платеж (любой статус)
+                last_payment = payments[0] if payments else None
                 if last_payment:
                     created_dt = datetime.fromisoformat(last_payment['created_at'])
                     expire_dt = created_dt.timestamp() + (last_payment['plan_days'] * 86400)
