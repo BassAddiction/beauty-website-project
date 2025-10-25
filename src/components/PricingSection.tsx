@@ -272,8 +272,9 @@ const PricingSection = () => {
                     className="w-full rounded-full button-glow"
                     onClick={() => handlePayment(plan)}
                     disabled={paying || !username.trim()}
+                    title={!username.trim() ? "Сначала введите username" : ""}
                   >
-                    {paying ? "Загрузка..." : "Оплатить"}
+                    {paying ? "Загрузка..." : !username.trim() ? "Введите username ⬆️" : "Оплатить"}
                   </Button>
                 )}
               </CardFooter>
