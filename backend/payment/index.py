@@ -125,18 +125,20 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             subscription_url = user_data.get('subscription_url', user_data.get('sub_url', ''))
                             print(f'🔗 Subscription URL: {subscription_url}')
                             
-                            # ВАЖНО: Добавляем в squad отдельным запросом
+                            # ВАЖНО: Добавляем в squad отдельным запросом (используем старый API формат)
                             squad_payload = {
-                                'internalSquadUuids': [
-                                    '6afd8de3-00d5-41db-aa52-f259fb98b2c8',
-                                    '9ef43f96-83c9-4252-ae57-bb17dc9b60a9'
-                                ]
+                                'inbounds': {
+                                    'vless-reality': {
+                                        '6afd8de3-00d5-41db-aa52-f259fb98b2c8': {},
+                                        '9ef43f96-83c9-4252-ae57-bb17dc9b60a9': {}
+                                    }
+                                }
                             }
                             
                             print(f'🔧 Adding to squads: {json.dumps(squad_payload, ensure_ascii=False)}')
                             
-                            squad_response = requests.patch(
-                                f'{remnawave_url}/api/users/{username}',
+                            squad_response = requests.put(
+                                f'{remnawave_url}/api/user/{username}',
                                 headers={
                                     'Authorization': f'Bearer {remnawave_token}',
                                     'Content-Type': 'application/json'
