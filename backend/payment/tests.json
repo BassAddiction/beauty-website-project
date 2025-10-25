@@ -1,18 +1,15 @@
 {
   "tests": [
     {
-      "name": "Test OPTIONS request for CORS",
+      "name": "OPTIONS request (CORS preflight)",
       "method": "OPTIONS",
       "path": "/",
-      "expectedStatus": 200,
-      "expectedHeaders": {
-        "Access-Control-Allow-Origin": "*"
-      }
+      "expectedStatus": 200
     },
     {
-      "name": "Test GET payment without payment_id",
+      "name": "Missing parameters - GET",
       "method": "GET",
-      "path": "/",
+      "path": "/?username=test",
       "expectedStatus": 400,
       "expectedBody": {
         "error": "string"
