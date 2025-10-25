@@ -146,7 +146,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                         'data_limit': 32212254720,
                                         'data_limit_reset_strategy': 'day',
                                         'inbounds': {
-                                            '9ef43f96-83c9-4252-ae57-bb17dc9b60a9': {}
+                                            'vless-reality': ['6afd8de3-00d5-41db-aa52-f259fb98b2c8', '9ef43f96-83c9-4252-ae57-bb17dc9b60a9']
                                         }
                                     },
                                     timeout=10
