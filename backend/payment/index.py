@@ -210,32 +210,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             print(f'🔗 User UUID: {user_uuid}')
                             print(f'🔗 Subscription URL: {subscription_url}')
                             
-                            # Добавляем в squad через PATCH /api/users/{uuid} с activeInternalSquads
-                            squad_uuids = ['6afd8de3-00d5-41db-aa52-f259fb98b2c8', '9ef43f96-83c9-4252-ae57-bb17dc9b60a9']
-                            squad_payload = {
-                                'activeInternalSquads': squad_uuids
-                            }
+                            # Проверяем список сквадов в ответе
+                            active_squads = user_data.get('activeInternalSquads', [])
+                            print(f'📊 Active squads after creation: {active_squads}')
                             
-                            print(f'🔧 Adding user to squads via PATCH /api/users/{user_uuid}')
-                            print(f'🔧 Squad UUIDs: {squad_uuids}')
-                            
-                            squad_response = requests.patch(
-                                f'{remnawave_url}/api/users/{user_uuid}',
-                                headers={
-                                    'Authorization': f'Bearer {remnawave_token}',
-                                    'Content-Type': 'application/json'
-                                },
-                                json=squad_payload,
-                                timeout=10
-                            )
-                            
-                            print(f'✅ Squad PATCH response: {squad_response.status_code}')
-                            print(f'📝 Response: {squad_response.text[:500]}')
-                            
-                            if squad_response.status_code == 200:
-                                print(f'🎉 Successfully added to squads!')
+                            if len(active_squads) == 0:
+                                print(f'⚠️ No squads assigned - inbounds in payload do not auto-assign squads')
                             else:
-                                print(f'⚠️ Squad assignment failed')
+                                print(f'✅ Squads assigned successfully: {len(active_squads)} squads')
                             
                             update_response = create_response
                         
