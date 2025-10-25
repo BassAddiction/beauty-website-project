@@ -97,10 +97,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             'trafficLimitBytes': 32212254720,
                             'trafficLimitStrategy': 'DAY',
                             'expireAt': expire_iso,
-                            'internalSquadUuids': [
-                                '6afd8de3-00d5-41db-aa52-f259fb98b2c8',
-                                '9ef43f96-83c9-4252-ae57-bb17dc9b60a9'
-                            ]
+                            'inbounds': {
+                                'vless-reality': ['6afd8de3-00d5-41db-aa52-f259fb98b2c8', '9ef43f96-83c9-4252-ae57-bb17dc9b60a9']
+                            }
                         }
                         
                         print(f'📦 Creating user payload: {json.dumps(payload, ensure_ascii=False)}')
@@ -127,27 +126,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             print(f'🔗 User UUID: {user_uuid}')
                             print(f'🔗 Subscription URL: {subscription_url}')
                             
-                            # ВАЖНО: Добавляем в каждый squad отдельными POST запросами
-                            squads = [
-                                '6afd8de3-00d5-41db-aa52-f259fb98b2c8',
-                                '9ef43f96-83c9-4252-ae57-bb17dc9b60a9'
-                            ]
-                            
-                            for squad_uuid in squads:
-                                print(f'🔧 Adding to squad: {squad_uuid}')
-                                
-                                squad_response = requests.post(
-                                    f'{remnawave_url}/api/users/{user_uuid}/internal-squads/{squad_uuid}',
-                                    headers={
-                                        'Authorization': f'Bearer {remnawave_token}',
-                                        'Content-Type': 'application/json'
-                                    },
-                                    timeout=10
-                                )
-                                
-                                print(f'✅ Squad {squad_uuid[:8]} response: {squad_response.status_code}')
-                                if squad_response.status_code not in [200, 201, 204]:
-                                    print(f'⚠️ Squad add failed: {squad_response.text}')
+                            print(f'✅ User created with inbounds already assigned')
                             
                             update_response = create_response
                         
