@@ -230,12 +230,18 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                     print(f'🔹 Try #{idx * len(payloads_to_try) + payload_idx + 1}: PATCH {endpoint}')
                                     print(f'   Payload: {json.dumps(update_payload, indent=2)}')
                                     
-                                    update_response = requests.patch(
-                                        endpoint,
-                                        headers=headers,
-                                        json=update_payload,
-                                        timeout=10
-                                    )
+                                    # Пробуем и PATCH и PUT
+                                    for method in ['PATCH', 'PUT']:
+                                        update_response = requests.request(
+                                            method,
+                                            endpoint,
+                                            headers=headers,
+                                            json=update_payload,
+                                            timeout=10
+                                        )
+                                        
+                                        if update_response.status_code not in [404, 405]:
+                                            break
                                     
                                     print(f'   Result: {update_response.status_code} - {update_response.text[:200]}')
                                     
