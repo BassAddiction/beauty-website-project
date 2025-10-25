@@ -89,7 +89,7 @@ const Register = () => {
 
       // Добавляем пользователя в squad сразу после создания
       try {
-        await fetch(
+        const squadResponse = await fetch(
           'https://functions.poehali.dev/d8d680b3-23f3-481e-b8cf-ccb969e2f158',
           {
             method: 'POST',
@@ -97,10 +97,18 @@ const Register = () => {
             body: JSON.stringify({
               action: 'update_user',
               username: username,
-              internalSquads: ['e742f30b-82fb-431a-918b-1b4d22d6ba4d']
+              inbounds: {
+                'vless-reality': ['e742f30b-82fb-431a-918b-1b4d22d6ba4d']
+              }
             })
           }
         );
+        
+        if (!squadResponse.ok) {
+          console.error('Ошибка добавления в squad:', await squadResponse.text());
+        } else {
+          console.log('✅ Пользователь добавлен в squad');
+        }
       } catch (squadError) {
         console.error('Не удалось добавить в squad:', squadError);
       }
