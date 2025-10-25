@@ -63,75 +63,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
     
-    # GET /inbounds - получить список inbounds (сквадов)
-    if method == 'GET' and event.get('queryStringParameters', {}).get('action') == 'inbounds':
-        endpoints_to_try = [
-            '/api/inbounds',
-            '/api/core/inbounds', 
-            '/api/nodes',
-            '/api/core/nodes',
-            '/api/system/inbounds'
-        ]
-        
-        results = {}
-        for endpoint in endpoints_to_try:
-            try:
-                response = requests.get(f'{api_url}{endpoint}', headers=headers, timeout=5)
-                results[endpoint] = {
-                    'status': response.status_code,
-                    'data': response.json() if response.status_code == 200 else response.text
-                }
-            except Exception as e:
-                results[endpoint] = {'error': str(e)}
-        
-        return {
-            'statusCode': 200,
-            'headers': cors_headers,
-            'body': json.dumps(results, ensure_ascii=False),
-            'isBase64Encoded': False
-        }
-    
     # GET /user/:username - получить данные пользователя
     if method == 'GET':
         params = event.get('queryStringParameters', {})
         username = params.get('username')
-        email_prefix = params.get('email_prefix')
-        
-        # Поиск по email префиксу
-        if email_prefix:
-            try:
-                # Получаем всех пользователей
-                response = requests.get(f'{api_url}/api/users', headers=headers, timeout=10)
-                if response.status_code == 200:
-                    users = response.json()
-                    # Ищем пользователя с нужным префиксом
-                    for user in users.get('users', []):
-                        if user.get('username', '').startswith(email_prefix):
-                            return {
-                                'statusCode': 200,
-                                'headers': cors_headers,
-                                'body': json.dumps(user),
-                                'isBase64Encoded': False
-                            }
-                return {
-                    'statusCode': 404,
-                    'headers': cors_headers,
-                    'body': json.dumps({'error': 'User not found'}),
-                    'isBase64Encoded': False
-                }
-            except Exception as e:
-                return {
-                    'statusCode': 500,
-                    'headers': cors_headers,
-                    'body': json.dumps({'error': str(e)}),
-                    'isBase64Encoded': False
-                }
         
         if not username:
             return {
                 'statusCode': 400,
                 'headers': cors_headers,
-                'body': json.dumps({'error': 'Username or email_prefix required'}),
+                'body': json.dumps({'error': 'Username required'}),
                 'isBase64Encoded': False
             }
         
@@ -151,7 +92,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
     
-    # POST /user - создать пользователя
+    # POST /user - создать или обновить пользователя
     if method == 'POST':
         body_data = json.loads(event.get('body', '{}'))
         action = body_data.get('action')
@@ -159,64 +100,92 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         print(f'🔹 POST request - action: {action}, body keys: {list(body_data.keys())}')
         
         if action == 'create_user':
-            from datetime import datetime, timezone
+            from datetime import datetime
             
+            expire_timestamp = body_data.get('expire')
+            expire_at = None
+            if expire_timestamp:
+                expire_at = datetime.fromtimestamp(expire_timestamp).isoformat() + 'Z'
+            
+            proxies = body_data.get('proxies', {})
+            data_limit = body_data.get('data_limit', 0)
+            data_limit_reset_strategy = body_data.get('data_limit_reset_strategy', 'day')
+            internal_squads = body_data.get('internalSquads', [])
             username = body_data.get('username')
-            days = int(body_data.get('days', 1))
             
-            now = datetime.now(timezone.utc)
-            expire_timestamp = now.timestamp() + (days * 86400)
-            expire_at = datetime.fromtimestamp(expire_timestamp, timezone.utc).isoformat().replace('+00:00', 'Z')
-            
-            traffic_limit_gb = 30
-            traffic_limit_bytes = traffic_limit_gb * 1024 * 1024 * 1024
-            
-            user_payload = {
+            # Шаг 1: Создать пользователя с базовыми данными
+            create_payload = {
                 'username': username,
-                'trafficLimitBytes': traffic_limit_bytes,
-                'trafficLimitStrategy': 'MONTH',
+                'proxies': proxies,
                 'expireAt': expire_at,
-                'inboundUuids': ['9ef43f96-83c9-4252-ae57-bb17dc9b60a9']
+                'expire': expire_timestamp
             }
             
-            print(f'🆕 Creating test user: {username} for {days} days')
-            print(f'📦 Payload: {json.dumps(user_payload, indent=2)}')
+            print(f'🔹 Step 1: Creating user {username}')
+            print(f'🔹 Create payload: {json.dumps(create_payload, indent=2)}')
             
             try:
-                response = requests.post(
+                create_response = requests.post(
                     f'{api_url}/api/users',
                     headers=headers,
-                    json=user_payload,
+                    json=create_payload,
                     timeout=10
                 )
                 
-                print(f'✅ Response: {response.status_code}')
-                print(f'📥 Body: {response.text[:500]}')
+                print(f'🔹 Create response: {create_response.status_code}')
                 
-                if response.status_code in [200, 201]:
-                    data = response.json()
-                    user_data = data.get('response', {})
-                    subscription_url = user_data.get('subscription_url', user_data.get('sub_url', ''))
-                    
+                if create_response.status_code != 201:
+                    print(f'❌ Failed to create user: {create_response.text}')
+                    return {
+                        'statusCode': create_response.status_code,
+                        'headers': cors_headers,
+                        'body': create_response.text,
+                        'isBase64Encoded': False
+                    }
+                
+                # Получаем UUID созданного пользователя
+                created_data = create_response.json()
+                response_data = created_data.get('response', created_data)
+                user_uuid = response_data.get('uuid')
+                
+                print(f'🔹 User created with UUID: {user_uuid}')
+                
+                # Шаг 2: Обновить лимиты и сквады
+                update_payload = {
+                    'trafficLimitBytes': data_limit,
+                    'trafficLimitStrategy': data_limit_reset_strategy.upper().replace('_', '_'),
+                    'activeInternalSquads': internal_squads
+                }
+                
+                print(f'🔹 Step 2: Updating user {user_uuid}')
+                print(f'🔹 Update payload: {json.dumps(update_payload, indent=2)}')
+                
+                update_response = requests.patch(
+                    f'{api_url}/api/users/{user_uuid}',
+                    headers=headers,
+                    json=update_payload,
+                    timeout=10
+                )
+                
+                print(f'🔹 Update response: {update_response.status_code}')
+                
+                if update_response.status_code == 200:
+                    print(f'✅ User updated successfully')
                     return {
                         'statusCode': 200,
                         'headers': cors_headers,
-                        'body': json.dumps({
-                            'success': True,
-                            'username': username,
-                            'subscription_url': subscription_url,
-                            'days': days,
-                            'expire_at': expire_at
-                        }),
+                        'body': update_response.text,
                         'isBase64Encoded': False
                     }
                 else:
+                    print(f'⚠️ Update failed: {update_response.text}')
                     return {
-                        'statusCode': response.status_code,
+                        'statusCode': create_response.status_code,
                         'headers': cors_headers,
-                        'body': response.text,
+                        'body': create_response.text,
                         'isBase64Encoded': False
                     }
+                    
             except Exception as e:
                 print(f'❌ Error: {str(e)}')
                 return {
@@ -227,28 +196,47 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 }
         
         if action == 'update_user':
+            user_uuid = body_data.get('uuid')
             username = body_data.get('username')
-            if not username:
+            
+            if not user_uuid and not username:
                 return {
                     'statusCode': 400,
                     'headers': cors_headers,
-                    'body': json.dumps({'error': 'Username required'}),
+                    'body': json.dumps({'error': 'UUID or username required'}),
                     'isBase64Encoded': False
                 }
             
             try:
+                # Если UUID не передан - получаем по username
+                if not user_uuid:
+                    get_response = requests.get(f'{api_url}/api/user/{username}', headers=headers, timeout=10)
+                    if get_response.status_code == 200:
+                        user_data = get_response.json()
+                        response_data = user_data.get('response', user_data)
+                        user_uuid = response_data.get('uuid')
+                    else:
+                        return {
+                            'statusCode': 404,
+                            'headers': cors_headers,
+                            'body': json.dumps({'error': f'User {username} not found'}),
+                            'isBase64Encoded': False
+                        }
+                
                 update_payload = {
-                    'proxies': body_data.get('proxies'),
-                    'dataLimit': body_data.get('data_limit'),
-                    'expire': body_data.get('expire'),
-                    'dataLimitResetStrategy': body_data.get('data_limit_reset_strategy', 'no_reset'),
-                    'status': body_data.get('status', 'active')
+                    'trafficLimitBytes': body_data.get('data_limit'),
+                    'trafficLimitStrategy': body_data.get('data_limit_reset_strategy', 'day').upper().replace('_', '_'),
+                    'status': body_data.get('status', 'active').upper(),
+                    'activeInternalSquads': body_data.get('internalSquads')
                 }
                 
-                print(f'🔹 Updating user {username} with payload: {json.dumps(update_payload, indent=2)}')
+                # Удаляем None значения
+                update_payload = {k: v for k, v in update_payload.items() if v is not None}
                 
-                response = requests.put(
-                    f'{api_url}/api/users/{username}',
+                print(f'🔹 Updating user {user_uuid} with payload: {json.dumps(update_payload, indent=2)}')
+                
+                response = requests.patch(
+                    f'{api_url}/api/users/{user_uuid}',
                     headers=headers,
                     json=update_payload,
                     timeout=10
@@ -270,35 +258,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'body': json.dumps({'error': str(e)}),
                     'isBase64Encoded': False
                 }
-    
-    # DELETE /user/:username - удалить пользователя
-    if method == 'DELETE':
-        params = event.get('queryStringParameters', {})
-        username = params.get('username')
-        
-        if not username:
-            return {
-                'statusCode': 400,
-                'headers': cors_headers,
-                'body': json.dumps({'error': 'Username required'}),
-                'isBase64Encoded': False
-            }
-        
-        try:
-            response = requests.delete(f'{api_url}/api/user/{username}', headers=headers, timeout=10)
-            return {
-                'statusCode': response.status_code,
-                'headers': cors_headers,
-                'body': response.text,
-                'isBase64Encoded': False
-            }
-        except Exception as e:
-            return {
-                'statusCode': 500,
-                'headers': cors_headers,
-                'body': json.dumps({'error': str(e)}),
-                'isBase64Encoded': False
-            }
     
     return {
         'statusCode': 405,

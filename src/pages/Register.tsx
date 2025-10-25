@@ -26,6 +26,7 @@ const Register = () => {
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [testMode, setTestMode] = useState(false); // Тестовый режим
 
   const handleSelectPlan = (plan: Plan) => {
     setSelectedPlan(plan);
@@ -84,6 +85,33 @@ const Register = () => {
       // Сохраняем subscriptionUrl сразу после создания
       if (subscriptionUrl) {
         localStorage.setItem('vpn_subscription_url', subscriptionUrl);
+      }
+
+      // Добавляем пользователя в squad сразу после создания
+      try {
+        await fetch(
+          'https://functions.poehali.dev/d8d680b3-23f3-481e-b8cf-ccb969e2f158',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'update_user',
+              username: username,
+              internalSquads: ['e742f30b-82fb-431a-918b-1b4d22d6ba4d']
+            })
+          }
+        );
+      } catch (squadError) {
+        console.error('Не удалось добавить в squad:', squadError);
+      }
+
+      // ТЕСТОВЫЙ РЕЖИМ - пропускаем оплату
+      if (testMode) {
+        localStorage.setItem('vpn_username', username);
+        localStorage.setItem('vpn_email', email);
+        alert(`✅ Тестовый пользователь создан!\nUsername: ${username}\n\nПроверь панель админки!`);
+        navigate('/dashboard');
+        return;
       }
 
       const paymentResponse = await fetch(
@@ -190,6 +218,18 @@ const Register = () => {
                 <Icon name="LogIn" className="w-4 h-4 mr-2" />
                 Войти
               </Button>
+              
+              {/* Секретная кнопка для тестового режима */}
+              <div className="mt-4">
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => setTestMode(!testMode)}
+                  className="text-xs opacity-30 hover:opacity-100"
+                >
+                  {testMode ? '🧪 Тест ON' : '🔧 Режим разработки'}
+                </Button>
+              </div>
             </div>
           </div>
         )}
