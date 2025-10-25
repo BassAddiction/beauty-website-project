@@ -91,28 +91,34 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         
                         # Пробуем создать пользователя
                         print(f'🆕 Attempting to create user {username}')
+                        
+                        payload = {
+                            'username': username,
+                            'data_limit': 32212254720,
+                            'expire': int(new_expire),
+                            'expireAt': expire_iso,
+                            'data_limit_reset_strategy': 'day',
+                            'inbounds': {
+                                '9ef43f96-83c9-4252-ae57-bb17dc9b60a9': {}
+                            }
+                        }
+                        
+                        print(f'📦 Payload: {payload}')
+                        
                         create_response = requests.post(
                             f'{remnawave_url}/api/users',
                             headers={
                                 'Authorization': f'Bearer {remnawave_token}',
                                 'Content-Type': 'application/json'
                             },
-                            json={
-                                'username': username,
-                                'data_limit': 32212254720,
-                                'expire': int(new_expire),
-                                'expireAt': expire_iso,
-                                'data_limit_reset_strategy': 'day',
-                                'inbounds': {
-                                    '9ef43f96-83c9-4252-ae57-bb17dc9b60a9': {}
-                                }
-                            },
+                            json=payload,
                             timeout=10
                         )
                         
                         # Если создан успешно (201)
                         if create_response.status_code in [200, 201]:
                             print(f'✅ User created: {create_response.status_code}')
+                            print(f'📥 Response: {create_response.text[:500]}')
                             user_data = create_response.json().get('response', {})
                             subscription_url = user_data.get('subscription_url', user_data.get('sub_url', ''))
                             update_response = create_response
