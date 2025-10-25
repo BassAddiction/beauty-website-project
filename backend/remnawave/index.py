@@ -101,6 +101,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         
         if action == 'create_user':
             from datetime import datetime
+            import psycopg2
             
             expire_timestamp = body_data.get('expire')
             expire_at = None
@@ -112,6 +113,39 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             data_limit_reset_strategy = body_data.get('data_limit_reset_strategy', 'day')
             internal_squads = body_data.get('internalSquads', [])
             username = body_data.get('username')
+            
+            # Для тестовых пользователей: сохраняем платёж в БД
+            test_mode = body_data.get('test_mode', False)
+            if test_mode and username and username.startswith('test_'):
+                try:
+                    db_url = os.environ.get('DATABASE_URL', '')
+                    if db_url:
+                        conn = psycopg2.connect(db_url)
+                        cursor = conn.cursor()
+                        
+                        # Вычисляем plan_days из expire_timestamp
+                        now_ts = int(datetime.now().timestamp())
+                        plan_days = int((expire_timestamp - now_ts) / 86400) if expire_timestamp else 30
+                        
+                        cursor.execute("""
+                            INSERT INTO payments (payment_id, username, email, amount, plan_name, plan_days, status, created_at, updated_at)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
+                        """, (
+                            f'test_{int(datetime.now().timestamp())}',
+                            username,
+                            body_data.get('email', ''),
+                            0.0,
+                            f'Test {plan_days} days',
+                            plan_days,
+                            'succeeded'
+                        ))
+                        
+                        conn.commit()
+                        cursor.close()
+                        conn.close()
+                        print(f'✅ Test payment saved to DB for {username}')
+                except Exception as e:
+                    print(f'⚠️ Failed to save test payment: {str(e)}')
             
             # Шаг 1: Создать пользователя с базовыми данными
             create_payload = {
