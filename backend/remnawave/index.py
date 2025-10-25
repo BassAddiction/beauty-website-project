@@ -161,7 +161,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 print(f'🔹 Update payload: {json.dumps(update_payload, indent=2)}')
                 
                 update_response = requests.patch(
-                    f'{api_url}/api/user/{user_uuid}',
+                    f'{api_url}/api/users/{user_uuid}',
                     headers=headers,
                     json=update_payload,
                     timeout=10
