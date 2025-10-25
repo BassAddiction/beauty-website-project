@@ -103,6 +103,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             users = all_users
             print(f'👥 Total found {len(users)} users')
             
+            # Выводим первого пользователя для отладки
+            if len(users) > 0:
+                print(f'🔍 First user sample: {json.dumps(users[0], indent=2)}')
+            
             print('=' * 80)
             print('🧪 STARTING API ENDPOINT TESTS')
             print('=' * 80)
