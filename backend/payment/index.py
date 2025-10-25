@@ -99,9 +99,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             'expireAt': expire_iso,
                             'inbounds': [
                                 {
-                                    'uuid': '6afd8de3-00d5-41db-aa52-f259fb98b2c8'
-                                },
-                                {
                                     'uuid': '9ef43f96-83c9-4252-ae57-bb17dc9b60a9'
                                 }
                             ]
@@ -125,30 +122,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             print(f'📥 Response: {create_response.text[:500]}')
                             user_data = create_response.json().get('response', {})
                             subscription_url = user_data.get('subscription_url', user_data.get('sub_url', ''))
-                            
-                            # Теперь привяжем inbound через PUT обновление пользователя
-                            user_uuid = user_data.get('uuid')
-                            print(f'🔗 Binding inbound to user {username} (uuid: {user_uuid})')
-                            inbound_response = requests.put(
-                                f'{remnawave_url}/api/user/{user_uuid}',
-                                headers={
-                                    'Authorization': f'Bearer {remnawave_token}',
-                                    'Content-Type': 'application/json'
-                                },
-                                json={
-                                    'inbounds': [
-                                        {
-                                            'uuid': '6afd8de3-00d5-41db-aa52-f259fb98b2c8'
-                                        },
-                                        {
-                                            'uuid': '9ef43f96-83c9-4252-ae57-bb17dc9b60a9'
-                                        }
-                                    ]
-                                },
-                                timeout=10
-                            )
-                            print(f'🔗 Inbound binding: {inbound_response.status_code} - {inbound_response.text[:200]}')
-                            
                             update_response = create_response
                         
                         # Если пользователь уже существует (400 + errorCode A019)
