@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface Plan {
   name: string;
@@ -14,8 +16,59 @@ interface Plan {
 
 const PricingSection = () => {
   const { ref, isVisible } = useScrollAnimation();
+  const { toast } = useToast();
+  const [testing, setTesting] = useState(false);
+
+  const handleTestWebhook = async () => {
+    setTesting(true);
+    try {
+      const username = `test_${Date.now()}`;
+      const webhook = {
+        type: 'notification',
+        event: 'payment.succeeded',
+        object: {
+          id: `test_${Date.now()}`,
+          status: 'succeeded',
+          amount: { value: '1.00', currency: 'RUB' },
+          metadata: {
+            username,
+            plan_days: '1',
+            plan_name: 'Test'
+          },
+          receipt: { customer: { email: 'test@test.com' } }
+        }
+      };
+      
+      const res = await fetch('https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(webhook)
+      });
+      
+      const data = await res.json();
+      toast({
+        title: res.ok ? '✅ Webhook отправлен' : '❌ Ошибка',
+        description: `Username: ${username}. Проверь логи backend/payment`
+      });
+    } catch (e) {
+      toast({ title: '❌ Ошибка', description: String(e), variant: 'destructive' });
+    } finally {
+      setTesting(false);
+    }
+  };
 
   const plans: Plan[] = [
+    {
+      name: "Тест",
+      price: "Free",
+      period: "",
+      features: [
+        "Тест webhook",
+        "Создаст пользователя",
+        "Проверка лимитов",
+        "Логи в backend/payment"
+      ]
+    },
     {
       name: "1 Месяц",
       price: "200",
@@ -85,7 +138,7 @@ const PricingSection = () => {
           </p>
         </div>
 
-        <div className={`grid md:grid-cols-2 lg:grid-cols-5 gap-6 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <div className={`grid md:grid-cols-2 lg:grid-cols-6 gap-6 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           {plans.map((plan, index) => (
             <Card key={index} className={`relative border-2 transition-all duration-300 hover:scale-105 ${plan.popular ? 'border-primary shadow-xl' : plan.custom ? 'border-purple-500 shadow-lg' : 'hover:border-primary'}`}>
               {plan.popular && (
@@ -123,11 +176,21 @@ const PricingSection = () => {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button className="w-full rounded-full button-glow" asChild>
-                  <a href={plan.custom ? "https://t.me/gospeedvpn" : "https://t.me/shopspeedvpn_bot"} target="_blank" rel="noopener noreferrer">
-                    {plan.custom ? "Связаться" : "Выбрать план"}
-                  </a>
-                </Button>
+                {plan.price === "Free" ? (
+                  <Button 
+                    className="w-full rounded-full button-glow" 
+                    onClick={handleTestWebhook}
+                    disabled={testing}
+                  >
+                    {testing ? "Отправка..." : "🧪 Тест"}
+                  </Button>
+                ) : (
+                  <Button className="w-full rounded-full button-glow" asChild>
+                    <a href={plan.custom ? "https://t.me/gospeedvpn" : "https://t.me/shopspeedvpn_bot"} target="_blank" rel="noopener noreferrer">
+                      {plan.custom ? "Связаться" : "Выбрать план"}
+                    </a>
+                  </Button>
+                )}
               </CardFooter>
             </Card>
           ))}
