@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест Webhook - Создание пользователя</title>
+    <style>
+        body {
+            font-family: monospace;
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        h1 {
+            color: #4ade80;
+        }
+        button {
+            background: #4ade80;
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #22c55e;
+        }
+        pre {
+            background: #0a0a0a;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            border: 1px solid #333;
+        }
+        .success { color: #4ade80; }
+        .error { color: #ef4444; }
+        .info { color: #60a5fa; }
+        input {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 10px;
+            border-radius: 6px;
+            width: 300px;
+            margin: 10px 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Тест Webhook - Создание пользователя после оплаты</h1>
+    
+    <div>
+        <input type="text" id="username" placeholder="Username (например: test_user_123)" value="test_user_auto_create">
+        <input type="number" id="days" placeholder="Дней подписки" value="30">
+        <br>
+        <button onclick="testWebhook()">🚀 Симулировать успешную оплату (webhook)</button>
+        <button onclick="checkUser()">👤 Проверить пользователя</button>
+    </div>
+    
+    <pre id="output">Ожидание...</pre>
+
+    <script>
+        const PAYMENT_URL = 'https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c';
+        const REMNAWAVE_URL = 'https://functions.poehali.dev/eb10e5f7-d0cf-4bb8-87e0-8af1ce0c85a6';
+        
+        function log(message, type = 'info') {
+            const output = document.getElementById('output');
+            const timestamp = new Date().toLocaleTimeString('ru-RU');
+            const color = type === 'success' ? '#4ade80' : type === 'error' ? '#ef4444' : '#60a5fa';
+            output.innerHTML += `<span style="color: ${color}">[${timestamp}] ${message}</span>\n`;
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        async function testWebhook() {
+            const username = document.getElementById('username').value;
+            const days = parseInt(document.getElementById('days').value);
+            
+            if (!username) {
+                alert('Укажите username!');
+                return;
+            }
+            
+            document.getElementById('output').innerHTML = '';
+            log('🚀 СИМУЛЯЦИЯ WEBHOOK от ЮKassa...', 'info');
+            log(`Username: ${username}, Дней: ${days}`, 'info');
+            
+            // Симулируем webhook от ЮKassa
+            const webhookPayload = {
+                "type": "notification",
+                "event": "payment.succeeded",
+                "object": {
+                    "id": `test_payment_${Date.now()}`,
+                    "status": "succeeded",
+                    "amount": {
+                        "value": "299.00",
+                        "currency": "RUB"
+                    },
+                    "receipt": {
+                        "customer": {
+                            "email": "test@example.com"
+                        }
+                    },
+                    "metadata": {
+                        "username": username,
+                        "plan_name": "Тестовый тариф",
+                        "plan_days": days.toString()
+                    }
+                }
+            };
+            
+            try {
+                log('📤 Отправка webhook...', 'info');
+                const response = await fetch(PAYMENT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(webhookPayload)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log('✅ Webhook обработан успешно!', 'success');
+                    log(`Ответ: ${JSON.stringify(data, null, 2)}`, 'success');
+                    
+                    // Ждём 2 секунды и проверяем пользователя
+                    setTimeout(() => checkUser(), 2000);
+                } else {
+                    log(`❌ Ошибка webhook: ${response.status}`, 'error');
+                    log(JSON.stringify(data, null, 2), 'error');
+                }
+            } catch (error) {
+                log(`❌ Ошибка: ${error.message}`, 'error');
+            }
+        }
+        
+        async function checkUser() {
+            const username = document.getElementById('username').value;
+            
+            if (!username) {
+                alert('Укажите username!');
+                return;
+            }
+            
+            log('\n👤 Проверка пользователя...', 'info');
+            
+            try {
+                const response = await fetch(`${REMNAWAVE_URL}?username=${username}`, {
+                    method: 'GET'
+                });
+                
+                if (response.ok) {
+                    const user = await response.json();
+                    log('✅ Пользователь найден!', 'success');
+                    log(`Username: ${user.username}`, 'success');
+                    log(`Status: ${user.status}`, 'success');
+                    
+                    // Проверяем дату
+                    const expireDate = new Date(user.expire * 1000);
+                    log(`Expire: ${user.expire} (${expireDate.toLocaleString('ru-RU')})`, 'success');
+                    
+                    if (user.expire > 0 && expireDate > new Date()) {
+                        log('🎉 УСПЕХ! Дата окончания установлена правильно!', 'success');
+                    } else {
+                        log('⚠️ ПРОБЛЕМА: Дата окончания = 01.01.1970 или в прошлом', 'error');
+                    }
+                    
+                    log(`Data limit: ${(user.data_limit / 1024 / 1024 / 1024).toFixed(2)} GB`, 'success');
+                    log(`Sub URL: ${user.sub_url}`, 'success');
+                } else if (response.status === 404) {
+                    log('❌ Пользователь НЕ найден (404)', 'error');
+                    log('Возможно webhook не отработал или пользователь не создался', 'error');
+                } else {
+                    log(`❌ Ошибка: ${response.status}`, 'error');
+                    const data = await response.text();
+                    log(data, 'error');
+                }
+            } catch (error) {
+                log(`❌ Ошибка: ${error.message}`, 'error');
+            }
+        }
+        
+        log('✅ Готов к тестированию!', 'success');
+        log('Нажмите "Симулировать успешную оплату" для создания пользователя', 'info');
+    </script>
+</body>
+</html>
