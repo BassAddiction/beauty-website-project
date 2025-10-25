@@ -189,6 +189,55 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 print(f'🔹 Response status: {response.status_code}')
                 print(f'🔹 Response body: {response.text}')
                 
+                # Если создание успешно - обновляем лимиты и сквады через PATCH
+                if response.status_code == 201:
+                    created_user = response.json()
+                    response_data = created_user.get('response', created_user)
+                    user_uuid = response_data.get('uuid')
+                    username = response_data.get('username')
+                    
+                    # Читаем настройки из переменных окружения
+                    traffic_limit_gb = int(os.environ.get('USER_TRAFFIC_LIMIT_GB', 0))
+                    traffic_strategy = os.environ.get('USER_TRAFFIC_STRATEGY', 'DAY').upper()
+                    squad_uuids_str = os.environ.get('USER_SQUAD_UUIDS', '')
+                    squad_uuids = [s.strip() for s in squad_uuids_str.split(',') if s.strip()]
+                    
+                    # Конвертируем GB в байты
+                    traffic_limit_bytes = traffic_limit_gb * 1024 * 1024 * 1024 if traffic_limit_gb > 0 else 0
+                    
+                    # Формируем payload для PATCH
+                    update_payload = {}
+                    if traffic_limit_bytes > 0:
+                        update_payload['trafficLimitBytes'] = traffic_limit_bytes
+                        update_payload['trafficLimitStrategy'] = traffic_strategy
+                    if squad_uuids:
+                        update_payload['activeInternalSquads'] = squad_uuids
+                    
+                    if update_payload:
+                        print(f'🔹 Auto-updating user {username} ({user_uuid}) with: {json.dumps(update_payload, indent=2)}')
+                        
+                        try:
+                            update_response = requests.patch(
+                                f'{api_url}/api/user/{user_uuid}',
+                                headers=headers,
+                                json=update_payload,
+                                timeout=10
+                            )
+                            print(f'🔹 Auto-update response: {update_response.status_code}')
+                            print(f'🔹 Auto-update body: {update_response.text[:300]}')
+                            
+                            # Возвращаем обновлённые данные
+                            if update_response.status_code in [200, 201]:
+                                return {
+                                    'statusCode': 201,
+                                    'headers': cors_headers,
+                                    'body': update_response.text,
+                                    'isBase64Encoded': False
+                                }
+                        except Exception as e:
+                            print(f'⚠️ Auto-update failed: {str(e)}')
+                            # Возвращаем данные без обновления
+                
                 return {
                     'statusCode': response.status_code,
                     'headers': cors_headers,
