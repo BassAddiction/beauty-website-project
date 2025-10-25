@@ -131,20 +131,18 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 
                 try:
                     update_payload = {
-                        'action': 'update_user',
-                        'username': username,
-                        'data_limit': 32212254720,
-                        'data_limit_reset_strategy': 'day',
+                        'dataLimit': 32212254720,
+                        'dataLimitResetStrategy': 'day',
                         'proxies': {
                             'b0cac819-d48e-47cf-b877-6e302723634b': {}
                         },
                         'status': 'active'
                     }
                     
-                    # Используем POST с action=update_user через remnawave
+                    # Прямой PUT запрос к Marzban API
                     print(f'📝 Updating user: {username}')
-                    update_response = requests.post(
-                        remnawave_url,
+                    update_response = requests.put(
+                        f'{remnawave_url}/api/users/{username}',
                         headers=headers,
                         json=update_payload,
                         timeout=10
