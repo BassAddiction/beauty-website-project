@@ -97,17 +97,13 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             'trafficLimitBytes': 32212254720,
                             'trafficLimitStrategy': 'DAY',
                             'expireAt': expire_iso,
-                            'inbounds': [
-                                {
-                                    'uuid': '6afd8de3-00d5-41db-aa52-f259fb98b2c8'
-                                },
-                                {
-                                    'uuid': '9ef43f96-83c9-4252-ae57-bb17dc9b60a9'
-                                }
+                            'inboundUuids': [
+                                '6afd8de3-00d5-41db-aa52-f259fb98b2c8',
+                                '9ef43f96-83c9-4252-ae57-bb17dc9b60a9'
                             ]
                         }
                         
-                        print(f'📦 Payload: {payload}')
+                        print(f'📦 Creating user payload: {json.dumps(payload, ensure_ascii=False)}')
                         
                         create_response = requests.post(
                             f'{remnawave_url}/api/users',
@@ -119,37 +115,15 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             timeout=10
                         )
                         
+                        print(f'📥 Create response: {create_response.status_code}')
+                        print(f'📄 Response body: {create_response.text[:1000]}')
+                        
                         # Если создан успешно (201)
                         if create_response.status_code in [200, 201]:
-                            print(f'✅ User created: {create_response.status_code}')
-                            print(f'📥 Response: {create_response.text[:500]}')
+                            print(f'✅ User created successfully')
                             user_data = create_response.json().get('response', {})
                             subscription_url = user_data.get('subscription_url', user_data.get('sub_url', ''))
-                            
-                            # Теперь привяжем inbound через PUT обновление пользователя
-                            user_uuid = user_data.get('uuid')
-                            print(f'🔗 Binding inbound to user {username} (uuid: {user_uuid})')
-                            inbound_response = requests.put(
-                                f'{remnawave_url}/api/user/{user_uuid}',
-                                headers={
-                                    'Authorization': f'Bearer {remnawave_token}',
-                                    'Content-Type': 'application/json'
-                                },
-                                json={
-                                    'trafficLimitBytes': 32212254720,
-                                    'trafficLimitStrategy': 'DAY',
-                                    'inbounds': [
-                                        {
-                                            'uuid': '6afd8de3-00d5-41db-aa52-f259fb98b2c8'
-                                        },
-                                        {
-                                            'uuid': '9ef43f96-83c9-4252-ae57-bb17dc9b60a9'
-                                        }
-                                    ]
-                                },
-                                timeout=10
-                            )
-                            print(f'🔗 Inbound binding: {inbound_response.status_code} - {inbound_response.text[:200]}')
+                            print(f'🔗 Subscription URL: {subscription_url}')
                             
                             update_response = create_response
                         
