@@ -131,10 +131,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 
                 try:
                     update_payload = {
-                        'dataLimit': 32212254720,
-                        'dataLimitResetStrategy': 'day',
-                        'proxies': {
-                            'b0cac819-d48e-47cf-b877-6e302723634b': {}
+                        'data_limit': 42949672960,
+                        'data_limit_reset_strategy': '1_days',
+                        'inbounds': {
+                            '6afd8de3-00d5-41db-aa52-f259fb98b2c8': [],
+                            '9ef43f96-83c9-4252-ae57-bb17dc9b60a9': []
                         },
                         'status': 'active'
                     }
