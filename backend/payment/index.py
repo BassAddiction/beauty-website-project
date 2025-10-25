@@ -78,15 +78,18 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             payment_id = str(uuid.uuid4())
             host = event.get('headers', {}).get('host', 'localhost')
             
+            return_url = 'https://speedvpn.poehali.dev/payment-success' if 'localhost' in host else f'https://{host}/payment-success'
+            
             amount_formatted = f'{float(amount):.2f}'
             
             print(f'💳 Creating payment: amount={amount} -> {amount_formatted}, plan={plan_name}, days={plan_days}, user={username}')
+            print(f'🔙 Return URL: {return_url}')
             
             payment_data = {
                 'amount': {'value': amount_formatted, 'currency': 'RUB'},
                 'confirmation': {
                     'type': 'redirect',
-                    'return_url': f'https://{host}/payment-success'
+                    'return_url': return_url
                 },
                 'capture': True,
                 'description': f'{plan_name} - {username}',
