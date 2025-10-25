@@ -176,13 +176,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         # Пробуем создать пользователя
                         print(f'🆕 Attempting to create user {username}')
                         
+                        squad_uuids = ['6afd8de3-00d5-41db-aa52-f259fb98b2c8', '9ef43f96-83c9-4252-ae57-bb17dc9b60a9']
+                        
                         payload = {
                             'username': username,
                             'trafficLimitBytes': 32212254720,
                             'trafficLimitStrategy': 'DAY',
                             'expireAt': expire_iso,
+                            'activeInternalSquads': squad_uuids,
                             'inbounds': {
-                                'vless-reality': ['6afd8de3-00d5-41db-aa52-f259fb98b2c8', '9ef43f96-83c9-4252-ae57-bb17dc9b60a9']
+                                'vless-reality': squad_uuids
                             }
                         }
                         
@@ -210,32 +213,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             print(f'🔗 User UUID: {user_uuid}')
                             print(f'🔗 Subscription URL: {subscription_url}')
                             
-                            # Шаг 2: Обновляем пользователя для добавления в squads
-                            squad_uuids = ['6afd8de3-00d5-41db-aa52-f259fb98b2c8', '9ef43f96-83c9-4252-ae57-bb17dc9b60a9']
+                            # Проверяем сквады в ответе
+                            active_squads = user_data.get('activeInternalSquads', [])
+                            print(f'📊 Active squads: {active_squads}')
                             
-                            print(f'🔧 Step 2: Adding user to squads via PUT /api/user/{username}')
-                            
-                            update_payload = {
-                                'activeInternalSquads': squad_uuids
-                            }
-                            
-                            squad_update_response = requests.put(
-                                f'{remnawave_url}/api/user/{username}',
-                                headers={
-                                    'Authorization': f'Bearer {remnawave_token}',
-                                    'Content-Type': 'application/json'
-                                },
-                                json=update_payload,
-                                timeout=10
-                            )
-                            
-                            print(f'📥 Update squads response: {squad_update_response.status_code}')
-                            print(f'📄 Update response: {squad_update_response.text[:500]}')
-                            
-                            if squad_update_response.status_code in [200, 201]:
-                                print(f'✅ User added to {len(squad_uuids)} squads successfully!')
+                            if len(active_squads) > 0:
+                                print(f'✅ User added to {len(active_squads)} squads!')
                             else:
-                                print(f'⚠️ Failed to add user to squads: {squad_update_response.text}')
+                                print(f'⚠️ User created but not added to any squad')
                             
                             update_response = create_response
                         
