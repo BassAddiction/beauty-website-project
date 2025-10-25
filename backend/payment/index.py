@@ -99,11 +99,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             },
                             json={
                                 'username': username,
-                                'dataLimit': 32212254720,
-                                'expireAt': expire_iso,
-                                'dataLimitResetStrategy': 'day',
-                                'proxies': {
-                                    'vless-reality': {}
+                                'data_limit': 32212254720,
+                                'expire': int(new_expire),
+                                'data_limit_reset_strategy': 'day',
+                                'inbounds': {
+                                    '9ef43f96-83c9-4252-ae57-bb17dc9b60a9': {}
                                 }
                             },
                             timeout=10
@@ -133,7 +133,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                     json={
                                         'expire': int(new_expire),
                                         'data_limit': 32212254720,
-                                        'data_limit_reset_strategy': 'day'
+                                        'data_limit_reset_strategy': 'day',
+                                        'inbounds': {
+                                            '9ef43f96-83c9-4252-ae57-bb17dc9b60a9': {}
+                                        }
                                     },
                                     timeout=10
                                 )
