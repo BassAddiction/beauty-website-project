@@ -101,17 +101,26 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             users = all_users
             print(f'👥 Total found {len(users)} users')
             
-            # Тестируем GET для первого пользователя
+            # Тестируем разные endpoints для первого пользователя
             if len(users) > 0:
                 test_user = users[0]
                 test_username = test_user.get('username')
-                print(f'🧪 Testing GET /api/user/{test_username}')
-                test_response = requests.get(
-                    f'{remnawave_url}/api/user/{test_username}',
-                    headers=headers,
-                    timeout=10
-                )
-                print(f'🧪 GET response: {test_response.status_code} - {test_response.text[:200]}')
+                test_uuid = test_user.get('uuid')
+                
+                print(f'🧪 Testing endpoints for user: {test_username} (UUID: {test_uuid})')
+                
+                # Test 1: GET /api/user/{username}
+                test1 = requests.get(f'{remnawave_url}/api/user/{test_username}', headers=headers, timeout=10)
+                print(f'🧪 GET /api/user/{test_username}: {test1.status_code}')
+                
+                # Test 2: PUT /api/user/{username}
+                test_payload = {'data_limit': 32212254720}
+                test2 = requests.put(f'{remnawave_url}/api/user/{test_username}', headers=headers, json=test_payload, timeout=10)
+                print(f'🧪 PUT /api/user/{test_username}: {test2.status_code} - {test2.text[:150]}')
+                
+                # Test 3: PUT /api/user/{uuid}
+                test3 = requests.put(f'{remnawave_url}/api/user/{test_uuid}', headers=headers, json=test_payload, timeout=10)
+                print(f'🧪 PUT /api/user/{test_uuid}: {test3.status_code} - {test3.text[:150]}')
             
             updated_count = 0
             failed_count = 0
