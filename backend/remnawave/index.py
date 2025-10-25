@@ -231,8 +231,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     
                     print(f'🔹 Updating user {user_uuid} with: {json.dumps(update_payload, indent=2)}')
                     
-                    # Отправляем PATCH запрос
-                    update_response = requests.patch(
+                    # Отправляем PUT запрос (PATCH не работает - возвращает 404)
+                    update_response = requests.put(
                         f'{api_url}/api/user/{user_uuid}',
                         headers=headers,
                         json=update_payload,
