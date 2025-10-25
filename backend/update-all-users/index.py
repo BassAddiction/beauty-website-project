@@ -139,36 +139,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'status': 'active'
                     }
                     
-                    # Попробуем удалить пользователя и создать заново с новыми настройками
-                    print(f'🗑️ Deleting user: {username}')
-                    delete_response = requests.delete(
-                        f'{remnawave_url}/api/user/{username}',
+                    # Используем PUT для обновления пользователя через remnawave
+                    print(f'📝 Updating user: {username}')
+                    update_response = requests.put(
+                        f'{remnawave_url}?username={username}',
                         headers=headers,
+                        json=update_payload,
                         timeout=10
                     )
-                    print(f'📥 Delete response: {delete_response.status_code}')
-                    
-                    if delete_response.status_code in [200, 204]:
-                        # Воссоздаём пользователя с новыми настройками
-                        create_payload = {
-                            'username': username,
-                            'data_limit': 32212254720,
-                            'data_limit_reset_strategy': 'day',
-                            'proxies': {
-                                'b0cac819-d48e-47cf-b877-6e302723634b': {}
-                            },
-                            'status': 'active'
-                        }
-                        
-                        print(f'➕ Creating user: {username}')
-                        update_response = requests.post(
-                            f'{remnawave_url}/api/users',
-                            headers=headers,
-                            json=create_payload,
-                            timeout=10
-                        )
-                    else:
-                        update_response = delete_response
                     print(f'📥 Response status: {update_response.status_code}')
                     
                     if update_response.status_code == 200:
