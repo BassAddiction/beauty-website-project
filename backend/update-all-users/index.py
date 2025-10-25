@@ -5,12 +5,12 @@ from typing import Dict, Any
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     '''
-    Business: TEST API endpoints to find correct update method
+    Business: Update all users traffic limits using BULK UPDATE endpoint
     Args: event - dict with httpMethod, context - Cloud Function execution context  
-    Returns: HTTP response dict with API test results
-    Version: 3.0.0 - TESTING ONLY
+    Returns: HTTP response dict with update results
+    Version: 4.0.0 - BULK UPDATE
     '''
-    print(f'🚨 NEW VERSION 3.0.0 - TESTING API ENDPOINTS')
+    print(f'🚀 VERSION 4.0.0 - BULK UPDATE ENDPOINT TEST')
     print(f'🔧 Method: {event.get("httpMethod", "NONE")}')
     method: str = event.get('httpMethod', 'POST')
     
@@ -100,170 +100,70 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'trafficLimitStrategy': 'DAY'
             }
             
+            # Попробуем BULK UPDATE endpoint (как в Rust SDK)
+            print('\n' + '=' * 80)
+            print('🚀 TESTING BULK UPDATE ENDPOINTS')
+            print('=' * 80)
+            
+            bulk_payload = {
+                'users': [
+                    {
+                        'uuid': test_uuid,
+                        'data_limit': 32212254720,
+                        'data_limit_reset_strategy': 'day'
+                    }
+                ]
+            }
+            
             test_results = []
             
-            # Test 1: GET /api/user/{username}
-            print('\n' + '=' * 80)
-            print('🧪 TEST 1: GET /api/user/{username}')
-            print('=' * 80)
+            # Test 1: POST /api/users/bulk/update
+            print('\n🧪 TEST 1: POST /api/users/bulk/update')
             try:
-                r1 = requests.get(f'{remnawave_url}/api/user/{test_username}', headers=headers, timeout=10)
-                print(f'Status: {r1.status_code}')
-                print(f'Response: {r1.text[:300]}')
+                r1 = requests.post(f'{remnawave_url}/api/users/bulk/update', headers=headers, json=bulk_payload, timeout=15)
+                print(f'✅ Status: {r1.status_code}')
+                print(f'📦 Response: {r1.text[:500]}')
                 test_results.append({
-                    'test': 'GET /api/user/{username}',
+                    'test': 'POST /api/users/bulk/update',
                     'status': r1.status_code,
-                    'response': r1.text[:300]
+                    'response': r1.text[:500]
                 })
             except Exception as e:
-                print(f'ERROR: {str(e)}')
-                test_results.append({
-                    'test': 'GET /api/user/{username}',
-                    'error': str(e)
-                })
+                print(f'❌ ERROR: {str(e)}')
+                test_results.append({'test': 'POST /api/users/bulk/update', 'error': str(e)})
             
-            # Test 2: PUT /api/user/{username}
-            print('\n' + '=' * 80)
-            print('🧪 TEST 2: PUT /api/user/{username}')
-            print('=' * 80)
+            # Test 2: POST /api/users/bulk (без /update)
+            print('\n🧪 TEST 2: POST /api/users/bulk')
             try:
-                r2 = requests.put(f'{remnawave_url}/api/user/{test_username}', headers=headers, json=test_payload_v1, timeout=10)
-                print(f'Status: {r2.status_code}')
-                print(f'Response: {r2.text[:300]}')
+                r2 = requests.post(f'{remnawave_url}/api/users/bulk', headers=headers, json=bulk_payload, timeout=15)
+                print(f'✅ Status: {r2.status_code}')
+                print(f'📦 Response: {r2.text[:500]}')
                 test_results.append({
-                    'test': 'PUT /api/user/{username}',
+                    'test': 'POST /api/users/bulk',
                     'status': r2.status_code,
-                    'response': r2.text[:300]
+                    'response': r2.text[:500]
                 })
             except Exception as e:
-                print(f'ERROR: {str(e)}')
-                test_results.append({
-                    'test': 'PUT /api/user/{username}',
-                    'error': str(e)
-                })
+                print(f'❌ ERROR: {str(e)}')
+                test_results.append({'test': 'POST /api/users/bulk', 'error': str(e)})
             
-            # Test 3: PUT /api/users/{username} (with 's')
-            print('\n' + '=' * 80)
-            print('🧪 TEST 3: PUT /api/users/{username} (with s)')
-            print('=' * 80)
+            # Test 3: PATCH /api/users/bulk
+            print('\n🧪 TEST 3: PATCH /api/users/bulk')
             try:
-                r3 = requests.put(f'{remnawave_url}/api/users/{test_username}', headers=headers, json=test_payload_v1, timeout=10)
-                print(f'Status: {r3.status_code}')
-                print(f'Response: {r3.text[:300]}')
+                r3 = requests.patch(f'{remnawave_url}/api/users/bulk', headers=headers, json=bulk_payload, timeout=15)
+                print(f'✅ Status: {r3.status_code}')
+                print(f'📦 Response: {r3.text[:500]}')
                 test_results.append({
-                    'test': 'PUT /api/users/{username}',
+                    'test': 'PATCH /api/users/bulk',
                     'status': r3.status_code,
-                    'response': r3.text[:300]
+                    'response': r3.text[:500]
                 })
             except Exception as e:
-                print(f'ERROR: {str(e)}')
-                test_results.append({
-                    'test': 'PUT /api/users/{username}',
-                    'error': str(e)
-                })
-            
-            # Test 4: PATCH /api/user/{username}
-            print('\n' + '=' * 80)
-            print('🧪 TEST 4: PATCH /api/user/{username}')
-            print('=' * 80)
-            try:
-                r4 = requests.patch(f'{remnawave_url}/api/user/{test_username}', headers=headers, json=test_payload_v1, timeout=10)
-                print(f'Status: {r4.status_code}')
-                print(f'Response: {r4.text[:300]}')
-                test_results.append({
-                    'test': 'PATCH /api/user/{username}',
-                    'status': r4.status_code,
-                    'response': r4.text[:300]
-                })
-            except Exception as e:
-                print(f'ERROR: {str(e)}')
-                test_results.append({
-                    'test': 'PATCH /api/user/{username}',
-                    'error': str(e)
-                })
-            
-            # Test 5: PUT /api/user/{uuid}
-            print('\n' + '=' * 80)
-            print('🧪 TEST 5: PUT /api/user/{uuid}')
-            print('=' * 80)
-            try:
-                r5 = requests.put(f'{remnawave_url}/api/user/{test_uuid}', headers=headers, json=test_payload_v1, timeout=10)
-                print(f'Status: {r5.status_code}')
-                print(f'Response: {r5.text[:300]}')
-                test_results.append({
-                    'test': 'PUT /api/user/{uuid}',
-                    'status': r5.status_code,
-                    'response': r5.text[:300]
-                })
-            except Exception as e:
-                print(f'ERROR: {str(e)}')
-                test_results.append({
-                    'test': 'PUT /api/user/{uuid}',
-                    'error': str(e)
-                })
-            
-            # Test 6: PATCH /api/users/{uuid} with v2 payload
-            print('\n' + '=' * 80)
-            print('🧪 TEST 6: PATCH /api/users/{uuid} (trafficLimitBytes/trafficLimitStrategy)')
-            print('=' * 80)
-            try:
-                r6 = requests.patch(f'{remnawave_url}/api/users/{test_uuid}', headers=headers, json=test_payload_v2, timeout=10)
-                print(f'Status: {r6.status_code}')
-                print(f'Response: {r6.text[:300]}')
-                test_results.append({
-                    'test': 'PATCH /api/users/{uuid} (v2 payload)',
-                    'status': r6.status_code,
-                    'response': r6.text[:300]
-                })
-            except Exception as e:
-                print(f'ERROR: {str(e)}')
-                test_results.append({
-                    'test': 'PATCH /api/users/{uuid} (v2 payload)',
-                    'error': str(e)
-                })
-            
-            # Test 7: PATCH /users/{uuid} (without /api/)
-            print('\n' + '=' * 80)
-            print('🧪 TEST 7: PATCH /users/{uuid} (NO /api/ prefix)')
-            print('=' * 80)
-            try:
-                r7 = requests.patch(f'{remnawave_url}/users/{test_uuid}', headers=headers, json=test_payload_v2, timeout=10)
-                print(f'Status: {r7.status_code}')
-                print(f'Response: {r7.text[:300]}')
-                test_results.append({
-                    'test': 'PATCH /users/{uuid} (no /api/)',
-                    'status': r7.status_code,
-                    'response': r7.text[:300]
-                })
-            except Exception as e:
-                print(f'ERROR: {str(e)}')
-                test_results.append({
-                    'test': 'PATCH /users/{uuid} (no /api/)',
-                    'error': str(e)
-                })
-            
-            # Test 8: GET /api/users (token check - уже работает)
-            print('\n' + '=' * 80)
-            print('🧪 TEST 8: Token validity - GET /api/users')
-            print('=' * 80)
-            try:
-                r8 = requests.get(f'{remnawave_url}/api/users?limit=1', headers=headers, timeout=10)
-                print(f'Status: {r8.status_code}')
-                print(f'Token is: {"✅ VALID" if r8.status_code == 200 else "❌ INVALID"}')
-                test_results.append({
-                    'test': 'GET /api/users (token check)',
-                    'status': r8.status_code,
-                    'response': f'Token: {"VALID ✅" if r8.status_code == 200 else "INVALID ❌"}'
-                })
-            except Exception as e:
-                print(f'ERROR: {str(e)}')
-                test_results.append({
-                    'test': 'GET /api/users (token check)',
-                    'error': str(e)
-                })
+                print(f'❌ ERROR: {str(e)}')
+                test_results.append({'test': 'PATCH /api/users/bulk', 'error': str(e)})
             
             print('\n' + '=' * 80)
-            print('✅ ALL TESTS COMPLETED')
+            print('✅ BULK TESTS COMPLETED')
             print('=' * 80)
             
             return {
