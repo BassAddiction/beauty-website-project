@@ -115,6 +115,25 @@ const Register = () => {
 
       // ТЕСТОВЫЙ РЕЖИМ - пропускаем оплату
       if (testMode) {
+        // Создаем фейковый платеж для тестового режима
+        try {
+          await fetch('https://functions.poehali.dev/d6f1cac6-9e90-4d35-8d25-7c2af6ea4d18', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              payment_id: 'test_' + Date.now(),
+              username: username,
+              email: email,
+              amount: selectedPlan.price,
+              plan_name: selectedPlan.name,
+              plan_days: selectedPlan.days,
+              status: 'succeeded'
+            })
+          });
+        } catch (error) {
+          console.error('Ошибка создания тестового платежа:', error);
+        }
+        
         localStorage.setItem('vpn_username', username);
         localStorage.setItem('vpn_email', email);
         alert(`✅ Тестовый пользователь создан!\nUsername: ${username}\n\nПроверь панель админки!`);
