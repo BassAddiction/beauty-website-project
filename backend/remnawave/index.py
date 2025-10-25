@@ -214,16 +214,22 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             try:
                 update_payload = {
                     'proxies': body_data.get('proxies'),
-                    'data_limit': body_data.get('data_limit'),
+                    'dataLimit': body_data.get('data_limit'),
                     'expire': body_data.get('expire'),
+                    'dataLimitResetStrategy': body_data.get('data_limit_reset_strategy', 'no_reset'),
+                    'status': body_data.get('status', 'active')
                 }
                 
+                print(f'🔹 Updating user {username} with payload: {json.dumps(update_payload, indent=2)}')
+                
                 response = requests.put(
-                    f'{api_url}/api/user/{username}',
+                    f'{api_url}/api/users/{username}',
                     headers=headers,
                     json=update_payload,
                     timeout=10
                 )
+                
+                print(f'🔹 Update response: {response.status_code} - {response.text[:200]}')
                 
                 return {
                     'statusCode': response.status_code,
@@ -232,6 +238,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             except Exception as e:
+                print(f'❌ Error updating user: {str(e)}')
                 return {
                     'statusCode': 500,
                     'headers': cors_headers,
