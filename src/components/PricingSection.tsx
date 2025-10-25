@@ -79,6 +79,9 @@ const PricingSection = () => {
                    plan.name === '6 Месяцев' ? 180 :
                    plan.name === '12 Месяцев' ? 365 : 30;
 
+      localStorage.setItem('vpn_username', username.trim());
+      localStorage.setItem('vpn_email', email.trim());
+
       const params = new URLSearchParams({
         amount: price.toString(),
         plan_name: plan.name,
