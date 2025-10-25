@@ -124,6 +124,24 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 except Exception as e:
                     print(f'⚠️ Failed to fetch Remnawave data: {str(e)}')
             
+            # Если Remnawave не вернул данные, но есть платежи - вычисляем из БД
+            if expire_timestamp is None and payments:
+                # Берем последний успешный платеж
+                last_payment = next((p for p in payments if p['status'] == 'succeeded'), None)
+                if last_payment:
+                    created_dt = datetime.fromisoformat(last_payment['created_at'])
+                    expire_dt = created_dt.timestamp() + (last_payment['plan_days'] * 86400)
+                    expire_timestamp = int(expire_dt)
+                    
+                    now = datetime.now().timestamp()
+                    if expire_timestamp > now:
+                        seconds_left = expire_timestamp - now
+                        days_left = int(seconds_left / 86400)
+                    else:
+                        days_left = 0
+                    
+                    print(f'💾 Calculated from DB: expire_timestamp={expire_timestamp}, days_left={days_left}')
+            
             return {
                 'statusCode': 200,
                 'headers': cors_headers,

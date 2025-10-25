@@ -117,7 +117,13 @@ const Register = () => {
       if (testMode) {
         // Создаем фейковый платеж для тестового режима
         try {
-          await fetch('https://functions.poehali.dev/d6f1cac6-9e90-4d35-8d25-7c2af6ea4d18', {
+          console.log('💳 Creating test payment...', {
+            username,
+            email,
+            plan: selectedPlan.name
+          });
+          
+          const paymentResponse = await fetch('https://functions.poehali.dev/d6f1cac6-9e90-4d35-8d25-7c2af6ea4d18', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -130,8 +136,14 @@ const Register = () => {
               status: 'succeeded'
             })
           });
+          
+          if (!paymentResponse.ok) {
+            console.error('❌ Payment save failed:', await paymentResponse.text());
+          } else {
+            console.log('✅ Payment saved!', await paymentResponse.json());
+          }
         } catch (error) {
-          console.error('Ошибка создания тестового платежа:', error);
+          console.error('❌ Ошибка создания тестового платежа:', error);
         }
         
         localStorage.setItem('vpn_username', username);
