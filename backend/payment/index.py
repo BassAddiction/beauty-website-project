@@ -122,15 +122,27 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             if error_data.get('errorCode') == 'A019':
                                 print(f'🔄 User exists, updating {username}')
                                 
-                                # Получаем текущие данные
-                                user_response = requests.get(
-                                    f'{remnawave_url}/api/user/{username}',
+                                # Получаем список всех пользователей
+                                users_response = requests.get(
+                                    f'{remnawave_url}/api/users',
                                     headers={'Authorization': f'Bearer {remnawave_token}'},
                                     timeout=10
                                 )
                                 
-                                if user_response.status_code == 200:
-                                    user_data = user_response.json()
+                                if users_response.status_code == 200:
+                                    users_data = users_response.json()
+                                    users_list = users_data.get('users', [])
+                                    
+                                    # Ищем нашего пользователя
+                                    user_data = None
+                                    for user in users_list:
+                                        if user.get('username') == username:
+                                            user_data = user
+                                            break
+                                    
+                                    if not user_data:
+                                        raise Exception(f'User {username} not found in users list')
+                                    
                                     current_expire = user_data.get('expire', 0)
                                     subscription_url = user_data.get('subscription_url', user_data.get('sub_url', ''))
                                     
@@ -138,7 +150,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                     if current_expire > now:
                                         new_expire = current_expire + (plan_days * 86400)
                                     
-                                    # Обновляем пользователя
+                                    # Обновляем пользователя через PUT /api/user/{username}
                                     update_response = requests.put(
                                         f'{remnawave_url}/api/user/{username}',
                                         headers={
@@ -148,10 +160,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                         json={
                                             'expire': int(new_expire),
                                             'data_limit': 32212254720,
-                                            'data_limit_reset_strategy': 'day',
-                                            'proxies': {
-                                                'vless-reality': {}
-                                            }
+                                            'data_limit_reset_strategy': 'day'
                                         },
                                         timeout=10
                                     )
@@ -161,7 +170,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                     if update_response.status_code != 200:
                                         raise Exception(f'Failed to update: {update_response.text}')
                                 else:
-                                    raise Exception(f'Failed to get user: {user_response.text}')
+                                    raise Exception(f'Failed to get users: {users_response.text}')
                             else:
                                 raise Exception(f'Creation failed: {create_response.text}')
                         else:
