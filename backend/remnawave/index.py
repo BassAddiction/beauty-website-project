@@ -166,13 +166,22 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 from datetime import datetime
                 expire_at = datetime.fromtimestamp(expire_timestamp).isoformat() + 'Z'
             
+            # Формируем inbounds с лимитами
+            inbounds = {}
+            proxies = body_data.get('proxies', {})
+            data_limit = body_data.get('data_limit', 0)
+            
+            for proxy_type in proxies.keys():
+                inbounds[proxy_type] = {
+                    'data_limit': data_limit
+                }
+            
             user_payload = {
                 'username': body_data.get('username'),
-                'proxies': body_data.get('proxies', {}),
-                'dataLimit': body_data.get('data_limit', 0),
-                'expireAt': expire_at,
-                'dataLimitResetStrategy': body_data.get('data_limit_reset_strategy', 'day'),
-                'activeInternalSquads': body_data.get('internalSquads', [])
+                'proxies': proxies,
+                'inbounds': inbounds,
+                'expire': expire_timestamp,
+                'data_limit_reset_strategy': body_data.get('data_limit_reset_strategy', 'day')
             }
             
             print(f'🔹 Creating user with payload: {json.dumps(user_payload, indent=2)}')
@@ -189,78 +198,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 print(f'🔹 Response status: {response.status_code}')
                 print(f'🔹 Response body: {response.text}')
                 
-                # Пробуем обновить лимиты - перебираем все варианты endpoints
-                if response.status_code == 201:
-                    user_data = response.json().get('response', {})
-                    user_uuid = user_data.get('uuid')
-                    username = user_data.get('username')
-                    
-                    if user_uuid:
-                        print(f'🔹 Trying to update user {user_uuid} ({username})...')
-                        
-                        # Пробуем разные варианты payload
-                        payloads_to_try = [
-                            {
-                                'trafficLimitBytes': body_data.get('data_limit', 0),
-                                'trafficLimitStrategy': 'DAY',
-                                'activeInternalSquads': body_data.get('internalSquads', [])
-                            },
-                            {
-                                'data_limit': body_data.get('data_limit', 0),
-                                'data_limit_reset_strategy': 'day',
-                                'inbound': {'tag': 'vless-reality'}
-                            },
-                            {
-                                'inbounds': {'vless-reality': {'data_limit': body_data.get('data_limit', 0)}},
-                                'data_limit_reset_strategy': 'day'
-                            }
-                        ]
-                        
-                        # Пробуем разные endpoints
-                        endpoints_to_try = [
-                            f'{api_url}/api/users/{user_uuid}',
-                            f'{api_url}/api/user/{user_uuid}', 
-                            f'{api_url}/api/user/{username}',
-                            f'{api_url}/api/users/{username}'
-                        ]
-                        
-                        for idx, endpoint in enumerate(endpoints_to_try):
-                            for payload_idx, update_payload in enumerate(payloads_to_try):
-                                try:
-                                    print(f'🔹 Try #{idx * len(payloads_to_try) + payload_idx + 1}: PATCH {endpoint}')
-                                    print(f'   Payload: {json.dumps(update_payload, indent=2)}')
-                                    
-                                    # Пробуем и PATCH и PUT
-                                    for method in ['PATCH', 'PUT']:
-                                        update_response = requests.request(
-                                            method,
-                                            endpoint,
-                                            headers=headers,
-                                            json=update_payload,
-                                            timeout=10
-                                        )
-                                        
-                                        if update_response.status_code not in [404, 405]:
-                                            break
-                                    
-                                    print(f'   Result: {update_response.status_code} - {update_response.text[:200]}')
-                                    
-                                    # Если успешно - возвращаем результат
-                                    if update_response.status_code in [200, 201]:
-                                        print(f'✅ SUCCESS! Endpoint {endpoint} works!')
-                                        return {
-                                            'statusCode': 200,
-                                            'headers': cors_headers,
-                                            'body': update_response.text,
-                                            'isBase64Encoded': False
-                                        }
-                                except Exception as e:
-                                    print(f'   Exception: {str(e)}')
-                                    continue
-                        
-                        print('❌ All PATCH attempts failed, returning original user')
-                
-                # Возвращаем оригинальный результат создания
                 return {
                     'statusCode': response.status_code,
                     'headers': cors_headers,
