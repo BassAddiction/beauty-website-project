@@ -122,23 +122,23 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         if create_response.status_code in [200, 201]:
                             print(f'✅ User created successfully')
                             user_data = create_response.json().get('response', {})
+                            user_uuid = user_data.get('uuid')
                             subscription_url = user_data.get('subscription_url', user_data.get('sub_url', ''))
+                            print(f'🔗 User UUID: {user_uuid}')
                             print(f'🔗 Subscription URL: {subscription_url}')
                             
-                            # ВАЖНО: Добавляем в squad отдельным запросом (используем старый API формат)
+                            # ВАЖНО: Добавляем в squad через PATCH /api/users/{UUID}
                             squad_payload = {
-                                'inbounds': {
-                                    'vless-reality': {
-                                        '6afd8de3-00d5-41db-aa52-f259fb98b2c8': {},
-                                        '9ef43f96-83c9-4252-ae57-bb17dc9b60a9': {}
-                                    }
-                                }
+                                'activeInternalSquads': [
+                                    '6afd8de3-00d5-41db-aa52-f259fb98b2c8',
+                                    '9ef43f96-83c9-4252-ae57-bb17dc9b60a9'
+                                ]
                             }
                             
                             print(f'🔧 Adding to squads: {json.dumps(squad_payload, ensure_ascii=False)}')
                             
-                            squad_response = requests.put(
-                                f'{remnawave_url}/api/user/{username}',
+                            squad_response = requests.patch(
+                                f'{remnawave_url}/api/users/{user_uuid}',
                                 headers={
                                     'Authorization': f'Bearer {remnawave_token}',
                                     'Content-Type': 'application/json'
