@@ -78,8 +78,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             payment_id = str(uuid.uuid4())
             host = event.get('headers', {}).get('host', 'localhost')
             
+            amount_formatted = f'{float(amount):.2f}'
+            
             payment_data = {
-                'amount': {'value': str(amount), 'currency': 'RUB'},
+                'amount': {'value': amount_formatted, 'currency': 'RUB'},
                 'confirmation': {
                     'type': 'redirect',
                     'return_url': f'https://{host}/payment-success'
@@ -99,7 +101,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'items': [{
                         'description': f'VPN подписка {plan_name}',
                         'quantity': '1',
-                        'amount': {'value': str(amount), 'currency': 'RUB'},
+                        'amount': {'value': amount_formatted, 'currency': 'RUB'},
                         'vat_code': 1
                     }]
                 }
