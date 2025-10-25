@@ -189,6 +189,39 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 print(f'🔹 Response status: {response.status_code}')
                 print(f'🔹 Response body: {response.text}')
                 
+                # Если юзер создан - обновляем с правильными параметрами через UUID
+                if response.status_code == 201:
+                    user_data = response.json().get('response', {})
+                    user_uuid = user_data.get('uuid')
+                    
+                    if user_uuid:
+                        print(f'🔹 User created with UUID: {user_uuid}, updating settings...')
+                        
+                        # Обновляем лимиты и сквады через UUID
+                        update_payload = {
+                            'trafficLimitBytes': body_data.get('data_limit', 0),
+                            'trafficLimitStrategy': body_data.get('data_limit_reset_strategy', 'day').upper().replace('_', '_'),
+                            'activeInternalSquads': body_data.get('internalSquads', [])
+                        }
+                        
+                        update_response = requests.patch(
+                            f'{api_url}/api/users/{user_uuid}',
+                            headers=headers,
+                            json=update_payload,
+                            timeout=10
+                        )
+                        
+                        print(f'🔹 Update response: {update_response.status_code} - {update_response.text[:200]}')
+                        
+                        # Возвращаем обновлённые данные
+                        if update_response.status_code in [200, 201]:
+                            return {
+                                'statusCode': 200,
+                                'headers': cors_headers,
+                                'body': update_response.text,
+                                'isBase64Encoded': False
+                            }
+                
                 return {
                     'statusCode': response.status_code,
                     'headers': cors_headers,
@@ -205,32 +238,45 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 }
         
         if action == 'update_user':
+            user_uuid = body_data.get('uuid')
             username = body_data.get('username')
-            if not username:
+            
+            if not user_uuid and not username:
                 return {
                     'statusCode': 400,
                     'headers': cors_headers,
-                    'body': json.dumps({'error': 'Username required'}),
+                    'body': json.dumps({'error': 'UUID or username required'}),
                     'isBase64Encoded': False
                 }
             
             try:
+                # Если UUID не передан - получаем по username
+                if not user_uuid:
+                    get_response = requests.get(f'{api_url}/api/user/{username}', headers=headers, timeout=10)
+                    if get_response.status_code == 200:
+                        user_uuid = get_response.json().get('uuid')
+                    else:
+                        return {
+                            'statusCode': 404,
+                            'headers': cors_headers,
+                            'body': json.dumps({'error': f'User {username} not found'}),
+                            'isBase64Encoded': False
+                        }
+                
                 update_payload = {
-                    'proxies': body_data.get('proxies'),
-                    'dataLimit': body_data.get('data_limit'),
-                    'expire': body_data.get('expire'),
-                    'dataLimitResetStrategy': body_data.get('data_limit_reset_strategy', 'day'),
-                    'status': body_data.get('status', 'active'),
+                    'trafficLimitBytes': body_data.get('data_limit'),
+                    'trafficLimitStrategy': body_data.get('data_limit_reset_strategy', 'day').upper().replace('_', '_'),
+                    'status': body_data.get('status', 'active').upper(),
                     'activeInternalSquads': body_data.get('internalSquads')
                 }
                 
-                # Удаляем None значения из payload
+                # Удаляем None значения
                 update_payload = {k: v for k, v in update_payload.items() if v is not None}
                 
-                print(f'🔹 Updating user {username} with payload: {json.dumps(update_payload, indent=2)}')
+                print(f'🔹 Updating user {user_uuid} with payload: {json.dumps(update_payload, indent=2)}')
                 
                 response = requests.patch(
-                    f'{api_url}/api/user/{username}',
+                    f'{api_url}/api/users/{user_uuid}',
                     headers=headers,
                     json=update_payload,
                     timeout=10
@@ -249,7 +295,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 return {
                     'statusCode': 500,
                     'headers': cors_headers,
-                    'body': json.dumps({'error': str(e)}),
+                    'body': json.dumps({'error': f'Exception updating user: {str(e)}'}),
                     'isBase64Encoded': False
                 }
     
