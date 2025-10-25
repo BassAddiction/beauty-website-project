@@ -210,51 +210,32 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             print(f'🔗 User UUID: {user_uuid}')
                             print(f'🔗 Subscription URL: {subscription_url}')
                             
-                            # Добавляем пользователя в squad через squad API
+                            # Шаг 2: Обновляем пользователя для добавления в squads
                             squad_uuids = ['6afd8de3-00d5-41db-aa52-f259fb98b2c8', '9ef43f96-83c9-4252-ae57-bb17dc9b60a9']
                             
-                            print(f'🔧 Adding user to squads via squad API')
+                            print(f'🔧 Step 2: Adding user to squads via PUT /api/user/{username}')
                             
-                            for squad_id in squad_uuids:
-                                squad_add_payload = {
-                                    'userUuids': [user_uuid]
-                                }
-                                
-                                print(f'➕ Adding to squad {squad_id}')
-                                
-                                # Пробуем несколько вариантов endpoints
-                                endpoints_to_try = [
-                                    f'/api/squads/{squad_id}/users',
-                                    f'/api/squads/{squad_id}/add-users',
-                                    f'/api/internal-squads/{squad_id}/users',
-                                ]
-                                
-                                success = False
-                                for endpoint in endpoints_to_try:
-                                    try:
-                                        squad_resp = requests.post(
-                                            f'{remnawave_url}{endpoint}',
-                                            headers={
-                                                'Authorization': f'Bearer {remnawave_token}',
-                                                'Content-Type': 'application/json'
-                                            },
-                                            json=squad_add_payload,
-                                            timeout=10
-                                        )
-                                        
-                                        print(f'  📍 {endpoint}: {squad_resp.status_code}')
-                                        
-                                        if squad_resp.status_code in [200, 201]:
-                                            print(f'  ✅ Success via {endpoint}')
-                                            success = True
-                                            break
-                                        elif squad_resp.status_code != 404:
-                                            print(f'  ⚠️ Response: {squad_resp.text[:200]}')
-                                    except Exception as e:
-                                        print(f'  ❌ Error on {endpoint}: {str(e)[:100]}')
-                                
-                                if not success:
-                                    print(f'  ⚠️ Could not add to squad {squad_id}')
+                            update_payload = {
+                                'activeInternalSquads': squad_uuids
+                            }
+                            
+                            squad_update_response = requests.put(
+                                f'{remnawave_url}/api/user/{username}',
+                                headers={
+                                    'Authorization': f'Bearer {remnawave_token}',
+                                    'Content-Type': 'application/json'
+                                },
+                                json=update_payload,
+                                timeout=10
+                            )
+                            
+                            print(f'📥 Update squads response: {squad_update_response.status_code}')
+                            print(f'📄 Update response: {squad_update_response.text[:500]}')
+                            
+                            if squad_update_response.status_code in [200, 201]:
+                                print(f'✅ User added to {len(squad_uuids)} squads successfully!')
+                            else:
+                                print(f'⚠️ Failed to add user to squads: {squad_update_response.text}')
                             
                             update_response = create_response
                         
