@@ -200,7 +200,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     traffic_limit_gb = int(os.environ.get('USER_TRAFFIC_LIMIT_GB', 0))
                     traffic_strategy = os.environ.get('USER_TRAFFIC_STRATEGY', 'DAY').upper()
                     squad_uuids_str = os.environ.get('USER_SQUAD_UUIDS', '')
+                    
+                    print(f'🔹 Raw squad_uuids_str: {repr(squad_uuids_str)}')
                     squad_uuids = [s.strip() for s in squad_uuids_str.split(',') if s.strip()]
+                    print(f'🔹 Parsed squad_uuids ({len(squad_uuids)}): {squad_uuids}')
                     
                     # Конвертируем GB в байты
                     traffic_limit_bytes = traffic_limit_gb * 1024 * 1024 * 1024 if traffic_limit_gb > 0 else 0
@@ -217,7 +220,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         print(f'🔹 Auto-updating user {username} ({user_uuid}) with: {json.dumps(update_payload, indent=2)}')
                         
                         try:
-                            update_response = requests.patch(
+                            # Используем PUT вместо PATCH - API возвращает 404 на PATCH
+                            update_response = requests.put(
                                 f'{api_url}/api/user/{user_uuid}',
                                 headers=headers,
                                 json=update_payload,
