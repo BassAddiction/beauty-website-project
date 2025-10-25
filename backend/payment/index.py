@@ -55,6 +55,90 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         'Idempotence-Key': str(uuid.uuid4())
     }
     
+    # GET - создать платёж
+    if method == 'GET':
+        params = event.get('queryStringParameters', {})
+        amount = params.get('amount')
+        plan_name = params.get('plan_name')
+        plan_days = params.get('plan_days')
+        username = params.get('username')
+        email = params.get('email', '')
+        
+        if not all([amount, plan_name, plan_days, username]):
+            return {
+                'statusCode': 400,
+                'headers': cors_headers,
+                'body': json.dumps({'error': 'Missing: amount, plan_name, plan_days, username'}),
+                'isBase64Encoded': False
+            }
+        
+        try:
+            from requests.auth import HTTPBasicAuth
+            
+            payment_id = str(uuid.uuid4())
+            host = event.get('headers', {}).get('host', 'localhost')
+            
+            payment_data = {
+                'amount': {'value': str(amount), 'currency': 'RUB'},
+                'confirmation': {
+                    'type': 'redirect',
+                    'return_url': f'https://{host}/payment-success'
+                },
+                'capture': True,
+                'description': f'{plan_name} - {username}',
+                'metadata': {
+                    'username': username,
+                    'plan_name': plan_name,
+                    'plan_days': str(plan_days)
+                }
+            }
+            
+            if email:
+                payment_data['receipt'] = {
+                    'customer': {'email': email},
+                    'items': [{
+                        'description': f'VPN подписка {plan_name}',
+                        'quantity': '1',
+                        'amount': {'value': str(amount), 'currency': 'RUB'},
+                        'vat_code': 1
+                    }]
+                }
+            
+            response = requests.post(
+                'https://api.yookassa.ru/v3/payments',
+                json=payment_data,
+                auth=HTTPBasicAuth(shop_id, secret_key),
+                headers={'Idempotence-Key': payment_id, 'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            if response.status_code != 200:
+                return {
+                    'statusCode': response.status_code,
+                    'headers': cors_headers,
+                    'body': json.dumps({'error': f'YooKassa error: {response.text[:200]}'}),
+                    'isBase64Encoded': False
+                }
+            
+            result = response.json()
+            return {
+                'statusCode': 200,
+                'headers': cors_headers,
+                'body': json.dumps({
+                    'payment_id': result.get('id'),
+                    'confirmation_url': result.get('confirmation', {}).get('confirmation_url'),
+                    'status': result.get('status')
+                }),
+                'isBase64Encoded': False
+            }
+        except Exception as e:
+            return {
+                'statusCode': 500,
+                'headers': cors_headers,
+                'body': json.dumps({'error': str(e)}),
+                'isBase64Encoded': False
+            }
+    
     # POST - создать платеж
     if method == 'POST':
         body_data = json.loads(event.get('body', '{}'))
