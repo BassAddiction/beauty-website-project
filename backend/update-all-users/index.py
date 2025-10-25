@@ -5,9 +5,9 @@ from typing import Dict, Any
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     '''
-    Business: Обновление настроек всех пользователей (30GB лимит, ежедневный сброс, VLESS-Reality)
-    Args: event - dict с httpMethod
-    Returns: HTTP response dict с количеством обновлённых пользователей
+    Business: Batch update all Remnawave VPN users - 30GB limit, daily reset, VLESS-Reality inbound
+    Args: event - dict with httpMethod, context - Cloud Function execution context  
+    Returns: HTTP response dict with update results and API endpoint tests
     '''
     method: str = event.get('httpMethod', 'POST')
     
