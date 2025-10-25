@@ -63,75 +63,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
     
-    # GET /inbounds - получить список inbounds (сквадов)
-    if method == 'GET' and event.get('queryStringParameters', {}).get('action') == 'inbounds':
-        endpoints_to_try = [
-            '/api/inbounds',
-            '/api/core/inbounds', 
-            '/api/nodes',
-            '/api/core/nodes',
-            '/api/system/inbounds'
-        ]
-        
-        results = {}
-        for endpoint in endpoints_to_try:
-            try:
-                response = requests.get(f'{api_url}{endpoint}', headers=headers, timeout=5)
-                results[endpoint] = {
-                    'status': response.status_code,
-                    'data': response.json() if response.status_code == 200 else response.text
-                }
-            except Exception as e:
-                results[endpoint] = {'error': str(e)}
-        
-        return {
-            'statusCode': 200,
-            'headers': cors_headers,
-            'body': json.dumps(results, ensure_ascii=False),
-            'isBase64Encoded': False
-        }
-    
     # GET /user/:username - получить данные пользователя
     if method == 'GET':
         params = event.get('queryStringParameters', {})
         username = params.get('username')
-        email_prefix = params.get('email_prefix')
-        
-        # Поиск по email префиксу
-        if email_prefix:
-            try:
-                # Получаем всех пользователей
-                response = requests.get(f'{api_url}/api/users', headers=headers, timeout=10)
-                if response.status_code == 200:
-                    users = response.json()
-                    # Ищем пользователя с нужным префиксом
-                    for user in users.get('users', []):
-                        if user.get('username', '').startswith(email_prefix):
-                            return {
-                                'statusCode': 200,
-                                'headers': cors_headers,
-                                'body': json.dumps(user),
-                                'isBase64Encoded': False
-                            }
-                return {
-                    'statusCode': 404,
-                    'headers': cors_headers,
-                    'body': json.dumps({'error': 'User not found'}),
-                    'isBase64Encoded': False
-                }
-            except Exception as e:
-                return {
-                    'statusCode': 500,
-                    'headers': cors_headers,
-                    'body': json.dumps({'error': str(e)}),
-                    'isBase64Encoded': False
-                }
         
         if not username:
             return {
                 'statusCode': 400,
                 'headers': cors_headers,
-                'body': json.dumps({'error': 'Username or email_prefix required'}),
+                'body': json.dumps({'error': 'Username required'}),
                 'isBase64Encoded': False
             }
         
@@ -151,7 +92,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
     
-    # POST /user - создать пользователя
+    # POST /user - создать или обновить пользователя
     if method == 'POST':
         body_data = json.loads(event.get('body', '{}'))
         action = body_data.get('action')
@@ -166,13 +107,23 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 from datetime import datetime
                 expire_at = datetime.fromtimestamp(expire_timestamp).isoformat() + 'Z'
             
+            # Формируем inbounds с лимитами
+            inbounds = {}
             proxies = body_data.get('proxies', {})
+            data_limit = body_data.get('data_limit', 0)
+            
+            for proxy_type in proxies.keys():
+                inbounds[proxy_type] = {
+                    'data_limit': data_limit
+                }
             
             user_payload = {
                 'username': body_data.get('username'),
                 'proxies': proxies,
+                'inbounds': inbounds,
                 'expireAt': expire_at,
-                'expire': expire_timestamp
+                'expire': expire_timestamp,
+                'data_limit_reset_strategy': body_data.get('data_limit_reset_strategy', 'day')
             }
             
             print(f'🔹 Creating user with payload: {json.dumps(user_payload, indent=2)}')
@@ -188,59 +139,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 
                 print(f'🔹 Response status: {response.status_code}')
                 print(f'🔹 Response body: {response.text}')
-                
-                # Если создание успешно - обновляем лимиты и сквады через PATCH
-                if response.status_code == 201:
-                    created_user = response.json()
-                    response_data = created_user.get('response', created_user)
-                    user_uuid = response_data.get('uuid')
-                    username = response_data.get('username')
-                    
-                    # Читаем настройки из переменных окружения
-                    traffic_limit_gb = int(os.environ.get('USER_TRAFFIC_LIMIT_GB', 0))
-                    traffic_strategy = os.environ.get('USER_TRAFFIC_STRATEGY', 'DAY').upper()
-                    squad_uuids_str = os.environ.get('USER_SQUAD_UUIDS', '')
-                    
-                    print(f'🔹 Raw squad_uuids_str: {repr(squad_uuids_str)}')
-                    squad_uuids = [s.strip() for s in squad_uuids_str.split(',') if s.strip()]
-                    print(f'🔹 Parsed squad_uuids ({len(squad_uuids)}): {squad_uuids}')
-                    
-                    # Конвертируем GB в байты
-                    traffic_limit_bytes = traffic_limit_gb * 1024 * 1024 * 1024 if traffic_limit_gb > 0 else 0
-                    
-                    # Формируем payload для PATCH
-                    update_payload = {}
-                    if traffic_limit_bytes > 0:
-                        update_payload['trafficLimitBytes'] = traffic_limit_bytes
-                        update_payload['trafficLimitStrategy'] = traffic_strategy
-                    if squad_uuids:
-                        update_payload['activeInternalSquads'] = squad_uuids
-                    
-                    if update_payload:
-                        print(f'🔹 Auto-updating user {username} ({user_uuid}) with: {json.dumps(update_payload, indent=2)}')
-                        
-                        try:
-                            # Используем PUT вместо PATCH - API возвращает 404 на PATCH
-                            update_response = requests.put(
-                                f'{api_url}/api/user/{user_uuid}',
-                                headers=headers,
-                                json=update_payload,
-                                timeout=10
-                            )
-                            print(f'🔹 Auto-update response: {update_response.status_code}')
-                            print(f'🔹 Auto-update body: {update_response.text[:300]}')
-                            
-                            # Возвращаем обновлённые данные
-                            if update_response.status_code in [200, 201]:
-                                return {
-                                    'statusCode': 201,
-                                    'headers': cors_headers,
-                                    'body': update_response.text,
-                                    'isBase64Encoded': False
-                                }
-                        except Exception as e:
-                            print(f'⚠️ Auto-update failed: {str(e)}')
-                            # Возвращаем данные без обновления
                 
                 return {
                     'statusCode': response.status_code,
@@ -275,7 +173,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     get_response = requests.get(f'{api_url}/api/user/{username}', headers=headers, timeout=10)
                     if get_response.status_code == 200:
                         user_data = get_response.json()
-                        # UUID может быть в response или напрямую
                         response_data = user_data.get('response', user_data)
                         user_uuid = response_data.get('uuid')
                     else:
@@ -318,38 +215,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 return {
                     'statusCode': 500,
                     'headers': cors_headers,
-                    'body': json.dumps({'error': f'Exception updating user: {str(e)}'}),
+                    'body': json.dumps({'error': str(e)}),
                     'isBase64Encoded': False
                 }
-    
-    # DELETE /user/:username - удалить пользователя
-    if method == 'DELETE':
-        params = event.get('queryStringParameters', {})
-        username = params.get('username')
-        
-        if not username:
-            return {
-                'statusCode': 400,
-                'headers': cors_headers,
-                'body': json.dumps({'error': 'Username required'}),
-                'isBase64Encoded': False
-            }
-        
-        try:
-            response = requests.delete(f'{api_url}/api/user/{username}', headers=headers, timeout=10)
-            return {
-                'statusCode': response.status_code,
-                'headers': cors_headers,
-                'body': response.text,
-                'isBase64Encoded': False
-            }
-        except Exception as e:
-            return {
-                'statusCode': 500,
-                'headers': cors_headers,
-                'body': json.dumps({'error': str(e)}),
-                'isBase64Encoded': False
-            }
     
     return {
         'statusCode': 405,
