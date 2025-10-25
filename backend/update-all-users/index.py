@@ -8,7 +8,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     Business: Batch update all Remnawave VPN users - 30GB limit, daily reset, VLESS-Reality inbound
     Args: event - dict with httpMethod, context - Cloud Function execution context  
     Returns: HTTP response dict with update results and API endpoint tests
+    Version: 2.0.1 - With API endpoint tests
     '''
+    print(f'🚀 Function version: 2.0.1 | Method: {event.get("httpMethod", "NONE")}')
     method: str = event.get('httpMethod', 'POST')
     
     cors_headers = {
