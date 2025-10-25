@@ -142,7 +142,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     conn = psycopg2.connect(db_url)
                     cursor = conn.cursor()
                     cursor.execute("""
-                        INSERT INTO payments (payment_id, username, email, amount, currency, status, plan_name, plan_days, created_at, updated_at)
+                        INSERT INTO t_p66544974_beauty_website_proje.payments (payment_id, username, email, amount, currency, status, plan_name, plan_days, created_at, updated_at)
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
                         ON CONFLICT (payment_id) DO NOTHING
                     """, (
@@ -337,7 +337,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                         conn = psycopg2.connect(db_url)
                                         cursor = conn.cursor()
                                         cursor.execute(
-                                            "UPDATE payments SET status = %s, updated_at = CURRENT_TIMESTAMP WHERE payment_id = %s",
+                                            "UPDATE t_p66544974_beauty_website_proje.payments SET status = %s, updated_at = CURRENT_TIMESTAMP WHERE payment_id = %s",
                                             ('succeeded', payment_id)
                                         )
                                         conn.commit()
