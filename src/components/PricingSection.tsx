@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface Plan {
   name: string;
@@ -14,8 +16,60 @@ interface Plan {
 
 const PricingSection = () => {
   const { ref, isVisible } = useScrollAnimation();
+  const { toast } = useToast();
+  const [isCreatingDemo, setIsCreatingDemo] = useState(false);
+
+  const handleDemoRegistration = async () => {
+    setIsCreatingDemo(true);
+    try {
+      const username = `demo_${Date.now()}`;
+      const response = await fetch('https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'create_payment',
+          username: username,
+          amount: 1,
+          plan_name: 'Демо 1 день',
+          plan_days: 1,
+          email: 'demo@test.com'
+        })
+      });
+
+      const data = await response.json();
+      
+      if (response.ok && data.confirmation_url) {
+        window.open(data.confirmation_url, '_blank');
+        toast({
+          title: "✅ Демо-ссылка создана",
+          description: "Откройте новую вкладку для оплаты 1₽"
+        });
+      } else {
+        throw new Error(data.error || 'Ошибка создания демо');
+      }
+    } catch (error) {
+      toast({
+        title: "❌ Ошибка",
+        description: error instanceof Error ? error.message : 'Не удалось создать демо',
+        variant: "destructive"
+      });
+    } finally {
+      setIsCreatingDemo(false);
+    }
+  };
 
   const plans: Plan[] = [
+    {
+      name: "Демо 1 день",
+      price: "1",
+      period: "₽",
+      features: [
+        "30 ГБ трафика в сутки",
+        "Без ограничений устройств",
+        "Любые локации",
+        "Тест на 24 часа"
+      ]
+    },
     {
       name: "1 Месяц",
       price: "200",
@@ -85,7 +139,7 @@ const PricingSection = () => {
           </p>
         </div>
 
-        <div className={`grid md:grid-cols-2 lg:grid-cols-5 gap-6 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <div className={`grid md:grid-cols-2 lg:grid-cols-6 gap-6 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           {plans.map((plan, index) => (
             <Card key={index} className={`relative border-2 transition-all duration-300 hover:scale-105 ${plan.popular ? 'border-primary shadow-xl' : plan.custom ? 'border-purple-500 shadow-lg' : 'hover:border-primary'}`}>
               {plan.popular && (
@@ -123,11 +177,21 @@ const PricingSection = () => {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button className="w-full rounded-full button-glow" asChild>
-                  <a href={plan.custom ? "https://t.me/gospeedvpn" : "https://t.me/shopspeedvpn_bot"} target="_blank" rel="noopener noreferrer">
-                    {plan.custom ? "Связаться" : "Выбрать план"}
-                  </a>
-                </Button>
+                {plan.price === "1" ? (
+                  <Button 
+                    className="w-full rounded-full button-glow" 
+                    onClick={handleDemoRegistration}
+                    disabled={isCreatingDemo}
+                  >
+                    {isCreatingDemo ? "Создаём..." : "Попробовать за 1₽"}
+                  </Button>
+                ) : (
+                  <Button className="w-full rounded-full button-glow" asChild>
+                    <a href={plan.custom ? "https://t.me/gospeedvpn" : "https://t.me/shopspeedvpn_bot"} target="_blank" rel="noopener noreferrer">
+                      {plan.custom ? "Связаться" : "Выбрать план"}
+                    </a>
+                  </Button>
+                )}
               </CardFooter>
             </Card>
           ))}
