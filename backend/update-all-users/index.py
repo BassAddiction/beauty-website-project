@@ -167,10 +167,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'status': 'active'
                     }
                     
-                    # Прямой PUT запрос к Marzban API
+                    # Прямой PUT запрос к Marzban API по UUID
                     print(f'📝 Updating user: {username}')
                     update_response = requests.put(
-                        f'{remnawave_url}/api/user/{username}',
+                        f'{remnawave_url}/api/user/{uuid}',
                         headers=headers,
                         json=update_payload,
                         timeout=10
