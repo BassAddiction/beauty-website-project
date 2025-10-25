@@ -131,6 +131,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 
                 try:
                     update_payload = {
+                        'action': 'update_user',
+                        'username': username,
                         'data_limit': 32212254720,
                         'data_limit_reset_strategy': 'day',
                         'proxies': {
@@ -139,10 +141,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'status': 'active'
                     }
                     
-                    # Используем PUT для обновления пользователя через remnawave
+                    # Используем POST с action=update_user через remnawave
                     print(f'📝 Updating user: {username}')
-                    update_response = requests.put(
-                        f'{remnawave_url}?username={username}',
+                    update_response = requests.post(
+                        remnawave_url,
                         headers=headers,
                         json=update_payload,
                         timeout=10
