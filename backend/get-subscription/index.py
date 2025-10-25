@@ -95,12 +95,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     )
                     
                     if user_response.status_code == 200:
-                        user_data = user_response.json()
-                        expire_timestamp = user_data.get('expire', 0)
-                        subscription_url = user_data.get('subscription_url', user_data.get('sub_url', ''))
+                        user_data = user_response.json().get('response', {})
+                        expire_at_str = user_data.get('expireAt', '')
+                        subscription_url = user_data.get('subscriptionUrl', '')
                         
-                        # Вычисляем количество дней до окончания
-                        if expire_timestamp:
+                        # Парсим дату из ISO формата
+                        if expire_at_str:
+                            expire_dt = datetime.fromisoformat(expire_at_str.replace('Z', '+00:00'))
+                            expire_timestamp = int(expire_dt.timestamp())
+                            
+                            # Вычисляем количество дней до окончания
                             now = datetime.now().timestamp()
                             if expire_timestamp > now:
                                 seconds_left = expire_timestamp - now
