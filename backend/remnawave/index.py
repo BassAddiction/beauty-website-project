@@ -156,6 +156,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         body_data = json.loads(event.get('body', '{}'))
         action = body_data.get('action')
         
+        print(f'🔹 POST request - action: {action}, body keys: {list(body_data.keys())}')
+        
         if action == 'create_user':
             # Вычисляем expireAt из timestamp expire
             expire_timestamp = body_data.get('expire')
