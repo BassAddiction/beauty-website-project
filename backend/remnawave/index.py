@@ -171,7 +171,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'proxies': body_data.get('proxies', {}),
                 'dataLimit': body_data.get('data_limit', 0),
                 'expireAt': expire_at,
-                'dataLimitResetStrategy': body_data.get('data_limit_reset_strategy', 'no_reset')
+                'dataLimitResetStrategy': body_data.get('data_limit_reset_strategy', 'no_reset'),
+                'activeInternalSquads': body_data.get('internalSquads', [])
             }
             
             print(f'🔹 Creating user with payload: {json.dumps(user_payload, indent=2)}')
