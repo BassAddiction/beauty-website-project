@@ -197,6 +197,26 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'error': str(e)
                 })
             
+            # Test 6: PATCH /api/users/{uuid}
+            print('\n' + '=' * 80)
+            print('🧪 TEST 6: PATCH /api/users/{uuid}')
+            print('=' * 80)
+            try:
+                r6 = requests.patch(f'{remnawave_url}/api/users/{test_uuid}', headers=headers, json=test_payload, timeout=10)
+                print(f'Status: {r6.status_code}')
+                print(f'Response: {r6.text[:300]}')
+                test_results.append({
+                    'test': 'PATCH /api/users/{uuid}',
+                    'status': r6.status_code,
+                    'response': r6.text[:300]
+                })
+            except Exception as e:
+                print(f'ERROR: {str(e)}')
+                test_results.append({
+                    'test': 'PATCH /api/users/{uuid}',
+                    'error': str(e)
+                })
+            
             print('\n' + '=' * 80)
             print('✅ ALL TESTS COMPLETED')
             print('=' * 80)
