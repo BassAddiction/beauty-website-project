@@ -210,6 +210,74 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         
+        # Тестовый webhook для разработки (без ЮKassa)
+        if action == 'test_payment':
+            username = body_data.get('username', f'test_{int(datetime.now().timestamp())}')
+            plan_days = int(body_data.get('plan_days', 1))
+            
+            print(f'🧪 TEST PAYMENT: Creating subscription for {username} ({plan_days} days)')
+            
+            remnawave_url = os.environ.get('REMNAWAVE_API_URL', '').rstrip('/')
+            remnawave_token = os.environ.get('REMNAWAVE_API_TOKEN', '')
+            
+            if not remnawave_url or not remnawave_token:
+                return {
+                    'statusCode': 500,
+                    'headers': cors_headers,
+                    'body': json.dumps({'error': 'Remnawave not configured'}),
+                    'isBase64Encoded': False
+                }
+            
+            try:
+                now = datetime.now().timestamp()
+                new_expire = now + (plan_days * 86400)
+                
+                # Создаём пользователя через Remnawave
+                squad_uuids_str = os.environ.get('USER_SQUAD_UUIDS', '')
+                squad_uuids = [s.strip() for s in squad_uuids_str.split(',') if s.strip()]
+                traffic_limit_gb = int(os.environ.get('USER_TRAFFIC_LIMIT_GB', 30))
+                traffic_limit_bytes = traffic_limit_gb * 1024 * 1024 * 1024
+                
+                create_resp = requests.post(
+                    f'{remnawave_url}/api/users',
+                    headers={
+                        'Authorization': f'Bearer {remnawave_token}',
+                        'Content-Type': 'application/json'
+                    },
+                    json={
+                        'action': 'create_user',
+                        'username': username,
+                        'proxies': {'vless-reality': {}},
+                        'data_limit': traffic_limit_bytes,
+                        'expire': int(new_expire),
+                        'data_limit_reset_strategy': 'day',
+                        'internalSquads': squad_uuids
+                    },
+                    timeout=10
+                )
+                
+                print(f'✅ Test payment completed: {create_resp.status_code}')
+                
+                return {
+                    'statusCode': 200,
+                    'headers': cors_headers,
+                    'body': json.dumps({
+                        'status': 'test_success',
+                        'username': username,
+                        'days': plan_days,
+                        'response': create_resp.json() if create_resp.status_code in [200, 201] else create_resp.text
+                    }),
+                    'isBase64Encoded': False
+                }
+            except Exception as e:
+                print(f'❌ Test payment error: {str(e)}')
+                return {
+                    'statusCode': 500,
+                    'headers': cors_headers,
+                    'body': json.dumps({'error': str(e)}),
+                    'isBase64Encoded': False
+                }
+        
         if action == 'create_payment':
             username = body_data.get('username')
             amount = body_data.get('amount')
