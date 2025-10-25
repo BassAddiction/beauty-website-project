@@ -14,7 +14,11 @@ const PaymentSuccess = () => {
     const savedEmail = localStorage.getItem('vpn_email') || '';
     setUsername(savedUsername);
     setEmail(savedEmail);
-  }, []);
+    
+    if (!savedUsername) {
+      navigate('/?payment=success');
+    }
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
