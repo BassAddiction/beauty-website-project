@@ -116,6 +116,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             # Для тестовых пользователей: сохраняем платёж в БД
             test_mode = body_data.get('test_mode', False)
+            print(f'🧪 test_mode={test_mode}, username={username}')
             if test_mode and username and username.startswith('test_'):
                 try:
                     db_url = os.environ.get('DATABASE_URL', '')
