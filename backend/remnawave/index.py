@@ -100,58 +100,98 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         print(f'🔹 POST request - action: {action}, body keys: {list(body_data.keys())}')
         
         if action == 'create_user':
-            # Вычисляем expireAt из timestamp expire
+            from datetime import datetime
+            
             expire_timestamp = body_data.get('expire')
             expire_at = None
             if expire_timestamp:
-                from datetime import datetime
                 expire_at = datetime.fromtimestamp(expire_timestamp).isoformat() + 'Z'
             
-            # Формируем inbounds с лимитами
-            inbounds = {}
             proxies = body_data.get('proxies', {})
             data_limit = body_data.get('data_limit', 0)
+            data_limit_reset_strategy = body_data.get('data_limit_reset_strategy', 'day')
+            internal_squads = body_data.get('internalSquads', [])
+            username = body_data.get('username')
             
-            for proxy_type in proxies.keys():
-                inbounds[proxy_type] = {
-                    'data_limit': data_limit
-                }
-            
-            user_payload = {
-                'username': body_data.get('username'),
+            # Шаг 1: Создать пользователя с базовыми данными
+            create_payload = {
+                'username': username,
                 'proxies': proxies,
-                'inbounds': inbounds,
                 'expireAt': expire_at,
-                'expire': expire_timestamp,
-                'data_limit_reset_strategy': body_data.get('data_limit_reset_strategy', 'day')
+                'expire': expire_timestamp
             }
             
-            print(f'🔹 Creating user with payload: {json.dumps(user_payload, indent=2)}')
-            print(f'🔹 API URL: {api_url}/api/users')
+            print(f'🔹 Step 1: Creating user {username}')
+            print(f'🔹 Create payload: {json.dumps(create_payload, indent=2)}')
             
             try:
-                response = requests.post(
+                create_response = requests.post(
                     f'{api_url}/api/users',
                     headers=headers,
-                    json=user_payload,
+                    json=create_payload,
                     timeout=10
                 )
                 
-                print(f'🔹 Response status: {response.status_code}')
-                print(f'🔹 Response body: {response.text}')
+                print(f'🔹 Create response: {create_response.status_code}')
                 
-                return {
-                    'statusCode': response.status_code,
-                    'headers': cors_headers,
-                    'body': response.text,
-                    'isBase64Encoded': False
+                if create_response.status_code != 201:
+                    print(f'❌ Failed to create user: {create_response.text}')
+                    return {
+                        'statusCode': create_response.status_code,
+                        'headers': cors_headers,
+                        'body': create_response.text,
+                        'isBase64Encoded': False
+                    }
+                
+                # Получаем UUID созданного пользователя
+                created_data = create_response.json()
+                response_data = created_data.get('response', created_data)
+                user_uuid = response_data.get('uuid')
+                
+                print(f'🔹 User created with UUID: {user_uuid}')
+                
+                # Шаг 2: Обновить лимиты и сквады
+                update_payload = {
+                    'trafficLimitBytes': data_limit,
+                    'trafficLimitStrategy': data_limit_reset_strategy.upper().replace('_', '_'),
+                    'activeInternalSquads': internal_squads
                 }
+                
+                print(f'🔹 Step 2: Updating user {user_uuid}')
+                print(f'🔹 Update payload: {json.dumps(update_payload, indent=2)}')
+                
+                update_response = requests.patch(
+                    f'{api_url}/api/user/{user_uuid}',
+                    headers=headers,
+                    json=update_payload,
+                    timeout=10
+                )
+                
+                print(f'🔹 Update response: {update_response.status_code}')
+                
+                if update_response.status_code == 200:
+                    print(f'✅ User updated successfully')
+                    return {
+                        'statusCode': 200,
+                        'headers': cors_headers,
+                        'body': update_response.text,
+                        'isBase64Encoded': False
+                    }
+                else:
+                    print(f'⚠️ Update failed: {update_response.text}')
+                    return {
+                        'statusCode': create_response.status_code,
+                        'headers': cors_headers,
+                        'body': create_response.text,
+                        'isBase64Encoded': False
+                    }
+                    
             except Exception as e:
-                print(f'❌ Error creating user: {str(e)}')
+                print(f'❌ Error: {str(e)}')
                 return {
                     'statusCode': 500,
                     'headers': cors_headers,
-                    'body': json.dumps({'error': f'Exception creating user: {str(e)}'}),
+                    'body': json.dumps({'error': str(e)}),
                     'isBase64Encoded': False
                 }
         
