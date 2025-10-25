@@ -123,16 +123,21 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             user_data = create_response.json().get('response', {})
                             subscription_url = user_data.get('subscription_url', user_data.get('sub_url', ''))
                             
-                            # Теперь привяжем inbound отдельным запросом
-                            print(f'🔗 Binding inbound to user {username}')
-                            inbound_response = requests.post(
-                                f'{remnawave_url}/api/user/{username}/inbounds',
+                            # Теперь привяжем inbound через PUT обновление пользователя
+                            user_uuid = user_data.get('uuid')
+                            print(f'🔗 Binding inbound to user {username} (uuid: {user_uuid})')
+                            inbound_response = requests.put(
+                                f'{remnawave_url}/api/user/{user_uuid}',
                                 headers={
                                     'Authorization': f'Bearer {remnawave_token}',
                                     'Content-Type': 'application/json'
                                 },
                                 json={
-                                    'inboundUuids': ['9ef43f96-83c9-4252-ae57-bb17dc9b60a9']
+                                    'inbounds': [
+                                        {
+                                            'uuid': '9ef43f96-83c9-4252-ae57-bb17dc9b60a9'
+                                        }
+                                    ]
                                 },
                                 timeout=10
                             )
