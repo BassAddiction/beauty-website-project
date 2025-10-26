@@ -2,12 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 interface Plan {
+  plan_id?: number;
   name: string;
   price: string;
   period: string;
@@ -23,6 +24,51 @@ const PricingSection = () => {
   const [paying, setPaying] = useState(false);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadPlans = async () => {
+      try {
+        const response = await fetch('https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0?action=get_plans');
+        const data = await response.json();
+        
+        const formattedPlans = data.plans.map((plan: any, index: number) => ({
+          name: plan.name,
+          price: plan.price.toString(),
+          period: '₽',
+          popular: index === 0,
+          custom: plan.custom,
+          features: plan.features || []
+        }));
+        
+        setPlans(formattedPlans);
+      } catch (error) {
+        console.error('Failed to load plans:', error);
+        // Fallback to hardcoded plans
+        setPlans(getDefaultPlans());
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadPlans();
+  }, []);
+
+  const getDefaultPlans = () => [
+    {
+      name: "1 Месяц",
+      price: "200",
+      period: "₽",
+      popular: true,
+      features: [
+        "30 ГБ трафика в сутки",
+        "Без ограничений устройств",
+        "Любые локации",
+        "Базовая поддержка"
+      ]
+    }
+  ];
 
   const handleTestWebhook = async () => {
     setTesting(true);
@@ -113,65 +159,7 @@ const PricingSection = () => {
     }
   };
 
-  const plans: Plan[] = [
-    {
-      name: "1 Месяц",
-      price: "200",
-      period: "₽",
-      popular: true,
-      features: [
-        "30 ГБ трафика в сутки",
-        "Без ограничений устройств",
-        "Любые локации",
-        "Базовая поддержка"
-      ]
-    },
-    {
-      name: "3 Месяца",
-      price: "500",
-      period: "₽",
-      features: [
-        "30 ГБ трафика в сутки",
-        "Без ограничений устройств",
-        "Любые локации",
-        "Приоритетная поддержка 24/7"
-      ]
-    },
-    {
-      name: "6 Месяцев",
-      price: "900",
-      period: "₽",
-      features: [
-        "30 ГБ трафика в сутки",
-        "Без ограничений устройств",
-        "Любые локации",
-        "Приоритетная поддержка 24/7"
-      ]
-    },
-    {
-      name: "12 Месяцев",
-      price: "1200",
-      period: "₽",
-      features: [
-        "30 ГБ трафика в сутки",
-        "Без ограничений устройств",
-        "Любые локации",
-        "VIP поддержка 24/7"
-      ]
-    },
-    {
-      name: "Persona",
-      price: "От 2000",
-      period: "₽",
-      custom: true,
-      features: [
-        "Безлимитный трафик",
-        "Выделенный сервер",
-        "Персональные настройки",
-        "Личный менеджер 24/7"
-      ]
-    }
-  ];
+
 
   return (
     <section ref={ref} className="py-20 px-4 bg-black/30" id="pricing">
@@ -185,8 +173,14 @@ const PricingSection = () => {
 
 
 
-        <div className={`grid md:grid-cols-2 lg:grid-cols-6 gap-6 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          {plans.map((plan, index) => (
+        {loading ? (
+          <div className="text-center py-12">
+            <Icon name="Loader2" className="w-12 h-12 animate-spin mx-auto text-primary" />
+            <p className="mt-4 text-muted-foreground">Загрузка тарифов...</p>
+          </div>
+        ) : (
+          <div className={`grid md:grid-cols-2 lg:grid-cols-6 gap-6 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            {plans.map((plan, index) => (
             <Card key={index} className={`relative border-2 transition-all duration-300 hover:scale-105 ${plan.popular ? 'border-primary shadow-xl' : plan.custom ? 'border-purple-500 shadow-lg' : 'hover:border-primary'}`}>
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-bold">
@@ -249,8 +243,9 @@ const PricingSection = () => {
                 )}
               </CardFooter>
             </Card>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

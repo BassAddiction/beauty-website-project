@@ -10,6 +10,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import GetAccess from "./pages/GetAccess";
+import Admin from "./pages/Admin";
 import AdminUpdate from "./pages/AdminUpdate";
 import TestWebhook from "./pages/TestWebhook";
 import NotFound from "./pages/NotFound";
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/get-access" element={<GetAccess />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/admin" element={<Admin />} />
           <Route path="/admin/update" element={<AdminUpdate />} />
           <Route path="/test-webhook" element={<TestWebhook />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

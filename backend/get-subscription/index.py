@@ -5,18 +5,231 @@ import requests
 from typing import Dict, Any
 from datetime import datetime
 
+def get_public_plans(cors_headers: Dict[str, str]) -> Dict[str, Any]:
+    '''Получить активные тарифы для публичного доступа'''
+    db_url = os.environ.get('DATABASE_URL', '')
+    if not db_url:
+        return {
+            'statusCode': 500,
+            'headers': cors_headers,
+            'body': json.dumps({'error': 'Database not configured'}),
+            'isBase64Encoded': False
+        }
+    
+    conn = psycopg2.connect(db_url)
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("""
+            SELECT plan_id, name, price, days, traffic_gb, is_custom, features
+            FROM plans
+            WHERE is_active = true
+            ORDER BY sort_order, plan_id
+        """)
+        
+        rows = cursor.fetchall()
+        
+        plans = []
+        for row in rows:
+            plans.append({
+                'plan_id': row[0],
+                'name': row[1],
+                'price': row[2],
+                'days': row[3],
+                'traffic': row[4],
+                'custom': row[5],
+                'features': row[6]
+            })
+        
+        return {
+            'statusCode': 200,
+            'headers': cors_headers,
+            'body': json.dumps({'plans': plans}),
+            'isBase64Encoded': False
+        }
+    finally:
+        cursor.close()
+        conn.close()
+
+def handle_admin(event: Dict[str, Any], context: Any, cors_headers: Dict[str, str]) -> Dict[str, Any]:
+    '''Обработка админских запросов'''
+    method = event.get('httpMethod', 'GET')
+    params = event.get('queryStringParameters') or {}
+    action = params.get('action', '')
+    
+    db_url = os.environ.get('DATABASE_URL', '')
+    if not db_url:
+        return {
+            'statusCode': 500,
+            'headers': cors_headers,
+            'body': json.dumps({'error': 'Database not configured'}),
+            'isBase64Encoded': False
+        }
+    
+    conn = psycopg2.connect(db_url)
+    cursor = conn.cursor()
+    
+    try:
+        # GET /admin?action=plans - получить все тарифы
+        if action == 'plans':
+            cursor.execute("""
+                SELECT plan_id, name, price, days, traffic_gb, is_active, is_custom, 
+                       sort_order, features
+                FROM plans
+                ORDER BY sort_order, plan_id
+            """)
+            rows = cursor.fetchall()
+            
+            plans = []
+            for row in rows:
+                plans.append({
+                    'plan_id': row[0],
+                    'name': row[1],
+                    'price': row[2],
+                    'days': row[3],
+                    'traffic_gb': row[4],
+                    'is_active': row[5],
+                    'is_custom': row[6],
+                    'sort_order': row[7],
+                    'features': row[8]
+                })
+            
+            return {
+                'statusCode': 200,
+                'headers': cors_headers,
+                'body': json.dumps({'plans': plans}),
+                'isBase64Encoded': False
+            }
+        
+        # GET /admin?action=clients - получить всех клиентов
+        elif action == 'clients':
+            cursor.execute("""
+                SELECT DISTINCT username, email, 
+                       MAX(created_at) as last_payment,
+                       SUM(CASE WHEN status = 'succeeded' THEN amount ELSE 0 END) as total_paid,
+                       COUNT(CASE WHEN status = 'succeeded' THEN 1 END) as payment_count
+                FROM payments
+                GROUP BY username, email
+                ORDER BY last_payment DESC
+            """)
+            rows = cursor.fetchall()
+            
+            clients = []
+            for row in rows:
+                clients.append({
+                    'username': row[0],
+                    'email': row[1],
+                    'last_payment': row[2].isoformat() if row[2] else None,
+                    'total_paid': float(row[3]),
+                    'payment_count': row[4]
+                })
+            
+            return {
+                'statusCode': 200,
+                'headers': cors_headers,
+                'body': json.dumps({'clients': clients, 'total': len(clients)}),
+                'isBase64Encoded': False
+            }
+        
+        # POST - создать/обновить тариф
+        elif method == 'POST':
+            body = json.loads(event.get('body', '{}'))
+            plan_id = body.get('plan_id')
+            
+            if plan_id:
+                # UPDATE
+                cursor.execute("""
+                    UPDATE plans
+                    SET name = %s, price = %s, days = %s, traffic_gb = %s,
+                        is_active = %s, is_custom = %s, sort_order = %s, features = %s,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE plan_id = %s
+                """, (
+                    body.get('name'),
+                    body.get('price'),
+                    body.get('days'),
+                    body.get('traffic_gb'),
+                    body.get('is_active'),
+                    body.get('is_custom'),
+                    body.get('sort_order'),
+                    json.dumps(body.get('features', [])),
+                    plan_id
+                ))
+                conn.commit()
+                return {
+                    'statusCode': 200,
+                    'headers': cors_headers,
+                    'body': json.dumps({'message': 'Plan updated'}),
+                    'isBase64Encoded': False
+                }
+            else:
+                # INSERT
+                cursor.execute("""
+                    INSERT INTO plans (name, price, days, traffic_gb, is_active, is_custom, sort_order, features)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                    RETURNING plan_id
+                """, (
+                    body.get('name'),
+                    body.get('price'),
+                    body.get('days'),
+                    body.get('traffic_gb', 30),
+                    body.get('is_active', True),
+                    body.get('is_custom', False),
+                    body.get('sort_order', 0),
+                    json.dumps(body.get('features', []))
+                ))
+                new_plan_id = cursor.fetchone()[0]
+                conn.commit()
+                return {
+                    'statusCode': 201,
+                    'headers': cors_headers,
+                    'body': json.dumps({'plan_id': new_plan_id, 'message': 'Plan created'}),
+                    'isBase64Encoded': False
+                }
+        
+        # DELETE - удалить тариф
+        elif method == 'DELETE':
+            plan_id = params.get('plan_id')
+            if not plan_id:
+                return {
+                    'statusCode': 400,
+                    'headers': cors_headers,
+                    'body': json.dumps({'error': 'plan_id required'}),
+                    'isBase64Encoded': False
+                }
+            
+            cursor.execute("DELETE FROM plans WHERE plan_id = %s", (plan_id,))
+            conn.commit()
+            return {
+                'statusCode': 200,
+                'headers': cors_headers,
+                'body': json.dumps({'message': 'Plan deleted'}),
+                'isBase64Encoded': False
+            }
+        
+        else:
+            return {
+                'statusCode': 400,
+                'headers': cors_headers,
+                'body': json.dumps({'error': 'Invalid action'}),
+                'isBase64Encoded': False
+            }
+    finally:
+        cursor.close()
+        conn.close()
+
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     '''
-    Business: Получение информации о подписке пользователя из БД
-    Args: event - dict с httpMethod, queryStringParameters (username)
-    Returns: HTTP response dict с данными подписки
+    Business: API для подписок и админки - получение данных и управление тарифами
+    Args: event - dict с httpMethod, queryStringParameters (username, action)
+    Returns: HTTP response dict с данными подписки или админки
     '''
     method: str = event.get('httpMethod', 'GET')
     
     cors_headers = {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, X-User-Id',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, X-User-Id, X-Admin-Password',
         'Access-Control-Max-Age': '86400',
         'Content-Type': 'application/json'
     }
@@ -29,8 +242,31 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'isBase64Encoded': False
         }
     
+    params = event.get('queryStringParameters') or {}
+    action = params.get('action', '')
+    
+    # ПУБЛИЧНЫЙ ЗАПРОС ТАРИФОВ (без пароля)
+    if action == 'get_plans':
+        return get_public_plans(cors_headers)
+    
+    # АДМИНКА - требует пароль
+    if action in ['plans', 'clients', 'plan_update', 'plan_delete']:
+        headers = event.get('headers', {})
+        admin_password = headers.get('x-admin-password') or headers.get('X-Admin-Password')
+        expected_password = os.environ.get('ADMIN_PASSWORD', 'admin123')
+        
+        if admin_password != expected_password:
+            return {
+                'statusCode': 401,
+                'headers': cors_headers,
+                'body': json.dumps({'error': 'Unauthorized'}),
+                'isBase64Encoded': False
+            }
+        
+        return handle_admin(event, context, cors_headers)
+    
+    # ОБЫЧНЫЙ ЗАПРОС ПОДПИСКИ
     if method == 'GET':
-        params = event.get('queryStringParameters', {})
         username = params.get('username', '')
         
         if not username:
