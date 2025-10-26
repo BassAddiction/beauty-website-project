@@ -1,15 +1,15 @@
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
-import Header from "@/components/webapp/Header";
-import HeroSection from "@/components/webapp/HeroSection";
-import PricingSection from "@/components/webapp/PricingSection";
-import FeaturesSection from "@/components/webapp/FeaturesSection";
-import VPNClientsSection from "@/components/webapp/VPNClientsSection";
-import TrainingSection from "@/components/webapp/TrainingSection";
-import FAQSection from "@/components/webapp/FAQSection";
-import Footer from "@/components/webapp/Footer";
-import ScrollToTop from "@/components/webapp/ScrollToTop";
+import Header from "@/components/Header";
+import HeroSection from "@/components/HeroSection";
+import PricingSection from "@/components/PricingSection";
+import FeaturesSection from "@/components/FeaturesSection";
+import VPNClientsSection from "@/components/VPNClientsSection";
+import TrainingSection from "@/components/TrainingSection";
+import FAQSection from "@/components/FAQSection";
+import Footer from "@/components/Footer";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const Index = () => {
   const [searchParams] = useSearchParams();
