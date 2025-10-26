@@ -321,40 +321,44 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 # Удаляем None значения
                 update_payload = {k: v for k, v in update_payload.items() if v is not None}
                 
-                # Добавляем пользователя в internal squads через API
-                # Формат: POST /api/internal-squads/{squadId}/users
+                # Пробуем добавить пользователя в squads через PATCH /api/users/{uuid}
                 if inbounds and 'activeInternalSquads' in update_payload:
                     squad_ids = update_payload['activeInternalSquads']
-                    last_response = None
                     
-                    # Для каждого squad добавляем пользователя
-                    for squad_id in squad_ids:
-                        squad_payload = {
-                            'userUuids': [user_uuid]
-                        }
-                        
-                        print(f'🔹 Adding user {user_uuid} to squad {squad_id}')
-                        
-                        last_response = requests.post(
-                            f'{api_url}/api/internal-squads/{squad_id}/users',
-                            headers=headers,
-                            json=squad_payload,
-                            timeout=10
-                        )
-                        
-                        print(f'🔹 Squad add response: {last_response.status_code}')
-                        print(f'🔹 Response body: {last_response.text[:500]}')
-                        
-                        if last_response.status_code == 200 or last_response.status_code == 201:
-                            print(f'✅ User added to squad {squad_id}')
-                        else:
-                            print(f'⚠️ Failed to add to squad: {last_response.text}')
+                    # Пробуем PATCH с inboundUuids
+                    print(f'🔹 Trying PATCH /api/users/{user_uuid} with inboundUuids: {squad_ids}')
                     
-                    if last_response:
+                    patch_payload = {
+                        'inboundUuids': squad_ids
+                    }
+                    
+                    patch_response = requests.patch(
+                        f'{api_url}/api/users/{user_uuid}',
+                        headers=headers,
+                        json=patch_payload,
+                        timeout=10
+                    )
+                    
+                    print(f'🔹 PATCH response: {patch_response.status_code}')
+                    print(f'🔹 Response body: {patch_response.text[:500]}')
+                    
+                    if patch_response.status_code in [200, 201]:
+                        print(f'✅ User squads updated via PATCH')
                         return {
-                            'statusCode': last_response.status_code,
+                            'statusCode': patch_response.status_code,
                             'headers': cors_headers,
-                            'body': last_response.text,
+                            'body': patch_response.text,
+                            'isBase64Encoded': False
+                        }
+                    else:
+                        print(f'⚠️ PATCH failed: {patch_response.text}')
+                        return {
+                            'statusCode': patch_response.status_code,
+                            'headers': cors_headers,
+                            'body': json.dumps({
+                                'error': 'Failed to update squads',
+                                'details': patch_response.text
+                            }),
                             'isBase64Encoded': False
                         }
                 
