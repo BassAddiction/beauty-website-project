@@ -243,7 +243,7 @@ const PricingSection = () => {
                     asChild
                   >
                     <a href="https://t.me/shopspeedvpn_bot" target="_blank" rel="noopener noreferrer">
-                      Подключить
+                      Telegram
                     </a>
                   </Button>
                 )}
