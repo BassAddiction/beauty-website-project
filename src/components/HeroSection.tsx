@@ -39,7 +39,7 @@ const HeroSection = () => {
             </Button>
             <Button size="lg" variant="outline" className="rounded-full text-lg px-8 h-14" asChild>
               <a href="https://t.me/gospeedvpn" target="_blank" rel="noopener noreferrer">
-                Support
+                Подключить в Telegram
               </a>
             </Button>
           </div>
