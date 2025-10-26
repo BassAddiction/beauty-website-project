@@ -200,6 +200,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 }
         
         if action == 'update_user':
+            print(f'🔹 Update user request - body: {json.dumps(body_data, indent=2)}')
+            
             user_uuid = body_data.get('uuid')
             username = body_data.get('username')
             
@@ -214,12 +216,17 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             try:
                 # Если UUID не передан - получаем по username
                 if not user_uuid:
+                    print(f'🔹 Fetching UUID for username: {username}')
                     get_response = requests.get(f'{api_url}/api/user/{username}', headers=headers, timeout=10)
+                    print(f'🔹 Get user response: {get_response.status_code}')
+                    
                     if get_response.status_code == 200:
                         user_data = get_response.json()
                         response_data = user_data.get('response', user_data)
                         user_uuid = response_data.get('uuid')
+                        print(f'🔹 Found UUID: {user_uuid}')
                     else:
+                        print(f'❌ User not found: {get_response.text}')
                         return {
                             'statusCode': 404,
                             'headers': cors_headers,
@@ -236,6 +243,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 
                 # Обработка inbounds (например: {"vless-reality": ["uuid1", "uuid2"]})
                 inbounds = body_data.get('inbounds')
+                print(f'🔹 Received inbounds: {inbounds}')
+                
                 if inbounds:
                     # Собираем все UUID из всех inbounds в один массив
                     squad_uuids = []
@@ -245,12 +254,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     
                     if squad_uuids:
                         update_payload['activeInternalSquads'] = squad_uuids
-                        print(f'🔹 Setting squads from inbounds: {squad_uuids}')
+                        print(f'✅ Setting squads from inbounds: {squad_uuids}')
                 
                 # Удаляем None значения
                 update_payload = {k: v for k, v in update_payload.items() if v is not None}
                 
-                print(f'🔹 Updating user {user_uuid} with payload: {json.dumps(update_payload, indent=2)}')
+                print(f'🔹 Final update payload: {json.dumps(update_payload, indent=2)}')
                 
                 response = requests.patch(
                     f'{api_url}/api/users/{user_uuid}',
@@ -259,7 +268,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     timeout=10
                 )
                 
-                print(f'🔹 Update response: {response.status_code} - {response.text[:200]}')
+                print(f'🔹 PATCH response: {response.status_code}')
+                print(f'🔹 Response body: {response.text[:500]}')
                 
                 return {
                     'statusCode': response.status_code,
