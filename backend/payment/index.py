@@ -354,6 +354,8 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int) -> Dict[
         remnawave_url = os.environ.get('REMNAWAVE_API_URL', '').rstrip('/')
         remnawave_token = os.environ.get('REMNAWAVE_API_TOKEN', '')
         
+        print(f'🔑 Debug Remnawave: URL={remnawave_url}, Token={remnawave_token[:20] if remnawave_token else "EMPTY"}...')
+        
         if not remnawave_url or not remnawave_token:
             return {'success': False, 'error': 'Remnawave credentials not configured'}
         
