@@ -374,7 +374,8 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int) -> Dict[
             },
             'data_limit': data_limit,
             'expire': expire_timestamp,
-            'data_limit_reset_strategy': 'day'
+            'data_limit_reset_strategy': 'day',
+            'internalSquads': ['e742f30b-82fb-431a-918b-1b4d22d6ba4d']
         }
         
         print(f'🔹 Creating user in Remnawave: {username}')
@@ -391,32 +392,7 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int) -> Dict[
             response_data = data.get('response', data)
             subscription_url = response_data.get('subscriptionUrl', response_data.get('subscription_url', ''))
             
-            print(f'✅ User created: {subscription_url}')
-            
-            # Добавляем пользователя в squad
-            try:
-                update_payload = {
-                    'action': 'update_user',
-                    'username': username,
-                    'inbounds': {
-                        'vless-reality': ['e742f30b-82fb-431a-918b-1b4d22d6ba4d']
-                    }
-                }
-                
-                update_response = requests.post(
-                    remnawave_url,
-                    headers={'Content-Type': 'application/json'},
-                    json=update_payload,
-                    timeout=10
-                )
-                
-                if update_response.status_code == 200:
-                    print(f'✅ User added to squad')
-                else:
-                    print(f'⚠️ Failed to add user to squad: {update_response.text}')
-                    
-            except Exception as e:
-                print(f'⚠️ Squad update error: {str(e)}')
+            print(f'✅ User created with squad access: {subscription_url}')
             
             return {'success': True, 'subscription_url': subscription_url}
         else:
