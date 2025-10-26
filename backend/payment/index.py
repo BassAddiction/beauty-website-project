@@ -351,13 +351,12 @@ def update_payment_status(payment_id: str, status: str):
 def create_user_in_remnawave(username: str, email: str, plan_days: int) -> Dict[str, Any]:
     '''Создаёт пользователя в Remnawave'''
     try:
-        remnawave_url = os.environ.get('REMNAWAVE_API_URL', '').rstrip('/')
-        remnawave_token = os.environ.get('REMNAWAVE_API_TOKEN', '')
+        remnawave_url = os.environ.get('REMNAWAVE_FUNCTION_URL', '').rstrip('/')
         
-        print(f'🔑 Debug Remnawave: URL={remnawave_url}, Token={remnawave_token[:20] if remnawave_token else "EMPTY"}...')
+        print(f'🔑 Debug Remnawave Function URL: {remnawave_url}')
         
-        if not remnawave_url or not remnawave_token:
-            return {'success': False, 'error': 'Remnawave credentials not configured'}
+        if not remnawave_url:
+            return {'success': False, 'error': 'REMNAWAVE_FUNCTION_URL not configured'}
         
         # Вычисляем timestamp окончания подписки
         expire_timestamp = int(datetime.now().timestamp()) + (plan_days * 86400)
