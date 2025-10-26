@@ -147,7 +147,8 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
                             'value': f'{amount:.2f}',
                             'currency': 'RUB'
                         },
-                        'vat_code': 1
+                        'vat_code': 1,
+                        'payment_subject': 'service'
                     }
                 ]
             }
