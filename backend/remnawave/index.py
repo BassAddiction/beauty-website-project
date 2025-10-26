@@ -261,14 +261,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 
                 print(f'🔹 Final update payload: {json.dumps(update_payload, indent=2)}')
                 
-                response = requests.patch(
+                response = requests.put(
                     f'{api_url}/api/users/{user_uuid}',
                     headers=headers,
                     json=update_payload,
                     timeout=10
                 )
                 
-                print(f'🔹 PATCH response: {response.status_code}')
+                print(f'🔹 PUT response: {response.status_code}')
                 print(f'🔹 Response body: {response.text[:500]}')
                 
                 return {
