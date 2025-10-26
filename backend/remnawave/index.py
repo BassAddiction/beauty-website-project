@@ -45,6 +45,24 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         'Content-Type': 'application/json'
     }
     
+    # GET /squads - получить список internal squads для дебага
+    if method == 'GET' and event.get('queryStringParameters', {}).get('action') == 'squads':
+        try:
+            response = requests.get(f'{api_url}/api/internal-squads', headers=headers, timeout=10)
+            return {
+                'statusCode': response.status_code,
+                'headers': cors_headers,
+                'body': response.text,
+                'isBase64Encoded': False
+            }
+        except Exception as e:
+            return {
+                'statusCode': 500,
+                'headers': cors_headers,
+                'body': json.dumps({'error': str(e)}),
+                'isBase64Encoded': False
+            }
+    
     # GET /users - получить список пользователей
     if method == 'GET' and event.get('queryStringParameters', {}).get('action') == 'users':
         try:
@@ -149,15 +167,17 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     print(f'⚠️ Failed to save test payment: {str(e)}')
             
             # Создать пользователя со всеми параметрами сразу
+            # НЕ передаем activeInternalSquads при создании - это вызывает ошибку A018
             create_payload = {
                 'username': username,
                 'proxies': proxies,
                 'expireAt': expire_at,
                 'expire': expire_timestamp,
                 'trafficLimitBytes': data_limit,
-                'trafficLimitStrategy': data_limit_reset_strategy.upper(),
-                'activeInternalSquads': internal_squads
+                'trafficLimitStrategy': data_limit_reset_strategy.upper()
             }
+            
+            print(f'🔹 Internal squads will be added AFTER user creation: {internal_squads}')
             
             print(f'🔹 Creating user {username} with full config')
             print(f'🔹 Payload: {json.dumps(create_payload, indent=2)}')
