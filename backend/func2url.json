@@ -1,7 +1,7 @@
 {
+  "marzban-api": "https://functions.poehali.dev/fd8d4fcc-154c-42a6-b352-7b8c3c1aa5ae",
   "admin-api": "https://functions.poehali.dev/3a00e893-a412-40ec-9669-5978a649e9c6",
   "update-all-users": "https://functions.poehali.dev/058e87bb-5d15-4a90-8f78-2ab58eeaf5c8",
   "get-subscription": "https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0",
-  "send-email": "https://functions.poehali.dev/02f41dd7-0d1d-4506-828c-64a917a7dda7",
   "payment": "https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c"
 }

@@ -1,0 +1,25 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS CORS check",
+      "method": "OPTIONS",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Create user without credentials",
+      "method": "POST",
+      "body": {
+        "action": "create_user",
+        "username": "test_user",
+        "proxies": {},
+        "data_limit": 1073741824,
+        "expire": 1735689600
+      },
+      "expectedStatus": 500,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

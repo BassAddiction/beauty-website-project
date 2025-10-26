@@ -23,7 +23,7 @@ const AdminUpdate = () => {
   const handleGetInbounds = async () => {
     try {
       const response = await fetch(
-        'https://functions.poehali.dev/d8d680b3-23f3-481e-b8cf-ccb969e2f158?action=inbounds'
+        'https://functions.poehali.dev/fd8d4fcc-154c-42a6-b352-7b8c3c1aa5ae?action=inbounds'
       );
       const data = await response.json();
       setInbounds(data);
