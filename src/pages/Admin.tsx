@@ -38,7 +38,7 @@ const Admin = () => {
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
   const { toast } = useToast();
 
-  const API_URL = 'https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0';
+  const API_URL = 'https://functions.poehali.dev/3a00e893-a412-40ec-9669-5978a649e9c6';
 
   useEffect(() => {
     const savedPassword = localStorage.getItem('admin_password');
