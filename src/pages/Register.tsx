@@ -220,22 +220,33 @@ const Register = () => {
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <div className="space-y-2 text-sm">
-                        <div className="flex items-center gap-2">
-                          <Icon name="Check" className="w-4 h-4 text-green-500" />
-                          <span>{plan.traffic_gb} ГБ/сутки</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Icon name="Check" className="w-4 h-4 text-green-500" />
-                          <span>{plan.days} дней</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Icon name="Check" className="w-4 h-4 text-green-500" />
-                          <span>Любые локации</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Icon name="Check" className="w-4 h-4 text-green-500" />
-                          <span>Неограниченные устройства</span>
-                        </div>
+                        {plan.features && plan.features.length > 0 ? (
+                          plan.features.map((feature, idx) => (
+                            <div key={idx} className="flex items-center gap-2">
+                              <Icon name="Check" className="w-4 h-4 text-green-500" />
+                              <span>{feature}</span>
+                            </div>
+                          ))
+                        ) : (
+                          <>
+                            <div className="flex items-center gap-2">
+                              <Icon name="Check" className="w-4 h-4 text-green-500" />
+                              <span>{plan.traffic_gb} ГБ/сутки</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Icon name="Check" className="w-4 h-4 text-green-500" />
+                              <span>{plan.days} дней</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Icon name="Check" className="w-4 h-4 text-green-500" />
+                              <span>Любые локации</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Icon name="Check" className="w-4 h-4 text-green-500" />
+                              <span>Неограниченные устройства</span>
+                            </div>
+                          </>
+                        )}
                       </div>
                       <Button className="w-full button-glow">
                         Выбрать тариф
