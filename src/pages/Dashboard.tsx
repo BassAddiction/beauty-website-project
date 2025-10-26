@@ -15,12 +15,23 @@ interface UserData {
   sub_url: string;
 }
 
+interface Payment {
+  payment_id: string;
+  amount: number;
+  plan_name: string;
+  plan_days: number;
+  status: string;
+  created_at: string;
+}
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [paymentLoading, setPaymentLoading] = useState(false);
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
 
   useEffect(() => {
     const username = localStorage.getItem('vpn_username');
@@ -57,6 +68,8 @@ const Dashboard = () => {
         expire: data.subscription?.expire_timestamp || 0,
         sub_url: data.subscription?.subscription_url || ''
       });
+      
+      setPayments(data.payments || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ошибка загрузки');
     } finally {
@@ -417,6 +430,58 @@ const Dashboard = () => {
               ))}
             </div>
           </CardContent>
+        </Card>
+
+        {/* История подписок */}
+        <Card>
+          <CardHeader 
+            className="cursor-pointer hover:bg-muted/50 transition-colors"
+            onClick={() => setShowHistory(!showHistory)}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Мои подписки</CardTitle>
+                <CardDescription>История платежей и продлений</CardDescription>
+              </div>
+              <Icon 
+                name={showHistory ? "ChevronUp" : "ChevronDown"} 
+                className="w-5 h-5 text-muted-foreground"
+              />
+            </div>
+          </CardHeader>
+          {showHistory && (
+            <CardContent className="space-y-3">
+              {payments.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  История платежей пуста
+                </p>
+              ) : (
+                payments.map((payment) => (
+                  <Card key={payment.payment_id} className="border-2">
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <Icon name="Check" className="w-4 h-4 text-green-500" />
+                            <span className="font-medium">{payment.plan_name}</span>
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {payment.plan_days} дней • {payment.amount} ₽
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Дата: {new Date(payment.created_at).toLocaleString('ru-RU')}
+                          </p>
+                        </div>
+                        <Badge variant={payment.status === 'succeeded' ? 'default' : 'secondary'}>
+                          {payment.status === 'succeeded' ? 'Оплачено' : payment.status}
+                        </Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </CardContent>
+          )}
         </Card>
       </div>
     </div>

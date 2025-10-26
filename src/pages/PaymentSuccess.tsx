@@ -76,10 +76,10 @@ const PaymentSuccess = () => {
 
           <div className="space-y-3 pt-4 border-t">
             <Button 
-              onClick={() => navigate('/get-access')} 
+              onClick={() => navigate('/dashboard')} 
               className="w-full"
             >
-              <Icon name="Key" className="w-4 h-4 mr-2" />
+              <Icon name="LayoutDashboard" className="w-4 h-4 mr-2" />
               Войти в личный кабинет
             </Button>
             <Button 
