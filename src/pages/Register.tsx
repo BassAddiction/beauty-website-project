@@ -69,6 +69,7 @@ const Register = () => {
             data_limit: 32212254720,
             expire: Math.floor(Date.now() / 1000) + (selectedPlan.days * 86400),
             data_limit_reset_strategy: 'day',
+            internalSquads: ['e742f30b-82fb-431a-918b-1b4d22d6ba4d'],
             test_mode: testMode
           })
         }
@@ -89,36 +90,7 @@ const Register = () => {
         localStorage.setItem('vpn_subscription_url', subscriptionUrl);
       }
 
-      // Ждём 1 секунду перед добавлением в squad (API нужно время для индексации)
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Добавляем пользователя в squad используя UUID из ответа
-      try {
-        const userUuid = responseData.uuid;
-        
-        const squadResponse = await fetch(
-          'https://functions.poehali.dev/d8d680b3-23f3-481e-b8cf-ccb969e2f158',
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              action: 'update_user',
-              uuid: userUuid,
-              inbounds: {
-                'vless-reality': ['e742f30b-82fb-431a-918b-1b4d22d6ba4d']
-              }
-            })
-          }
-        );
-        
-        if (!squadResponse.ok) {
-          console.error('Ошибка добавления в squad:', await squadResponse.text());
-        } else {
-          console.log('✅ Пользователь добавлен в squad');
-        }
-      } catch (squadError) {
-        console.error('Не удалось добавить в squad:', squadError);
-      }
+      // Squad добавлен сразу при создании пользователя через internalSquads
 
       // ТЕСТОВЫЙ РЕЖИМ - пропускаем оплату
       if (testMode) {
