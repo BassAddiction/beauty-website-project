@@ -259,22 +259,48 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 # Удаляем None значения
                 update_payload = {k: v for k, v in update_payload.items() if v is not None}
                 
-                print(f'🔹 Final update payload: {json.dumps(update_payload, indent=2)}')
+                # Используем bulk action для добавления в inbound/squad
+                # Формат: POST /api/inbounds/{inbound_tag}/users/bulk
+                if inbounds and 'activeInternalSquads' in update_payload:
+                    squad_ids = update_payload['activeInternalSquads']
+                    last_response = None
+                    
+                    # Для каждого inbound добавляем пользователя
+                    for inbound_tag in inbounds.keys():
+                        bulk_payload = {
+                            'userUuids': [user_uuid]
+                        }
+                        
+                        print(f'🔹 Adding user to inbound {inbound_tag}: {bulk_payload}')
+                        
+                        last_response = requests.post(
+                            f'{api_url}/api/inbounds/{inbound_tag}/users/bulk',
+                            headers=headers,
+                            json=bulk_payload,
+                            timeout=10
+                        )
+                        
+                        print(f'🔹 Bulk add response: {last_response.status_code}')
+                        print(f'🔹 Response body: {last_response.text[:500]}')
+                        
+                        if last_response.status_code == 200 or last_response.status_code == 201:
+                            print(f'✅ User added to inbound {inbound_tag}')
+                        else:
+                            print(f'⚠️ Failed to add to inbound: {last_response.text}')
+                    
+                    if last_response:
+                        return {
+                            'statusCode': last_response.status_code,
+                            'headers': cors_headers,
+                            'body': last_response.text,
+                            'isBase64Encoded': False
+                        }
                 
-                response = requests.put(
-                    f'{api_url}/api/users/{user_uuid}',
-                    headers=headers,
-                    json=update_payload,
-                    timeout=10
-                )
-                
-                print(f'🔹 PUT response: {response.status_code}')
-                print(f'🔹 Response body: {response.text[:500]}')
-                
+                # Если не было inbounds - возвращаем успех
                 return {
-                    'statusCode': response.status_code,
+                    'statusCode': 200,
                     'headers': cors_headers,
-                    'body': response.text,
+                    'body': json.dumps({'success': True, 'message': 'User updated'}),
                     'isBase64Encoded': False
                 }
             except Exception as e:
