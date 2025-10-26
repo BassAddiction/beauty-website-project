@@ -91,9 +91,24 @@ const Login = () => {
             </div>
 
             {error && (
-              <div className="flex items-center gap-2 p-3 rounded-md bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 text-sm">
-                <Icon name="AlertCircle" className="w-4 h-4" />
-                <span>{error}</span>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 p-3 rounded-md bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 text-sm">
+                  <Icon name="AlertCircle" className="w-4 h-4" />
+                  <span>{error}</span>
+                </div>
+                <div className="flex items-center gap-2 p-3 rounded-md bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 text-sm">
+                  <Icon name="HelpCircle" className="w-4 h-4" />
+                  <span>
+                    Забыли username?{' '}
+                    <button 
+                      type="button"
+                      onClick={() => navigate('/get-access')}
+                      className="underline font-medium hover:no-underline"
+                    >
+                      Восстановите доступ по email
+                    </button>
+                  </span>
+                </div>
               </div>
             )}
 
