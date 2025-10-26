@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 interface UserData {
   username: string;
+  email: string;
   status: string;
   used_traffic: number;
   data_limit: number;
@@ -49,6 +50,7 @@ const Dashboard = () => {
       
       setUserData({
         username: data.username || username,
+        email: data.payments?.[0]?.email || '',
         status: data.subscription?.is_active ? 'active' : 'expired',
         used_traffic: 0,
         data_limit: 32212254720,
@@ -109,6 +111,7 @@ const Dashboard = () => {
         body: JSON.stringify({
           action: 'create_payment',
           username: userData.username,
+          email: userData.email || 'noemail@speedvpn.io',
           amount: plan.price,
           plan_name: plan.name,
           plan_days: plan.days
