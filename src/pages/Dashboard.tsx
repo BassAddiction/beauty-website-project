@@ -366,11 +366,12 @@ const Dashboard = () => {
             <CardDescription>Выберите подходящий тариф</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
                 { name: '1 месяц', price: 200, days: 30, traffic: 30 },
                 { name: '3 месяца', price: 500, days: 90, traffic: 30 },
-                { name: '6 месяцев', price: 900, days: 180, traffic: 30 }
+                { name: '6 месяцев', price: 900, days: 180, traffic: 30 },
+                { name: '12 месяцев', price: 1200, days: 365, traffic: 30 }
               ].map((plan) => (
                 <Card key={plan.name} className="border-2 hover:border-primary transition-colors">
                   <CardHeader>
