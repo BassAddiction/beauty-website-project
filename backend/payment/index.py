@@ -374,8 +374,7 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int) -> Dict[
             },
             'data_limit': data_limit,
             'expire': expire_timestamp,
-            'data_limit_reset_strategy': 'day',
-            'internalSquads': []
+            'data_limit_reset_strategy': 'day'
         }
         
         print(f'🔹 Creating user in Remnawave: {username}')
@@ -387,7 +386,7 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int) -> Dict[
             timeout=30
         )
         
-        if response.status_code == 200:
+        if response.status_code == 200 or response.status_code == 201:
             data = response.json()
             response_data = data.get('response', data)
             subscription_url = response_data.get('subscriptionUrl', response_data.get('subscription_url', ''))
