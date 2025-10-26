@@ -115,17 +115,6 @@ const PricingSection = () => {
 
   const plans: Plan[] = [
     {
-      name: "Тест",
-      price: "Free",
-      period: "",
-      features: [
-        "Тест webhook",
-        "Создаст пользователя",
-        "Проверка лимитов",
-        "Логи в backend/payment"
-      ]
-    },
-    {
       name: "1 Месяц",
       price: "5",
       period: "₽",
@@ -194,32 +183,7 @@ const PricingSection = () => {
           </p>
         </div>
 
-        <div className="max-w-md mx-auto mb-12 space-y-4 p-6 border-2 border-primary/30 rounded-xl bg-black/20">
-          <h3 className="text-xl font-bold text-center mb-4">📝 Заполните данные для оплаты</h3>
-          <div>
-            <Label htmlFor="username" className="text-lg">1️⃣ Username для VPN *</Label>
-            <Input
-              id="username"
-              placeholder="Например: ivan_123"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="mt-2 text-lg h-12"
-            />
-            <p className="text-sm text-muted-foreground mt-1">Этот username будет использоваться для входа в VPN</p>
-          </div>
-          <div>
-            <Label htmlFor="email" className="text-lg">2️⃣ Email для чека</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="ivan@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-2 text-lg h-12"
-            />
-            <p className="text-sm text-muted-foreground mt-1">На этот email придёт чек об оплате</p>
-          </div>
-        </div>
+
 
         <div className={`grid md:grid-cols-2 lg:grid-cols-6 gap-6 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           {plans.map((plan, index) => (
@@ -280,7 +244,7 @@ const PricingSection = () => {
                     disabled={paying || !username.trim()}
                     title={!username.trim() ? "Сначала введите username" : ""}
                   >
-                    {paying ? "Загрузка..." : !username.trim() ? "Введите username ⬆️" : "Оплатить"}
+                    {paying ? "Загрузка..." : !username.trim() ? "Введите username ⬆️" : "Подключить"}
                   </Button>
                 )}
               </CardFooter>
