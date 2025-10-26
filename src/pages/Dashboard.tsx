@@ -63,8 +63,8 @@ const Dashboard = () => {
         username: data.username || username,
         email: data.payments?.[0]?.email || '',
         status: data.subscription?.is_active ? 'active' : 'expired',
-        used_traffic: 0,
-        data_limit: 32212254720,
+        used_traffic: data.subscription?.used_traffic_bytes || 0,
+        data_limit: data.subscription?.traffic_limit_bytes || 32212254720,
         expire: data.subscription?.expire_timestamp || 0,
         sub_url: data.subscription?.subscription_url || ''
       });

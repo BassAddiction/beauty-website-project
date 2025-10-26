@@ -93,6 +93,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             expire_timestamp = None
             days_left = None
             subscription_url = ''
+            used_traffic_bytes = 0
+            traffic_limit_bytes = 32212254720
             
             remnawave_url = os.environ.get('REMNAWAVE_API_URL', '').rstrip('/')
             remnawave_token = os.environ.get('REMNAWAVE_API_TOKEN', '')
@@ -114,9 +116,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         user_data = users_list[0] if users_list else {}
                         expire_at_str = user_data.get('expireAt', '')
                         subscription_url = user_data.get('subscriptionUrl', '')
+                        used_traffic_bytes = user_data.get('usedTrafficBytes', 0)
+                        traffic_limit_bytes = user_data.get('trafficLimitBytes', 32212254720)
                         
                         print(f'📅 expireAt string: {expire_at_str}')
                         print(f'🔗 subscriptionUrl: {subscription_url}')
+                        print(f'📊 Traffic: {used_traffic_bytes} / {traffic_limit_bytes}')
                         
                         # Парсим дату из ISO формата
                         if expire_at_str:
@@ -166,7 +171,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'days_left': days_left,
                         'expire_timestamp': expire_timestamp,
                         'subscription_url': subscription_url,
-                        'is_active': days_left is not None and days_left > 0
+                        'is_active': days_left is not None and days_left > 0,
+                        'used_traffic_bytes': used_traffic_bytes,
+                        'traffic_limit_bytes': traffic_limit_bytes
                     }
                 }),
                 'isBase64Encoded': False
