@@ -16,4 +16,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://beauty-website-project.poehali.app/sitemap.xml
+Sitemap: https://onproduct.pro/sitemap.xml

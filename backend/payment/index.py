@@ -125,7 +125,7 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
             },
             'confirmation': {
                 'type': 'redirect',
-                'return_url': 'https://speedvpn.poehali.dev/payment-success'
+                'return_url': 'https://onproduct.pro/payment-success'
             },
             'capture': True,
             'description': f'Подписка {plan_name} для {username}',
