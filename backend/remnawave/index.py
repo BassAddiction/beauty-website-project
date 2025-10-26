@@ -196,6 +196,43 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 
                 if create_response.status_code == 201:
                     print(f'✅ User created successfully')
+                    
+                    # Пытаемся добавить в squad через PATCH /api/users/{uuid}
+                    if internal_squads:
+                        try:
+                            user_data = create_response.json()
+                            user_uuid = user_data.get('response', {}).get('uuid')
+                            
+                            if user_uuid:
+                                print(f'🔹 Updating user {user_uuid} squads via PATCH')
+                                
+                                patch_payload = {
+                                    'activeInternalSquads': internal_squads
+                                }
+                                
+                                patch_response = requests.patch(
+                                    f'{api_url}/api/users/{user_uuid}',
+                                    headers=headers,
+                                    json=patch_payload,
+                                    timeout=10
+                                )
+                                
+                                print(f'🔹 PATCH response: {patch_response.status_code}')
+                                print(f'🔹 PATCH body: {patch_response.text}')
+                                
+                                if patch_response.status_code == 200:
+                                    print(f'✅ User squads updated successfully')
+                                    return {
+                                        'statusCode': 201,
+                                        'headers': cors_headers,
+                                        'body': patch_response.text,
+                                        'isBase64Encoded': False
+                                    }
+                                else:
+                                    print(f'⚠️ Failed to update squads, but user created')
+                        except Exception as e:
+                            print(f'⚠️ Squad update error: {str(e)}')
+                    
                     return {
                         'statusCode': 201,
                         'headers': cors_headers,
