@@ -63,6 +63,17 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             rows = cursor.fetchall()
             
+            # Если пользователь не найден - возвращаем 404
+            if not rows:
+                cursor.close()
+                conn.close()
+                return {
+                    'statusCode': 404,
+                    'headers': cors_headers,
+                    'body': json.dumps({'error': 'Пользователь не найден'}),
+                    'isBase64Encoded': False
+                }
+            
             payments = []
             for row in rows:
                 payments.append({

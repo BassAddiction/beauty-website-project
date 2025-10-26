@@ -37,12 +37,18 @@ const Login = () => {
 
       const data = await response.json();
 
-      if (response.ok && data.username) {
+      if (response.status === 404 || !response.ok) {
+        // Пользователь не найден
+        setError(data.error || 'Пользователь не найден. Проверьте правильность username.');
+        setLoading(false);
+        return;
+      }
+
+      if (data.username) {
         // Пользователь найден - сохраняем и переходим в кабинет
         localStorage.setItem('vpn_username', username.trim());
         navigate('/dashboard');
       } else {
-        // Пользователь не найден
         setError('Пользователь не найден. Проверьте правильность username.');
         setLoading(false);
       }
