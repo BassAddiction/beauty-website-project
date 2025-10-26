@@ -1,6 +1,7 @@
 import json
 import os
 from typing import Dict, Any, List
+from decimal import Decimal
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     '''
@@ -67,7 +68,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     FROM subscription_plans
                     ORDER BY sort_order
                 ''')
-                plans = [dict(row) for row in cur.fetchall()]
+                plans = []
+                for row in cur.fetchall():
+                    plan = dict(row)
+                    if isinstance(plan.get('price'), Decimal):
+                        plan['price'] = float(plan['price'])
+                    plans.append(plan)
                 
                 return {
                     'statusCode': 200,
@@ -88,11 +94,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     GROUP BY username, email
                     ORDER BY last_payment DESC
                 ''')
-                clients = [dict(row) for row in cur.fetchall()]
-                
-                for client in clients:
-                    if client['last_payment']:
+                clients = []
+                for row in cur.fetchall():
+                    client = dict(row)
+                    if client.get('last_payment'):
                         client['last_payment'] = client['last_payment'].isoformat()
+                    if isinstance(client.get('total_paid'), Decimal):
+                        client['total_paid'] = float(client['total_paid'])
+                    clients.append(client)
                 
                 return {
                     'statusCode': 200,
