@@ -12,7 +12,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!username.trim()) {
@@ -23,13 +23,34 @@ const Login = () => {
     setLoading(true);
     setError('');
 
-    // Просто сохраняем username и переходим в кабинет
-    localStorage.setItem('vpn_username', username.trim());
-    
-    // Небольшая задержка для визуального эффекта
-    setTimeout(() => {
-      navigate('/dashboard');
-    }, 300);
+    try {
+      // Проверяем существование пользователя через API
+      const response = await fetch(
+        `https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0?username=${encodeURIComponent(username.trim())}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok && data.username) {
+        // Пользователь найден - сохраняем и переходим в кабинет
+        localStorage.setItem('vpn_username', username.trim());
+        navigate('/dashboard');
+      } else {
+        // Пользователь не найден
+        setError('Пользователь не найден. Проверьте правильность username.');
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      setError('Ошибка проверки данных. Попробуйте позже.');
+      setLoading(false);
+    }
   };
 
   return (
