@@ -375,64 +375,7 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Subscription Plans */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Продлить подписку</CardTitle>
-            <CardDescription>Выберите подходящий тариф</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {[
-                { name: '1 месяц', price: 200, days: 30, traffic: 30 },
-                { name: '3 месяца', price: 500, days: 90, traffic: 30 },
-                { name: '6 месяцев', price: 900, days: 180, traffic: 30 },
-                { name: '12 месяцев', price: 1200, days: 365, traffic: 30 }
-              ].map((plan) => (
-                <Card key={plan.name} className="border-2 hover:border-primary transition-colors">
-                  <CardHeader>
-                    <CardTitle className="text-lg">{plan.name}</CardTitle>
-                    <CardDescription>
-                      <span className="text-3xl font-bold text-foreground">{plan.price}₽</span>
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center gap-2">
-                        <Icon name="Check" className="w-4 h-4 text-green-500" />
-                        <span>{plan.traffic} ГБ/сутки</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Icon name="Check" className="w-4 h-4 text-green-500" />
-                        <span>{plan.days} дней</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Icon name="Check" className="w-4 h-4 text-green-500" />
-                        <span>Любые локации</span>
-                      </div>
-                    </div>
-                    <Button 
-                      className="w-full" 
-                      onClick={() => handlePayment(plan)}
-                      disabled={paymentLoading}
-                    >
-                      {paymentLoading ? (
-                        <>
-                          <Icon name="Loader2" className="w-4 h-4 mr-2 animate-spin" />
-                          Загрузка...
-                        </>
-                      ) : (
-                        'Оплатить'
-                      )}
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* История подписок */}
+        {/* Мои подписки */}
         <Card>
           <CardHeader 
             className="cursor-pointer hover:bg-muted/50 transition-colors"
@@ -450,36 +393,94 @@ const Dashboard = () => {
             </div>
           </CardHeader>
           {showHistory && (
-            <CardContent className="space-y-3">
-              {payments.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-4">
-                  История платежей пуста
-                </p>
-              ) : (
-                payments.map((payment) => (
-                  <Card key={payment.payment_id} className="border-2">
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-1">
+            <CardContent className="space-y-6">
+              {/* Продление подписки */}
+              <div className="space-y-3">
+                <h3 className="font-semibold">Продлить подписку</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {[
+                    { name: '1 месяц', price: 200, days: 30, traffic: 30 },
+                    { name: '3 месяца', price: 500, days: 90, traffic: 30 },
+                    { name: '6 месяцев', price: 900, days: 180, traffic: 30 },
+                    { name: '12 месяцев', price: 1200, days: 365, traffic: 30 }
+                  ].map((plan) => (
+                    <Card key={plan.name} className="border-2 hover:border-primary transition-colors">
+                      <CardHeader>
+                        <CardTitle className="text-lg">{plan.name}</CardTitle>
+                        <CardDescription>
+                          <span className="text-3xl font-bold text-foreground">{plan.price}₽</span>
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="space-y-2 text-sm">
                           <div className="flex items-center gap-2">
                             <Icon name="Check" className="w-4 h-4 text-green-500" />
-                            <span className="font-medium">{payment.plan_name}</span>
+                            <span>{plan.traffic} ГБ/сутки</span>
                           </div>
-                          <p className="text-sm text-muted-foreground">
-                            {payment.plan_days} дней • {payment.amount} ₽
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Дата: {new Date(payment.created_at).toLocaleString('ru-RU')}
-                          </p>
+                          <div className="flex items-center gap-2">
+                            <Icon name="Check" className="w-4 h-4 text-green-500" />
+                            <span>{plan.days} дней</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Icon name="Check" className="w-4 h-4 text-green-500" />
+                            <span>Любые локации</span>
+                          </div>
                         </div>
-                        <Badge variant={payment.status === 'succeeded' ? 'default' : 'secondary'}>
-                          {payment.status === 'succeeded' ? 'Оплачено' : payment.status}
-                        </Badge>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
-              )}
+                        <Button 
+                          className="w-full" 
+                          onClick={() => handlePayment(plan)}
+                          disabled={paymentLoading}
+                        >
+                          {paymentLoading ? (
+                            <>
+                              <Icon name="Loader2" className="w-4 h-4 mr-2 animate-spin" />
+                              Загрузка...
+                            </>
+                          ) : (
+                            'Оплатить'
+                          )}
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+
+              {/* История платежей */}
+              <div className="space-y-3 pt-4 border-t">
+                <h3 className="font-semibold">История платежей</h3>
+                {payments.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    История платежей пуста
+                  </p>
+                ) : (
+                  <div className="space-y-3">
+                    {payments.map((payment) => (
+                      <Card key={payment.payment_id} className="border-2">
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between">
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2">
+                                <Icon name="Check" className="w-4 h-4 text-green-500" />
+                                <span className="font-medium">{payment.plan_name}</span>
+                              </div>
+                              <p className="text-sm text-muted-foreground">
+                                {payment.plan_days} дней • {payment.amount} ₽
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                Дата: {new Date(payment.created_at).toLocaleString('ru-RU')}
+                              </p>
+                            </div>
+                            <Badge variant={payment.status === 'succeeded' ? 'default' : 'secondary'}>
+                              {payment.status === 'succeeded' ? 'Оплачено' : payment.status}
+                            </Badge>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </div>
             </CardContent>
           )}
         </Card>
