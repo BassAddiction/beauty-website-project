@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,18 +7,13 @@ import Icon from "@/components/ui/icon";
 import { useNavigate } from 'react-router-dom';
 
 interface Plan {
+  plan_id: number;
   name: string;
   price: number;
   days: number;
-  traffic: number;
+  traffic_gb: number;
+  is_active: boolean;
 }
-
-const PLANS: Plan[] = [
-  { name: '1 месяц', price: 200, days: 30, traffic: 30 },
-  { name: '3 месяца', price: 500, days: 90, traffic: 30 },
-  { name: '6 месяцев', price: 900, days: 180, traffic: 30 },
-  { name: '12 месяцев', price: 1200, days: 365, traffic: 30 }
-];
 
 const Register = () => {
   const navigate = useNavigate();
@@ -27,6 +22,29 @@ const Register = () => {
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [loadingPlans, setLoadingPlans] = useState(true);
+
+  useEffect(() => {
+    const loadPlans = async () => {
+      try {
+        const response = await fetch('https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0?action=get_plans');
+        const data = await response.json();
+        
+        if (data.plans) {
+          const activePlans = data.plans.filter((p: Plan) => p.is_active);
+          setPlans(activePlans);
+        }
+      } catch (err) {
+        console.error('Ошибка загрузки тарифов:', err);
+        setError('Не удалось загрузить тарифы');
+      } finally {
+        setLoadingPlans(false);
+      }
+    };
+
+    loadPlans();
+  }, []);
 
   const handleSelectPlan = (plan: Plan) => {
     setSelectedPlan(plan);
@@ -66,7 +84,7 @@ const Register = () => {
             proxies: {
               'vless-reality': {}
             },
-            data_limit: 32212254720,
+            data_limit: selectedPlan.traffic_gb * 1073741824,
             expire: Math.floor(Date.now() / 1000) + (selectedPlan.days * 86400),
             data_limit_reset_strategy: 'day'
           })
@@ -175,45 +193,58 @@ const Register = () => {
 
         {step === 1 && (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {PLANS.map((plan) => (
-                <Card 
-                  key={plan.name} 
-                  className="border-2 hover:border-primary transition-all cursor-pointer"
-                  onClick={() => handleSelectPlan(plan)}
-                >
-                  <CardHeader>
-                    <CardTitle className="text-xl">{plan.name}</CardTitle>
-                    <CardDescription>
-                      <span className="text-4xl font-bold text-foreground">{plan.price}₽</span>
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center gap-2">
-                        <Icon name="Check" className="w-4 h-4 text-green-500" />
-                        <span>{plan.traffic} ГБ/сутки</span>
+            {loadingPlans ? (
+              <div className="text-center py-12">
+                <Icon name="Loader2" className="w-12 h-12 animate-spin mx-auto text-primary" />
+                <p className="mt-4 text-muted-foreground">Загрузка тарифов...</p>
+              </div>
+            ) : plans.length === 0 ? (
+              <Card className="p-8 text-center">
+                <Icon name="AlertCircle" className="w-12 h-12 mx-auto text-yellow-500 mb-4" />
+                <p className="text-lg">Нет доступных тарифов</p>
+                <p className="text-sm text-muted-foreground mt-2">Попробуйте позже</p>
+              </Card>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {plans.map((plan) => (
+                  <Card 
+                    key={plan.plan_id} 
+                    className="border-2 hover:border-primary transition-all cursor-pointer"
+                    onClick={() => handleSelectPlan(plan)}
+                  >
+                    <CardHeader>
+                      <CardTitle className="text-xl">{plan.name}</CardTitle>
+                      <CardDescription>
+                        <span className="text-4xl font-bold text-foreground">{plan.price}₽</span>
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-center gap-2">
+                          <Icon name="Check" className="w-4 h-4 text-green-500" />
+                          <span>{plan.traffic_gb} ГБ/сутки</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Icon name="Check" className="w-4 h-4 text-green-500" />
+                          <span>{plan.days} дней</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Icon name="Check" className="w-4 h-4 text-green-500" />
+                          <span>Любые локации</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Icon name="Check" className="w-4 h-4 text-green-500" />
+                          <span>Неограниченные устройства</span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Icon name="Check" className="w-4 h-4 text-green-500" />
-                        <span>{plan.days} дней</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Icon name="Check" className="w-4 h-4 text-green-500" />
-                        <span>Любые локации</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Icon name="Check" className="w-4 h-4 text-green-500" />
-                        <span>Неограниченные устройства</span>
-                      </div>
-                    </div>
-                    <Button className="w-full button-glow">
-                      Выбрать тариф
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                      <Button className="w-full button-glow">
+                        Выбрать тариф
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
 
             <div className="text-center pt-4">
               <p className="text-sm text-muted-foreground mb-3">
