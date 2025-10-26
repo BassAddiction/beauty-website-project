@@ -241,49 +241,63 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             print(f'📅 Extending subscription for {user_uuid} until {expire_at}')
             
             try:
-                # Сначала получаем текущие данные пользователя
-                get_response = requests.get(
-                    f'{api_url}/api/users?username=' + user_uuid,
+                # Используем POST /api/users/update-user-expire
+                update_payload = {
+                    'uuid': user_uuid,
+                    'expireAt': expire_at
+                }
+                
+                update_response = requests.post(
+                    f'{api_url}/api/users/update-user-expire',
                     headers=headers,
+                    json=update_payload,
                     timeout=10
                 )
                 
-                if get_response.status_code != 200:
-                    print(f'❌ Failed to get user data: {get_response.status_code}')
-                    return {
-                        'statusCode': get_response.status_code,
-                        'headers': cors_headers,
-                        'body': json.dumps({'error': 'User not found'}),
-                        'isBase64Encoded': False
-                    }
+                print(f'🔹 POST update-user-expire response: {update_response.status_code} - {update_response.text[:300]}')
                 
-                # PUT запрос для обновления expireAt
-                put_payload = {'expireAt': expire_at}
-                put_response = requests.put(
-                    f'{api_url}/api/users/{user_uuid}',
-                    headers=headers,
-                    json=put_payload,
-                    timeout=10
-                )
-                
-                print(f'🔹 PUT response: {put_response.status_code} - {put_response.text[:200]}')
-                
-                if put_response.status_code in [200, 201]:
-                    print(f'✅ Subscription extended successfully')
+                if update_response.status_code in [200, 201]:
+                    print(f'✅ Subscription extended via update-user-expire')
                     return {
                         'statusCode': 200,
                         'headers': cors_headers,
-                        'body': put_response.text,
+                        'body': update_response.text,
                         'isBase64Encoded': False
                     }
-                else:
-                    print(f'❌ Failed to extend subscription')
+                
+                # Если не получилось - пробуем альтернативный способ через PATCH /api/users/expire/{uuid}
+                print(f'⚠️ Trying alternative PATCH /api/users/expire/{user_uuid}')
+                
+                patch_response = requests.patch(
+                    f'{api_url}/api/users/expire/{user_uuid}',
+                    headers=headers,
+                    json={'expireAt': expire_at},
+                    timeout=10
+                )
+                
+                print(f'🔹 PATCH expire response: {patch_response.status_code} - {patch_response.text[:300]}')
+                
+                if patch_response.status_code in [200, 201]:
+                    print(f'✅ Subscription extended via PATCH expire')
                     return {
-                        'statusCode': put_response.status_code,
+                        'statusCode': 200,
                         'headers': cors_headers,
-                        'body': put_response.text,
+                        'body': patch_response.text,
                         'isBase64Encoded': False
                     }
+                
+                # Если оба не сработали - возвращаем ошибку
+                print(f'❌ All methods failed, returning first error')
+                return {
+                    'statusCode': update_response.status_code,
+                    'headers': cors_headers,
+                    'body': json.dumps({
+                        'error': 'Failed to extend subscription',
+                        'details': update_response.text
+                    }),
+                    'isBase64Encoded': False
+                }
+                
             except Exception as e:
                 print(f'❌ Error: {str(e)}')
                 return {
