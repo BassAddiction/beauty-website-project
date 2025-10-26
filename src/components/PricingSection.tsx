@@ -116,7 +116,7 @@ const PricingSection = () => {
   const plans: Plan[] = [
     {
       name: "1 Месяц",
-      price: "5",
+      price: "200",
       period: "₽",
       popular: true,
       features: [
@@ -128,7 +128,7 @@ const PricingSection = () => {
     },
     {
       name: "3 Месяца",
-      price: "550",
+      price: "500",
       period: "₽",
       features: [
         "30 ГБ трафика в сутки",
@@ -139,7 +139,7 @@ const PricingSection = () => {
     },
     {
       name: "6 Месяцев",
-      price: "1000",
+      price: "900",
       period: "₽",
       features: [
         "30 ГБ трафика в сутки",
@@ -150,7 +150,7 @@ const PricingSection = () => {
     },
     {
       name: "12 Месяцев",
-      price: "1500",
+      price: "1200",
       period: "₽",
       features: [
         "30 ГБ трафика в сутки",
@@ -240,11 +240,11 @@ const PricingSection = () => {
                 ) : (
                   <Button 
                     className="w-full rounded-full button-glow"
-                    onClick={() => handlePayment(plan)}
-                    disabled={paying || !username.trim()}
-                    title={!username.trim() ? "Сначала введите username" : ""}
+                    asChild
                   >
-                    {paying ? "Загрузка..." : !username.trim() ? "Введите username ⬆️" : "Подключить"}
+                    <a href="https://t.me/shopspeedvpn_bot" target="_blank" rel="noopener noreferrer">
+                      Подключить
+                    </a>
                   </Button>
                 )}
               </CardFooter>
