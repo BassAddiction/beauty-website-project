@@ -148,16 +148,19 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 except Exception as e:
                     print(f'⚠️ Failed to save test payment: {str(e)}')
             
-            # Шаг 1: Создать пользователя с базовыми данными
+            # Создать пользователя со всеми параметрами сразу
             create_payload = {
                 'username': username,
                 'proxies': proxies,
                 'expireAt': expire_at,
-                'expire': expire_timestamp
+                'expire': expire_timestamp,
+                'trafficLimitBytes': data_limit,
+                'trafficLimitStrategy': data_limit_reset_strategy.upper(),
+                'activeInternalSquads': internal_squads
             }
             
-            print(f'🔹 Step 1: Creating user {username}')
-            print(f'🔹 Create payload: {json.dumps(create_payload, indent=2)}')
+            print(f'🔹 Creating user {username} with full config')
+            print(f'🔹 Payload: {json.dumps(create_payload, indent=2)}')
             
             try:
                 create_response = requests.post(
@@ -167,53 +170,19 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     timeout=10
                 )
                 
-                print(f'🔹 Create response: {create_response.status_code}')
+                print(f'🔹 Response: {create_response.status_code}')
+                print(f'🔹 Response body: {create_response.text}')
                 
-                if create_response.status_code != 201:
-                    print(f'❌ Failed to create user: {create_response.text}')
+                if create_response.status_code == 201:
+                    print(f'✅ User created successfully')
                     return {
-                        'statusCode': create_response.status_code,
+                        'statusCode': 201,
                         'headers': cors_headers,
                         'body': create_response.text,
                         'isBase64Encoded': False
                     }
-                
-                # Получаем UUID созданного пользователя
-                created_data = create_response.json()
-                response_data = created_data.get('response', created_data)
-                user_uuid = response_data.get('uuid')
-                
-                print(f'🔹 User created with UUID: {user_uuid}')
-                
-                # Шаг 2: Обновить лимиты и сквады
-                update_payload = {
-                    'trafficLimitBytes': data_limit,
-                    'trafficLimitStrategy': data_limit_reset_strategy.upper().replace('_', '_'),
-                    'activeInternalSquads': internal_squads
-                }
-                
-                print(f'🔹 Step 2: Updating user {user_uuid}')
-                print(f'🔹 Update payload: {json.dumps(update_payload, indent=2)}')
-                
-                update_response = requests.patch(
-                    f'{api_url}/api/users/{user_uuid}',
-                    headers=headers,
-                    json=update_payload,
-                    timeout=10
-                )
-                
-                print(f'🔹 Update response: {update_response.status_code}')
-                
-                if update_response.status_code == 200:
-                    print(f'✅ User updated successfully')
-                    return {
-                        'statusCode': 200,
-                        'headers': cors_headers,
-                        'body': update_response.text,
-                        'isBase64Encoded': False
-                    }
                 else:
-                    print(f'⚠️ Update failed: {update_response.text}')
+                    print(f'❌ Failed to create user')
                     return {
                         'statusCode': create_response.status_code,
                         'headers': cors_headers,
