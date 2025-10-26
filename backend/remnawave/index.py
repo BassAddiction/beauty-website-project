@@ -197,39 +197,43 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 if create_response.status_code == 201:
                     print(f'✅ User created successfully')
                     
-                    # Пытаемся добавить в squad через PATCH /api/users/{uuid}
+                    # Пытаемся добавить в squad через POST /api/internal-squads/{squadId}/users
                     if internal_squads:
                         try:
                             user_data = create_response.json()
                             user_uuid = user_data.get('response', {}).get('uuid')
                             
                             if user_uuid:
-                                print(f'🔹 Updating user {user_uuid} squads via PATCH')
+                                print(f'🔹 Adding user {user_uuid} to squads: {internal_squads}')
                                 
-                                patch_payload = {
-                                    'activeInternalSquads': internal_squads
-                                }
-                                
-                                patch_response = requests.patch(
-                                    f'{api_url}/api/users/{user_uuid}',
-                                    headers=headers,
-                                    json=patch_payload,
-                                    timeout=10
-                                )
-                                
-                                print(f'🔹 PATCH response: {patch_response.status_code}')
-                                print(f'🔹 PATCH body: {patch_response.text}')
-                                
-                                if patch_response.status_code == 200:
-                                    print(f'✅ User squads updated successfully')
-                                    return {
-                                        'statusCode': 201,
-                                        'headers': cors_headers,
-                                        'body': patch_response.text,
-                                        'isBase64Encoded': False
+                                # Добавляем пользователя в каждый squad
+                                all_success = True
+                                for squad_id in internal_squads:
+                                    squad_payload = {
+                                        'userUuids': [user_uuid]
                                     }
+                                    
+                                    squad_response = requests.post(
+                                        f'{api_url}/api/internal-squads/{squad_id}/users',
+                                        headers=headers,
+                                        json=squad_payload,
+                                        timeout=10
+                                    )
+                                    
+                                    print(f'🔹 Squad {squad_id} response: {squad_response.status_code}')
+                                    print(f'🔹 Squad response body: {squad_response.text[:200]}')
+                                    
+                                    if squad_response.status_code in [200, 201]:
+                                        print(f'✅ User added to squad {squad_id}')
+                                    else:
+                                        print(f'⚠️ Failed to add to squad {squad_id}')
+                                        all_success = False
+                                
+                                if all_success:
+                                    print(f'✅ User added to all squads successfully')
                                 else:
-                                    print(f'⚠️ Failed to update squads, but user created')
+                                    print(f'⚠️ Some squads failed, but user created')
+                                    
                         except Exception as e:
                             print(f'⚠️ Squad update error: {str(e)}')
                     
