@@ -89,8 +89,13 @@ const Register = () => {
         localStorage.setItem('vpn_subscription_url', subscriptionUrl);
       }
 
-      // Добавляем пользователя в squad сразу после создания
+      // Ждём 1 секунду перед добавлением в squad (API нужно время для индексации)
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Добавляем пользователя в squad используя UUID из ответа
       try {
+        const userUuid = responseData.uuid;
+        
         const squadResponse = await fetch(
           'https://functions.poehali.dev/d8d680b3-23f3-481e-b8cf-ccb969e2f158',
           {
@@ -98,7 +103,7 @@ const Register = () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               action: 'update_user',
-              username: username,
+              uuid: userUuid,
               inbounds: {
                 'vless-reality': ['e742f30b-82fb-431a-918b-1b4d22d6ba4d']
               }
