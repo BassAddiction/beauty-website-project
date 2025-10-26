@@ -106,11 +106,13 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
         shop_id = os.environ.get('YOOKASSA_SHOP_ID', '')
         secret_key = os.environ.get('YOOKASSA_SECRET_KEY', '')
         
+        print(f'🔑 Debug: shop_id={shop_id[:10] if shop_id else "EMPTY"}..., secret_key={secret_key[:10] if secret_key else "EMPTY"}...')
+        
         if not shop_id or not secret_key:
             return {
                 'statusCode': 500,
                 'headers': cors_headers,
-                'body': json.dumps({'error': 'YooKassa credentials not configured'}),
+                'body': json.dumps({'error': 'YooKassa credentials not configured', 'debug': f'shop_id={bool(shop_id)}, secret_key={bool(secret_key)}'}),
                 'isBase64Encoded': False
             }
         
