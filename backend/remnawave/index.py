@@ -234,6 +234,19 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'activeInternalSquads': body_data.get('internalSquads')
                 }
                 
+                # Обработка inbounds (например: {"vless-reality": ["uuid1", "uuid2"]})
+                inbounds = body_data.get('inbounds')
+                if inbounds:
+                    # Собираем все UUID из всех inbounds в один массив
+                    squad_uuids = []
+                    for inbound_name, uuids in inbounds.items():
+                        if isinstance(uuids, list):
+                            squad_uuids.extend(uuids)
+                    
+                    if squad_uuids:
+                        update_payload['activeInternalSquads'] = squad_uuids
+                        print(f'🔹 Setting squads from inbounds: {squad_uuids}')
+                
                 # Удаляем None значения
                 update_payload = {k: v for k, v in update_payload.items() if v is not None}
                 
