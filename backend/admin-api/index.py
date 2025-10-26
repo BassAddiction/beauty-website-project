@@ -46,6 +46,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         from psycopg2.extras import RealDictCursor
         
         dsn = os.environ.get('DATABASE_URL')
+        if not dsn:
+            print('ERROR: DATABASE_URL not set')
+            return {
+                'statusCode': 500,
+                'headers': cors_headers,
+                'body': json.dumps({'error': 'DATABASE_URL not configured'}),
+                'isBase64Encoded': False
+            }
+        
+        print(f'Connecting to database, action={action}, method={method}')
         conn = psycopg2.connect(dsn)
         cur = conn.cursor(cursor_factory=RealDictCursor)
         
@@ -175,10 +185,13 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         conn.close()
         
     except Exception as e:
+        print(f'ERROR in admin-api: {type(e).__name__}: {str(e)}')
+        import traceback
+        traceback.print_exc()
         return {
             'statusCode': 500,
             'headers': cors_headers,
-            'body': json.dumps({'error': str(e)}),
+            'body': json.dumps({'error': str(e), 'type': type(e).__name__}),
             'isBase64Encoded': False
         }
     
