@@ -178,6 +178,36 @@ const Admin = () => {
     }
   };
 
+  const handleDeleteClient = async (username: string) => {
+    if (!confirm(`Удалить клиента ${username} и все его платежи?`)) return;
+    
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_URL}?username=${encodeURIComponent(username)}`, {
+        method: 'DELETE',
+        headers: {
+          'X-Admin-Password': password
+        }
+      });
+      
+      if (response.ok) {
+        toast({
+          title: '✅ Удалено',
+          description: 'Клиент удалён'
+        });
+        loadClients();
+      }
+    } catch (error) {
+      toast({
+        title: '❌ Ошибка удаления',
+        description: String(error),
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleLogout = () => {
     setIsAuthorized(false);
     setPassword('');
@@ -345,6 +375,7 @@ const Admin = () => {
                     <TableHead>Последний платёж</TableHead>
                     <TableHead>Всего оплачено</TableHead>
                     <TableHead>Платежей</TableHead>
+                    <TableHead className="w-[100px]"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -357,6 +388,16 @@ const Admin = () => {
                       </TableCell>
                       <TableCell>{client.total_paid}₽</TableCell>
                       <TableCell>{client.payment_count}</TableCell>
+                      <TableCell>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleDeleteClient(client.username)}
+                          disabled={loading}
+                        >
+                          <Icon name="Trash" className="w-4 h-4" />
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
