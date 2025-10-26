@@ -223,18 +223,6 @@ const Register = () => {
                 <Icon name="LogIn" className="w-4 h-4 mr-2" />
                 Войти
               </Button>
-              
-              {/* Секретная кнопка для тестового режима */}
-              <div className="mt-4">
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => setTestMode(!testMode)}
-                  className="text-xs opacity-30 hover:opacity-100"
-                >
-                  {testMode ? '🧪 Тест ON' : '🔧 Режим разработки'}
-                </Button>
-              </div>
             </div>
           </div>
         )}
