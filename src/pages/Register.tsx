@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -66,7 +66,7 @@ const Register = () => {
             proxies: {
               'vless-reality': {}
             },
-            data_limit: selectedPlan.traffic * 1073741824,
+            data_limit: 32212254720,
             expire: Math.floor(Date.now() / 1000) + (selectedPlan.days * 86400),
             data_limit_reset_strategy: 'day'
           })
@@ -175,7 +175,7 @@ const Register = () => {
 
         {step === 1 && (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {PLANS.map((plan) => (
                 <Card 
                   key={plan.name} 

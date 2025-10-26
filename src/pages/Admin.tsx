@@ -38,7 +38,7 @@ const Admin = () => {
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
   const { toast } = useToast();
 
-  const API_URL = 'https://functions.poehali.dev/3a00e893-a412-40ec-9669-5978a649e9c6';
+  const API_URL = 'https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0';
 
   useEffect(() => {
     const savedPassword = localStorage.getItem('admin_password');
@@ -166,36 +166,6 @@ const Admin = () => {
           description: 'Тариф удалён'
         });
         handleLogin(password);
-      }
-    } catch (error) {
-      toast({
-        title: '❌ Ошибка удаления',
-        description: String(error),
-        variant: 'destructive'
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDeleteClient = async (username: string) => {
-    if (!confirm(`Удалить клиента ${username} и все его платежи?`)) return;
-    
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_URL}?username=${encodeURIComponent(username)}`, {
-        method: 'DELETE',
-        headers: {
-          'X-Admin-Password': password
-        }
-      });
-      
-      if (response.ok) {
-        toast({
-          title: '✅ Удалено',
-          description: 'Клиент удалён'
-        });
-        loadClients();
       }
     } catch (error) {
       toast({
@@ -375,7 +345,6 @@ const Admin = () => {
                     <TableHead>Последний платёж</TableHead>
                     <TableHead>Всего оплачено</TableHead>
                     <TableHead>Платежей</TableHead>
-                    <TableHead className="w-[100px]"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -388,16 +357,6 @@ const Admin = () => {
                       </TableCell>
                       <TableCell>{client.total_paid}₽</TableCell>
                       <TableCell>{client.payment_count}</TableCell>
-                      <TableCell>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => handleDeleteClient(client.username)}
-                          disabled={loading}
-                        >
-                          <Icon name="Trash" className="w-4 h-4" />
-                        </Button>
-                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -447,48 +406,6 @@ const Admin = () => {
                       value={editingPlan.traffic_gb}
                       onChange={(e) => setEditingPlan({...editingPlan, traffic_gb: parseInt(e.target.value)})}
                     />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Описание возможностей (по одному на строку)</Label>
-                  <div className="space-y-2">
-                    {(editingPlan.features || []).map((feature, idx) => (
-                      <div key={idx} className="flex gap-2">
-                        <Input
-                          value={feature}
-                          onChange={(e) => {
-                            const newFeatures = [...(editingPlan.features || [])];
-                            newFeatures[idx] = e.target.value;
-                            setEditingPlan({...editingPlan, features: newFeatures});
-                          }}
-                          placeholder="Например: Безлимитный трафик"
-                        />
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => {
-                            const newFeatures = editingPlan.features.filter((_, i) => i !== idx);
-                            setEditingPlan({...editingPlan, features: newFeatures});
-                          }}
-                        >
-                          <Icon name="Trash" className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    ))}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setEditingPlan({
-                          ...editingPlan,
-                          features: [...(editingPlan.features || []), '']
-                        });
-                      }}
-                    >
-                      <Icon name="Plus" className="w-4 h-4 mr-2" />
-                      Добавить возможность
-                    </Button>
                   </div>
                 </div>
                 

@@ -28,8 +28,31 @@ const PricingSection = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setPlans(getDefaultPlans());
-    setLoading(false);
+    const loadPlans = async () => {
+      try {
+        const response = await fetch('https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0?action=get_plans');
+        const data = await response.json();
+        
+        const formattedPlans = data.plans.map((plan: any, index: number) => ({
+          name: plan.name,
+          price: plan.price.toString(),
+          period: '₽',
+          popular: index === 0,
+          custom: plan.custom,
+          features: plan.features || []
+        }));
+        
+        setPlans(formattedPlans);
+      } catch (error) {
+        console.error('Failed to load plans:', error);
+        // Fallback to hardcoded plans
+        setPlans(getDefaultPlans());
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadPlans();
   }, []);
 
   const getDefaultPlans = () => [
@@ -43,54 +66,6 @@ const PricingSection = () => {
         "Без ограничений устройств",
         "Любые локации",
         "Базовая поддержка"
-      ]
-    },
-    {
-      name: "3 Месяца",
-      price: "500",
-      period: "₽",
-      features: [
-        "30 ГБ трафика в сутки",
-        "Без ограничений устройств",
-        "Любые локации",
-        "Приоритетная поддержка"
-      ]
-    },
-    {
-      name: "6 Месяцев",
-      price: "900",
-      period: "₽",
-      features: [
-        "50 ГБ трафика в сутки",
-        "Без ограничений устройств",
-        "Любые локации",
-        "Приоритетная поддержка",
-        "Выделенные сервера"
-      ]
-    },
-    {
-      name: "12 Месяцев",
-      price: "1500",
-      period: "₽",
-      features: [
-        "Безлимитный трафик",
-        "Без ограничений устройств",
-        "Любые локации",
-        "VIP поддержка",
-        "Выделенные сервера"
-      ]
-    },
-    {
-      name: "Индивидуальный",
-      price: "От 3000",
-      period: "₽",
-      custom: true,
-      features: [
-        "Персональные настройки",
-        "Безлимитный трафик",
-        "Выделенный IP",
-        "Персональный менеджер",
-        "SLA 99.9%"
       ]
     }
   ];
