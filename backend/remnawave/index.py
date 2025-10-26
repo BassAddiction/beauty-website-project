@@ -167,7 +167,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     print(f'⚠️ Failed to save test payment: {str(e)}')
             
             # Создать пользователя со всеми параметрами сразу
-            # Попробуем передать squads через inboundUuids
+            squad_uuids = ['6afd8de3-00d5-41db-aa52-f259fb98b2c8', '9ef43f96-83c9-4252-ae57-bb17dc9b60a9']
+            
             create_payload = {
                 'username': username,
                 'proxies': proxies,
@@ -175,10 +176,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'expire': expire_timestamp,
                 'trafficLimitBytes': data_limit,
                 'trafficLimitStrategy': data_limit_reset_strategy.upper(),
-                'inboundUuids': internal_squads
+                'activeInternalSquads': squad_uuids
             }
             
-            print(f'🔹 Creating user with inboundUuids: {internal_squads}')
+            print(f'🔹 Creating user with activeInternalSquads: {squad_uuids}')
             
             print(f'🔹 Creating user {username} with full config')
             print(f'🔹 Payload: {json.dumps(create_payload, indent=2)}')
@@ -195,47 +196,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 print(f'🔹 Response body: {create_response.text}')
                 
                 if create_response.status_code == 201:
-                    print(f'✅ User created successfully')
-                    
-                    # Пытаемся добавить в squad через POST /api/internal-squads/{squadId}/users
-                    if internal_squads:
-                        try:
-                            user_data = create_response.json()
-                            user_uuid = user_data.get('response', {}).get('uuid')
-                            
-                            if user_uuid:
-                                print(f'🔹 Adding user {user_uuid} to squads: {internal_squads}')
-                                
-                                # Добавляем пользователя в каждый squad
-                                all_success = True
-                                for squad_id in internal_squads:
-                                    squad_payload = {
-                                        'userUuids': [user_uuid]
-                                    }
-                                    
-                                    squad_response = requests.post(
-                                        f'{api_url}/api/internal-squads/{squad_id}/users',
-                                        headers=headers,
-                                        json=squad_payload,
-                                        timeout=10
-                                    )
-                                    
-                                    print(f'🔹 Squad {squad_id} response: {squad_response.status_code}')
-                                    print(f'🔹 Squad response body: {squad_response.text[:200]}')
-                                    
-                                    if squad_response.status_code in [200, 201]:
-                                        print(f'✅ User added to squad {squad_id}')
-                                    else:
-                                        print(f'⚠️ Failed to add to squad {squad_id}')
-                                        all_success = False
-                                
-                                if all_success:
-                                    print(f'✅ User added to all squads successfully')
-                                else:
-                                    print(f'⚠️ Some squads failed, but user created')
-                                    
-                        except Exception as e:
-                            print(f'⚠️ Squad update error: {str(e)}')
+                    print(f'✅ User created successfully with squads')
                     
                     return {
                         'statusCode': 201,
