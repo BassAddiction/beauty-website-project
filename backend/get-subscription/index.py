@@ -89,7 +89,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             if remnawave_url and remnawave_token:
                 try:
                     user_response = requests.get(
-                        f'{remnawave_url}/api/user/{username}',
+                        f'{remnawave_url}/api/users?username={username}',
                         headers={'Authorization': f'Bearer {remnawave_token}'},
                         timeout=10
                     )
@@ -98,7 +98,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     print(f'📄 Remnawave response: {user_response.text[:500]}')
                     
                     if user_response.status_code == 200:
-                        user_data = user_response.json().get('response', {})
+                        response_data = user_response.json()
+                        users_list = response_data.get('response', {}).get('users', [])
+                        user_data = users_list[0] if users_list else {}
                         expire_at_str = user_data.get('expireAt', '')
                         subscription_url = user_data.get('subscriptionUrl', '')
                         
