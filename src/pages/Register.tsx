@@ -27,7 +27,6 @@ const Register = () => {
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [testMode, setTestMode] = useState(false); // Тестовый режим
 
   const handleSelectPlan = (plan: Plan) => {
     setSelectedPlan(plan);
@@ -69,8 +68,7 @@ const Register = () => {
             },
             data_limit: 32212254720,
             expire: Math.floor(Date.now() / 1000) + (selectedPlan.days * 86400),
-            data_limit_reset_strategy: 'day',
-            test_mode: testMode
+            data_limit_reset_strategy: 'day'
           })
         }
       );
@@ -119,15 +117,6 @@ const Register = () => {
         }
       } catch (squadError) {
         console.error('Не удалось добавить в squad:', squadError);
-      }
-
-      // ТЕСТОВЫЙ РЕЖИМ - пропускаем оплату
-      if (testMode) {
-        localStorage.setItem('vpn_username', username);
-        localStorage.setItem('vpn_email', email);
-        alert(`✅ Тестовый пользователь создан!\nUsername: ${username}\n\nПроверь панель админки!`);
-        navigate('/dashboard');
-        return;
       }
 
       const paymentResponse = await fetch(
