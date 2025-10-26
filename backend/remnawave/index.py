@@ -166,18 +166,18 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 except Exception as e:
                     print(f'⚠️ Failed to save test payment: {str(e)}')
             
-            # Создать пользователя со всеми параметрами сразу
-            # НЕ передаем activeInternalSquads при создании - это вызывает ошибку A018
+            # Создать пользователя со всеми параметрами сразу, включая activeInternalSquads
             create_payload = {
                 'username': username,
                 'proxies': proxies,
                 'expireAt': expire_at,
                 'expire': expire_timestamp,
                 'trafficLimitBytes': data_limit,
-                'trafficLimitStrategy': data_limit_reset_strategy.upper()
+                'trafficLimitStrategy': data_limit_reset_strategy.upper(),
+                'activeInternalSquads': internal_squads
             }
             
-            print(f'🔹 Internal squads will be added AFTER user creation: {internal_squads}')
+            print(f'🔹 Creating user with internal squads: {internal_squads}')
             
             print(f'🔹 Creating user {username} with full config')
             print(f'🔹 Payload: {json.dumps(create_payload, indent=2)}')
