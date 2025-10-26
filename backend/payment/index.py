@@ -349,35 +349,82 @@ def update_payment_status(payment_id: str, status: str):
 
 
 def create_user_in_remnawave(username: str, email: str, plan_days: int) -> Dict[str, Any]:
-    '''Создаёт пользователя в Remnawave'''
+    '''Создаёт или продлевает пользователя в Remnawave'''
     try:
         remnawave_url = os.environ.get('REMNAWAVE_FUNCTION_URL', '').rstrip('/')
+        remnawave_api_url = os.environ.get('REMNAWAVE_API_URL', '').rstrip('/')
+        remnawave_token = os.environ.get('REMNAWAVE_API_TOKEN', '')
         
         print(f'🔑 Debug Remnawave Function URL: {remnawave_url}')
         
         if not remnawave_url:
             return {'success': False, 'error': 'REMNAWAVE_FUNCTION_URL not configured'}
         
-        # Вычисляем timestamp окончания подписки
-        expire_timestamp = int(datetime.now().timestamp()) + (plan_days * 86400)
+        # Проверяем, существует ли пользователь
+        user_exists = False
+        user_uuid = None
+        current_expire_timestamp = None
+        
+        if remnawave_api_url and remnawave_token:
+            try:
+                check_response = requests.get(
+                    f'{remnawave_api_url}/api/users?username={username}',
+                    headers={'Authorization': f'Bearer {remnawave_token}'},
+                    timeout=10
+                )
+                if check_response.status_code == 200:
+                    users_data = check_response.json()
+                    users_list = users_data.get('response', {}).get('users', [])
+                    if users_list:
+                        user_exists = True
+                        user_data = users_list[0]
+                        user_uuid = user_data.get('uuid')
+                        expire_at_str = user_data.get('expireAt', '')
+                        if expire_at_str:
+                            from datetime import datetime as dt
+                            expire_dt = dt.fromisoformat(expire_at_str.replace('Z', '+00:00'))
+                            current_expire_timestamp = int(expire_dt.timestamp())
+                        print(f'👤 User exists: uuid={user_uuid}, current_expire={current_expire_timestamp}')
+            except Exception as e:
+                print(f'⚠️ Could not check user existence: {str(e)}')
+        
+        # Вычисляем новый timestamp окончания подписки
+        if user_exists and current_expire_timestamp:
+            # Продлеваем от текущей даты окончания (или от сейчас, если срок истёк)
+            now_ts = int(datetime.now().timestamp())
+            base_ts = max(current_expire_timestamp, now_ts)
+            expire_timestamp = base_ts + (plan_days * 86400)
+            print(f'📅 Extending subscription: +{plan_days} days from {base_ts} to {expire_timestamp}')
+        else:
+            # Новый пользователь - считаем от сейчас
+            expire_timestamp = int(datetime.now().timestamp()) + (plan_days * 86400)
+            print(f'📅 New subscription: {plan_days} days, expire={expire_timestamp}')
         
         # 30 GB в байтах = 30 * 1024 * 1024 * 1024
         data_limit = 32212254720
         
-        payload = {
-            'action': 'create_user',
-            'username': username,
-            'email': email,
-            'proxies': {
-                'vless-reality': {}
-            },
-            'data_limit': data_limit,
-            'expire': expire_timestamp,
-            'data_limit_reset_strategy': 'day',
-            'internalSquads': ['e742f30b-82fb-431a-918b-1b4d22d6ba4d']
-        }
-        
-        print(f'🔹 Creating user in Remnawave: {username}')
+        # Если пользователь существует - обновляем, иначе создаём
+        if user_exists and user_uuid:
+            payload = {
+                'action': 'extend_subscription',
+                'uuid': user_uuid,
+                'expire': expire_timestamp
+            }
+            print(f'🔄 Extending user subscription in Remnawave: {username}')
+        else:
+            payload = {
+                'action': 'create_user',
+                'username': username,
+                'email': email,
+                'proxies': {
+                    'vless-reality': {}
+                },
+                'data_limit': data_limit,
+                'expire': expire_timestamp,
+                'data_limit_reset_strategy': 'day',
+                'internalSquads': ['e742f30b-82fb-431a-918b-1b4d22d6ba4d']
+            }
+            print(f'🔹 Creating user in Remnawave: {username}')
         
         response = requests.post(
             remnawave_url,

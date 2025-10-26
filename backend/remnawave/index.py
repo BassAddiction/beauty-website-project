@@ -222,6 +222,60 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
         
+        if action == 'extend_subscription':
+            from datetime import datetime
+            
+            user_uuid = body_data.get('uuid')
+            expire_timestamp = body_data.get('expire')
+            
+            if not user_uuid or not expire_timestamp:
+                return {
+                    'statusCode': 400,
+                    'headers': cors_headers,
+                    'body': json.dumps({'error': 'uuid and expire required'}),
+                    'isBase64Encoded': False
+                }
+            
+            expire_at = datetime.fromtimestamp(expire_timestamp).isoformat() + 'Z'
+            
+            print(f'📅 Extending subscription for {user_uuid} until {expire_at}')
+            
+            try:
+                patch_payload = {'expireAt': expire_at}
+                patch_response = requests.patch(
+                    f'{api_url}/api/users/{user_uuid}',
+                    headers=headers,
+                    json=patch_payload,
+                    timeout=10
+                )
+                
+                print(f'🔹 PATCH response: {patch_response.status_code} - {patch_response.text[:200]}')
+                
+                if patch_response.status_code in [200, 201]:
+                    print(f'✅ Subscription extended successfully')
+                    return {
+                        'statusCode': 200,
+                        'headers': cors_headers,
+                        'body': patch_response.text,
+                        'isBase64Encoded': False
+                    }
+                else:
+                    print(f'❌ Failed to extend subscription')
+                    return {
+                        'statusCode': patch_response.status_code,
+                        'headers': cors_headers,
+                        'body': patch_response.text,
+                        'isBase64Encoded': False
+                    }
+            except Exception as e:
+                print(f'❌ Error: {str(e)}')
+                return {
+                    'statusCode': 500,
+                    'headers': cors_headers,
+                    'body': json.dumps({'error': str(e)}),
+                    'isBase64Encoded': False
+                }
+        
         if action == 'update_user':
             print(f'🔹 Update user request - body: {json.dumps(body_data, indent=2)}')
             
