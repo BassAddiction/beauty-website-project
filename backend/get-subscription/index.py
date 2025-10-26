@@ -22,7 +22,7 @@ def get_public_plans(cors_headers: Dict[str, str]) -> Dict[str, Any]:
     try:
         cursor.execute("""
             SELECT plan_id, name, price, days, traffic_gb, is_custom, features
-            FROM plans
+            FROM subscription_plans
             WHERE is_active = true
             ORDER BY sort_order, plan_id
         """)
@@ -75,7 +75,7 @@ def handle_admin(event: Dict[str, Any], context: Any, cors_headers: Dict[str, st
             cursor.execute("""
                 SELECT plan_id, name, price, days, traffic_gb, is_active, is_custom, 
                        sort_order, features
-                FROM plans
+                FROM subscription_plans
                 ORDER BY sort_order, plan_id
             """)
             rows = cursor.fetchall()
@@ -139,10 +139,9 @@ def handle_admin(event: Dict[str, Any], context: Any, cors_headers: Dict[str, st
             if plan_id:
                 # UPDATE
                 cursor.execute("""
-                    UPDATE plans
+                    UPDATE subscription_plans
                     SET name = %s, price = %s, days = %s, traffic_gb = %s,
-                        is_active = %s, is_custom = %s, sort_order = %s, features = %s,
-                        updated_at = CURRENT_TIMESTAMP
+                        is_active = %s, is_custom = %s, sort_order = %s, features = %s
                     WHERE plan_id = %s
                 """, (
                     body.get('name'),
@@ -165,7 +164,7 @@ def handle_admin(event: Dict[str, Any], context: Any, cors_headers: Dict[str, st
             else:
                 # INSERT
                 cursor.execute("""
-                    INSERT INTO plans (name, price, days, traffic_gb, is_active, is_custom, sort_order, features)
+                    INSERT INTO subscription_plans (name, price, days, traffic_gb, is_active, is_custom, sort_order, features)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                     RETURNING plan_id
                 """, (
@@ -198,7 +197,7 @@ def handle_admin(event: Dict[str, Any], context: Any, cors_headers: Dict[str, st
                     'isBase64Encoded': False
                 }
             
-            cursor.execute("DELETE FROM plans WHERE plan_id = %s", (plan_id,))
+            cursor.execute("DELETE FROM subscription_plans WHERE plan_id = %s", (plan_id,))
             conn.commit()
             return {
                 'statusCode': 200,
