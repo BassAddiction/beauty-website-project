@@ -408,6 +408,48 @@ const Admin = () => {
                     />
                   </div>
                 </div>
+
+                <div className="space-y-2">
+                  <Label>Описание возможностей (по одному на строку)</Label>
+                  <div className="space-y-2">
+                    {(editingPlan.features || []).map((feature, idx) => (
+                      <div key={idx} className="flex gap-2">
+                        <Input
+                          value={feature}
+                          onChange={(e) => {
+                            const newFeatures = [...(editingPlan.features || [])];
+                            newFeatures[idx] = e.target.value;
+                            setEditingPlan({...editingPlan, features: newFeatures});
+                          }}
+                          placeholder="Например: Безлимитный трафик"
+                        />
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => {
+                            const newFeatures = editingPlan.features.filter((_, i) => i !== idx);
+                            setEditingPlan({...editingPlan, features: newFeatures});
+                          }}
+                        >
+                          <Icon name="Trash" className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setEditingPlan({
+                          ...editingPlan,
+                          features: [...(editingPlan.features || []), '']
+                        });
+                      }}
+                    >
+                      <Icon name="Plus" className="w-4 h-4 mr-2" />
+                      Добавить возможность
+                    </Button>
+                  </div>
+                </div>
                 
                 <div className="flex gap-4 pt-4">
                   <Button onClick={handleSavePlan} disabled={loading}>
