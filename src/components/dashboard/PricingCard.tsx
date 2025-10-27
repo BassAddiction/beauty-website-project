@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
+import { useState } from 'react';
 
 interface PricingCardProps {
   paymentLoading: boolean;
@@ -15,12 +16,26 @@ const plans = [
 ];
 
 export const PricingCard = ({ paymentLoading, onPayment }: PricingCardProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <Card className="mb-6">
-      <CardHeader>
-        <CardTitle>Тарифы</CardTitle>
-        <CardDescription>Выберите подходящий план подписки</CardDescription>
+      <CardHeader 
+        className="cursor-pointer hover:bg-accent/50 transition-colors"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Продление подписки</CardTitle>
+            <CardDescription>Выберите подходящий план</CardDescription>
+          </div>
+          <Icon 
+            name={isOpen ? "ChevronUp" : "ChevronDown"} 
+            className="w-5 h-5 text-muted-foreground"
+          />
+        </div>
       </CardHeader>
+      {isOpen && (
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {plans.map((plan) => (
@@ -62,13 +77,14 @@ export const PricingCard = ({ paymentLoading, onPayment }: PricingCardProps) => 
                     Обработка...
                   </>
                 ) : (
-                  'Оплатить'
+                  'Продлить'
                 )}
               </Button>
             </div>
           ))}
         </div>
       </CardContent>
+      )}
     </Card>
   );
 };
