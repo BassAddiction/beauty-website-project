@@ -94,18 +94,14 @@ const PaymentSuccess = () => {
             </div>
           )}
 
-          <div className="space-y-3">
-            <h3 className="font-semibold">Что дальше?</h3>
-            <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
-              <li>Войдите в личный кабинет, используя ваш Username</li>
-              <li>Проверьте email — там инструкция и ссылка для подключения</li>
-              <li>Скачайте VPN-клиент для вашего устройства</li>
-              <li>Добавьте подписку по ссылке из письма</li>
-              <li>Наслаждайтесь быстрым и безопасным интернетом! 🚀</li>
-            </ol>
+          <div className="bg-gradient-to-r from-primary/10 to-purple-500/10 p-6 rounded-lg border border-primary/20 text-center">
+            <h3 className="font-bold text-xl mb-2">Авторизуйтесь в личном кабинете</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Используйте ваш Username для входа и получения инструкций по подключению
+            </p>
           </div>
 
-          <div className="space-y-3 pt-4 border-t">
+          <div className="space-y-3 pt-2">
             <Button 
               onClick={() => navigate('/dashboard')} 
               className="w-full"
