@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 import { StatusCard } from '@/components/dashboard/StatusCard';
 import { ConnectionCard } from '@/components/dashboard/ConnectionCard';
+import { QuickClients } from '@/components/dashboard/QuickClients';
 import { VpnClients } from '@/components/dashboard/VpnClients';
 import { PricingCard } from '@/components/dashboard/PricingCard';
 import { PaymentHistory } from '@/components/dashboard/PaymentHistory';
@@ -204,6 +205,8 @@ const Dashboard = () => {
         />
 
         <ConnectionCard subUrl={userData.sub_url} />
+
+        <QuickClients subUrl={userData.sub_url} />
 
         <VpnClients />
 

@@ -8,10 +8,10 @@ interface PricingCardProps {
 }
 
 const plans = [
-  { name: '1 месяц', price: 300, days: 30 },
-  { name: '3 месяца', price: 800, days: 90 },
-  { name: '6 месяцев', price: 1500, days: 180 },
-  { name: '1 год', price: 2500, days: 365 }
+  { name: '1 месяц', price: 200, days: 30 },
+  { name: '3 месяца', price: 500, days: 90 },
+  { name: '6 месяцев', price: 900, days: 180 },
+  { name: '1 год', price: 1200, days: 365 }
 ];
 
 export const PricingCard = ({ paymentLoading, onPayment }: PricingCardProps) => {
