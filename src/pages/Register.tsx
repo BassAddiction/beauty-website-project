@@ -55,7 +55,7 @@ const Register = () => {
       const username = emailPrefix + '_' + Date.now();
       
       const createUserResponse = await fetch(
-        'https://functions.poehali.dev/d8d680b3-23f3-481e-b8cf-ccb969e2f158',
+        'https://functions.poehali.dev/4e61ec57-0f83-4c68-83fb-8b3049f711ab',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -96,7 +96,7 @@ const Register = () => {
         const userUuid = responseData.uuid;
         
         const squadResponse = await fetch(
-          'https://functions.poehali.dev/d8d680b3-23f3-481e-b8cf-ccb969e2f158',
+          'https://functions.poehali.dev/4e61ec57-0f83-4c68-83fb-8b3049f711ab',
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
