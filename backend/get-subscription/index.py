@@ -356,12 +356,17 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         expire_at_str = user_data.get('expireAt', '')
                         subscription_url = user_data.get('subscriptionUrl', '')
                         used_traffic_bytes = user_data.get('usedTrafficBytes', 0)
+                        lifetime_traffic = user_data.get('lifetimeUsedTrafficBytes', 0)
                         traffic_limit_bytes = user_data.get('trafficLimitBytes', 32212254720)
                         
                         print(f'📅 expireAt string: {expire_at_str}')
                         print(f'🔗 subscriptionUrl: {subscription_url}')
-                        print(f'📊 Traffic: {used_traffic_bytes} / {traffic_limit_bytes}')
-                        print(f'📊 Type of usedTrafficBytes: {type(used_traffic_bytes)}')
+                        print(f'📊 Current traffic (daily): {used_traffic_bytes} bytes')
+                        print(f'📊 Lifetime traffic (total): {lifetime_traffic} bytes')
+                        print(f'📊 Traffic limit: {traffic_limit_bytes} bytes')
+                        
+                        # Используем lifetime вместо current для отображения
+                        used_traffic_bytes = lifetime_traffic
                         
                         # Парсим дату из ISO формата
                         if expire_at_str:
