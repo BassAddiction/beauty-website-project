@@ -350,6 +350,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         response_data = user_response.json()
                         users_list = response_data.get('response', {}).get('users', [])
                         user_data = users_list[0] if users_list else {}
+                        
+                        print(f'👤 Full user data: {json.dumps(user_data)}')
+                        
                         expire_at_str = user_data.get('expireAt', '')
                         subscription_url = user_data.get('subscriptionUrl', '')
                         used_traffic_bytes = user_data.get('usedTrafficBytes', 0)
@@ -358,6 +361,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         print(f'📅 expireAt string: {expire_at_str}')
                         print(f'🔗 subscriptionUrl: {subscription_url}')
                         print(f'📊 Traffic: {used_traffic_bytes} / {traffic_limit_bytes}')
+                        print(f'📊 Type of usedTrafficBytes: {type(used_traffic_bytes)}')
                         
                         # Парсим дату из ISO формата
                         if expire_at_str:
