@@ -362,6 +362,7 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int) -> Dict[
         user_exists = False
         user_uuid = None
         current_expire_timestamp = None
+        user_created_recently = False
         
         if remnawave_api_url and remnawave_token:
             try:
@@ -378,16 +379,30 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int) -> Dict[
                         user_data = users_list[0]
                         user_uuid = user_data.get('uuid')
                         expire_at_str = user_data.get('expireAt', '')
+                        created_at_str = user_data.get('createdAt', '')
+                        
                         if expire_at_str:
                             from datetime import datetime as dt
                             expire_dt = dt.fromisoformat(expire_at_str.replace('Z', '+00:00'))
                             current_expire_timestamp = int(expire_dt.timestamp())
+                        
+                        # Проверяем когда пользователь был создан
+                        if created_at_str:
+                            from datetime import datetime as dt
+                            created_dt = dt.fromisoformat(created_at_str.replace('Z', '+00:00'))
+                            created_timestamp = int(created_dt.timestamp())
+                            now_ts = int(datetime.now().timestamp())
+                            # Если пользователь создан меньше 5 минут назад - это первая оплата
+                            if (now_ts - created_timestamp) < 300:
+                                user_created_recently = True
+                                print(f'🆕 User created recently ({now_ts - created_timestamp}s ago), skip extension')
+                        
                         print(f'👤 User exists: uuid={user_uuid}, current_expire={current_expire_timestamp}')
             except Exception as e:
                 print(f'⚠️ Could not check user existence: {str(e)}')
         
         # Вычисляем новый timestamp окончания подписки
-        if user_exists and current_expire_timestamp:
+        if user_exists and current_expire_timestamp and not user_created_recently:
             # Продлеваем от текущей даты окончания (или от сейчас, если срок истёк)
             now_ts = int(datetime.now().timestamp())
             base_ts = max(current_expire_timestamp, now_ts)
@@ -401,8 +416,8 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int) -> Dict[
         # 30 GB в байтах = 30 * 1024 * 1024 * 1024
         data_limit = 32212254720
         
-        # Если пользователь существует - обновляем, иначе создаём
-        if user_exists and user_uuid:
+        # Если пользователь существует И НЕ только что создан - продлеваем, иначе создаём
+        if user_exists and user_uuid and not user_created_recently:
             payload = {
                 'action': 'extend_subscription',
                 'username': username,
