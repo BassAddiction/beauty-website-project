@@ -32,9 +32,7 @@ export const ConnectionCard = ({ subUrl }: ConnectionCardProps) => {
         </div>
         
         <Button 
-          onClick={() => {
-            window.location.href = subUrl;
-          }}
+          onClick={() => window.location.href = subUrl}
           variant="outline"
           className="w-full"
         >
