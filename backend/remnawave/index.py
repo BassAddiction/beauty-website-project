@@ -242,37 +242,56 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             print(f'📅 Extending subscription for {username} ({user_uuid}) until {expire_at}')
             
             try:
-                # Используем PUT /api/users/{username} для обновления существующего пользователя
-                update_payload = {
-                    'expireAt': expire_at
-                }
-                
-                update_response = requests.put(
-                    f'{api_url}/api/users/{username}',
+                # Шаг 1: Удаляем старого пользователя
+                print(f'🗑️ Deleting old user {user_uuid}...')
+                delete_response = requests.delete(
+                    f'{api_url}/api/users/{user_uuid}',
                     headers=headers,
-                    json=update_payload,
                     timeout=10
                 )
                 
-                print(f'🔹 PUT /api/users/{username} response: {update_response.status_code} - {update_response.text[:300]}')
+                print(f'🔹 DELETE response: {delete_response.status_code}')
                 
-                if update_response.status_code in [200, 201]:
+                # Шаг 2: Создаём пользователя заново с новым expire
+                squad_uuids = ['6afd8de3-00d5-41db-aa52-f259fb98b2c8', '9ef43f96-83c9-4252-ae57-bb17dc9b60a9']
+                
+                create_payload = {
+                    'username': username,
+                    'expireAt': expire_at,
+                    'trafficLimitBytes': 32212254720,
+                    'trafficLimitStrategy': 'DAY',
+                    'activeInternalSquads': squad_uuids,
+                    'proxies': {}
+                }
+                
+                print(f'🔹 Creating user with new expireAt: {expire_at}')
+                
+                create_response = requests.post(
+                    f'{api_url}/api/users',
+                    headers=headers,
+                    json=create_payload,
+                    timeout=10
+                )
+                
+                print(f'🔹 POST /api/users response: {create_response.status_code} - {create_response.text[:300]}')
+                
+                if create_response.status_code in [200, 201]:
                     print(f'✅ Subscription extended successfully')
                     return {
                         'statusCode': 200,
                         'headers': cors_headers,
-                        'body': update_response.text,
+                        'body': create_response.text,
                         'isBase64Encoded': False
                     }
                 
                 # Если не получилось - возвращаем ошибку
                 print(f'❌ Failed to extend subscription')
                 return {
-                    'statusCode': update_response.status_code,
+                    'statusCode': create_response.status_code,
                     'headers': cors_headers,
                     'body': json.dumps({
                         'error': 'Failed to extend subscription',
-                        'details': update_response.text
+                        'details': create_response.text
                     }),
                     'isBase64Encoded': False
                 }
