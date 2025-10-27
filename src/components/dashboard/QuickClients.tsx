@@ -19,13 +19,26 @@ const quickClients = [
 ];
 
 export const QuickClients = ({ subUrl }: QuickClientsProps) => {
+  const handleClick = (scheme: string) => {
+    try {
+      if (scheme === 'happ') {
+        window.location.href = `hiddify://import/${encodeURIComponent(subUrl)}`;
+      } else if (scheme === 'v2raytun') {
+        window.location.href = `v2raytun://install-sub?url=${encodeURIComponent(subUrl)}`;
+      }
+    } catch (error) {
+      console.error('Ошибка открытия приложения:', error);
+      alert('Приложение не установлено. Скачайте его в разделе "VPN-клиенты" ниже.');
+    }
+  };
+
   return (
     <div className="grid grid-cols-2 gap-4 mb-6">
       {quickClients.map((client) => (
         <Card 
           key={client.name}
           className="cursor-pointer hover:border-primary transition-colors"
-          onClick={() => window.location.href = `${client.scheme}://install-config?url=${encodeURIComponent(subUrl)}`}
+          onClick={() => handleClick(client.scheme)}
         >
           <CardContent className="flex items-center gap-3 p-4">
             <Icon name={client.icon as any} className="w-6 h-6 text-primary" />
