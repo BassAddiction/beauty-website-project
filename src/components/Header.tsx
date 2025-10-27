@@ -33,11 +33,6 @@ const Header = () => {
               Личный кабинет
             </a>
           </Button>
-          <Button className="hidden md:flex rounded-full button-glow" asChild>
-            <a href="https://t.me/shopspeedvpn_bot" target="_blank" rel="noopener noreferrer">
-              Начать
-            </a>
-          </Button>
           <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
@@ -91,11 +86,6 @@ const Header = () => {
                   <a href="/login">
                     <Icon name="User" className="w-4 h-4 mr-2" />
                     Личный кабинет
-                  </a>
-                </Button>
-                <Button className="rounded-full button-glow" asChild>
-                  <a href="https://t.me/shopspeedvpn_bot" target="_blank" rel="noopener noreferrer">
-                    Начать
                   </a>
                 </Button>
               </nav>
