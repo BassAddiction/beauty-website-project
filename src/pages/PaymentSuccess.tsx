@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
+import { useToast } from "@/hooks/use-toast";
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
 
@@ -19,6 +21,14 @@ const PaymentSuccess = () => {
       navigate('/?payment=success');
     }
   }, [navigate]);
+
+  const copyUsername = () => {
+    navigator.clipboard.writeText(username);
+    toast({
+      title: "✅ Скопировано!",
+      description: "Username скопирован в буфер обмена"
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
@@ -37,20 +47,40 @@ const PaymentSuccess = () => {
           </div>
 
           {username && (
-            <div className="space-y-3">
+            <div className="space-y-4">
               <h3 className="font-semibold text-lg">Данные вашей подписки:</h3>
               
-              <div className="bg-muted p-4 rounded-lg space-y-2">
-                <div className="flex items-center justify-between">
+              <div className="bg-muted p-4 rounded-lg space-y-3">
+                <div className="flex items-center justify-between gap-3">
                   <span className="text-sm text-muted-foreground">Username:</span>
-                  <span className="font-mono font-bold">{username}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-bold text-sm">{username}</span>
+                    <Button 
+                      onClick={copyUsername}
+                      size="sm"
+                      variant="outline"
+                      className="h-8 px-3"
+                    >
+                      <Icon name="Copy" className="w-3 h-3 mr-1" />
+                      Копировать
+                    </Button>
+                  </div>
                 </div>
                 {email && (
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">Email:</span>
-                    <span className="font-mono">{email}</span>
+                    <span className="font-mono text-sm">{email}</span>
                   </div>
                 )}
+              </div>
+
+              <div className="bg-yellow-50 dark:bg-yellow-950/30 p-4 rounded-lg border-l-4 border-yellow-500">
+                <p className="text-sm font-semibold text-yellow-800 dark:text-yellow-200 mb-2">
+                  ⚠️ Важно! Сохраните ваш Username в надёжном месте
+                </p>
+                <p className="text-xs text-yellow-700 dark:text-yellow-300">
+                  Username потребуется для входа в личный кабинет и управления подпиской. Без него вы не сможете авторизоваться.
+                </p>
               </div>
 
               <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg space-y-2">
