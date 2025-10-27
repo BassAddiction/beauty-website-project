@@ -289,6 +289,18 @@ const Dashboard = () => {
                 Копировать
               </Button>
             </div>
+            
+            <Button 
+              onClick={() => {
+                window.location.href = userData.sub_url;
+              }}
+              variant="outline"
+              className="w-full"
+            >
+              <Icon name="Download" className="w-4 h-4 mr-2" />
+              Добавить подписку в VPN клиент
+            </Button>
+            
             <div className="flex items-start gap-2 text-sm text-muted-foreground">
               <Icon name="Info" className="w-4 h-4 mt-0.5" />
               <p>Вставьте эту ссылку в настройки вашего VPN-клиента для подключения</p>
