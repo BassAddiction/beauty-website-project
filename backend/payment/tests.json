@@ -15,6 +15,12 @@
         "error": "string"
       },
       "bodyMatcher": "partial"
+    },
+    {
+      "name": "Create payment with all params",
+      "method": "GET",
+      "path": "/?username=testuser&email=test@test.com&amount=200&plan_name=Test&plan_days=30",
+      "expectedStatus": 200
     }
   ]
 }

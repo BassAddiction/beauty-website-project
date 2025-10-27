@@ -145,19 +145,26 @@ const PricingSection = () => {
         email: email.trim()
       });
 
-      const res = await fetch(`https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c?${params}`, {
+      const url = `https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c?${params}`;
+      console.log('Payment request:', { url, plan, username: username.trim(), email: email.trim() });
+
+      const res = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
         }
       });
 
+      console.log('Payment response status:', res.status);
+
       if (!res.ok) {
         const errorText = await res.text();
+        console.error('Payment error response:', errorText);
         throw new Error(`HTTP ${res.status}: ${errorText}`);
       }
 
       const data = await res.json();
+      console.log('Payment data:', data);
 
       if (data.confirmation_url) {
         window.location.href = data.confirmation_url;
