@@ -25,7 +25,7 @@ export const QuickClients = ({ subUrl }: QuickClientsProps) => {
       if (scheme === 'happ') {
         deepLink = `happ://add/${subUrl}`;
       } else if (scheme === 'v2raytun') {
-        deepLink = `v2raytun://add/${subUrl}`;
+        deepLink = `v2raytun://import/${subUrl}`;
       }
       window.location.href = deepLink;
     } catch (error) {
