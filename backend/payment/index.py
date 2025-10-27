@@ -351,14 +351,12 @@ def update_payment_status(payment_id: str, status: str):
 def create_user_in_remnawave(username: str, email: str, plan_days: int) -> Dict[str, Any]:
     '''Создаёт или продлевает пользователя в Remnawave'''
     try:
-        remnawave_url = os.environ.get('REMNAWAVE_FUNCTION_URL', '').rstrip('/')
+        # ВАЖНО: используем актуальный URL из func2url.json
+        remnawave_url = 'https://functions.poehali.dev/4e61ec57-0f83-4c68-83fb-8b3049f711ab'
         remnawave_api_url = os.environ.get('REMNAWAVE_API_URL', '').rstrip('/')
         remnawave_token = os.environ.get('REMNAWAVE_API_TOKEN', '')
         
         print(f'🔑 Debug Remnawave Function URL: {remnawave_url}')
-        
-        if not remnawave_url:
-            return {'success': False, 'error': 'REMNAWAVE_FUNCTION_URL not configured'}
         
         # Проверяем, существует ли пользователь
         user_exists = False
