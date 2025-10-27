@@ -58,6 +58,8 @@ const Dashboard = () => {
 
       const data = await response.json();
       console.log('📊 Subscription data:', data);
+      console.log('📊 Used traffic:', data.subscription?.used_traffic_bytes);
+      console.log('📊 Traffic limit:', data.subscription?.traffic_limit_bytes);
       
       setUserData({
         username: data.username || username,
