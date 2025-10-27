@@ -22,7 +22,7 @@ export const QuickClients = ({ subUrl }: QuickClientsProps) => {
   const handleClick = (scheme: string) => {
     try {
       if (scheme === 'happ') {
-        window.location.href = `hiddify://import/${encodeURIComponent(subUrl)}`;
+        window.location.href = `happ://install-config?url=${encodeURIComponent(subUrl)}`;
       } else if (scheme === 'v2raytun') {
         window.location.href = `v2raytun://install-sub?url=${encodeURIComponent(subUrl)}`;
       }
