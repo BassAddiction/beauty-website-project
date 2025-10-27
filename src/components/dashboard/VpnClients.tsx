@@ -3,16 +3,28 @@ import Icon from "@/components/ui/icon";
 
 const vpnClients = [
   {
-    name: 'Hiddify',
-    platform: 'Android / iOS / Windows / macOS',
-    icon: 'Smartphone',
-    url: 'https://github.com/hiddify/hiddify-next/releases'
+    name: 'V2RayN',
+    platform: 'Windows',
+    icon: 'Monitor',
+    url: 'https://github.com/2dust/v2rayN/releases'
   },
   {
-    name: 'V2rayTUN',
+    name: 'Shadowrocket',
+    platform: 'iOS',
+    icon: 'Apple',
+    url: 'https://apps.apple.com/app/shadowrocket/id932747118'
+  },
+  {
+    name: 'V2RayNG',
     platform: 'Android',
     icon: 'Smartphone',
-    url: 'https://play.google.com/store/apps/details?id=com.v2raytun.android'
+    url: 'https://github.com/2dust/v2rayNG/releases'
+  },
+  {
+    name: 'ClashX',
+    platform: 'macOS',
+    icon: 'Apple',
+    url: 'https://github.com/yichengchen/clashX/releases'
   }
 ];
 
