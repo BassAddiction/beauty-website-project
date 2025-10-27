@@ -8,7 +8,7 @@ const vpnClients = [
     logo: 'H',
     description: 'Простой и удобный клиент с понятным интерфейсом для быстрого подключения',
     platforms: [
-      { name: 'Play Market', icon: 'Smartphone', url: 'https://play.google.com/store/apps/details?id=app.happ.android' },
+      { name: 'Play Market', icon: 'Smartphone', url: 'https://play.google.com/store/apps/details?id=com.happproxy' },
       { name: 'App Store', icon: 'Apple', url: 'https://apps.apple.com/us/app/happ-proxy-utility/id6504287215' },
       { name: 'Windows', icon: 'Monitor', url: 'https://github.com/happ-ai/releases' }
     ]
