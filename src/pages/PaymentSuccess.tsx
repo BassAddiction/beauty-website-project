@@ -97,6 +97,7 @@ const PaymentSuccess = () => {
           <div className="space-y-3">
             <h3 className="font-semibold">Что дальше?</h3>
             <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
+              <li>Войдите в личный кабинет, используя ваш Username</li>
               <li>Проверьте email — там инструкция и ссылка для подключения</li>
               <li>Скачайте VPN-клиент для вашего устройства</li>
               <li>Добавьте подписку по ссылке из письма</li>
