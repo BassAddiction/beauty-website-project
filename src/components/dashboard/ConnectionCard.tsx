@@ -14,7 +14,7 @@ export const ConnectionCard = ({ subUrl }: ConnectionCardProps) => {
         <CardDescription>Скопируйте ссылку для подключения в VPN-клиент</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <input
             type="text"
             readOnly
@@ -25,6 +25,7 @@ export const ConnectionCard = ({ subUrl }: ConnectionCardProps) => {
             onClick={() => {
               navigator.clipboard.writeText(subUrl);
             }}
+            className="w-full sm:w-auto"
           >
             <Icon name="Copy" className="w-4 h-4 mr-2" />
             Копировать
