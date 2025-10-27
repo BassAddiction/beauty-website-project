@@ -7,7 +7,7 @@ interface QuickClientsProps {
 
 const quickClients = [
   {
-    name: 'Hiddify',
+    name: 'Happ',
     scheme: 'happ',
     icon: 'Smartphone'
   },
