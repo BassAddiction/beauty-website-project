@@ -56,6 +56,7 @@ export const StatusCard = ({
             <p className="text-2xl font-bold">
               {formatBytes(usedTraffic)} / {formatBytes(dataLimit)}
             </p>
+            <p className="text-xs text-muted-foreground">Лимит на сутки: 30 GB</p>
           </div>
         </div>
 
