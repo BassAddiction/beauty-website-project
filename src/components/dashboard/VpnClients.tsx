@@ -8,9 +8,9 @@ const vpnClients = [
     logo: 'H',
     description: 'Простой и удобный клиент с понятным интерфейсом для быстрого подключения',
     platforms: [
-      { name: 'Play Market', icon: 'Smartphone', url: 'https://play.google.com/store/apps/details?id=app.hiddify.com' },
-      { name: 'App Store', icon: 'Apple', url: 'https://apps.apple.com/app/hiddify/id6596777532' },
-      { name: 'Windows', icon: 'Monitor', url: 'https://github.com/hiddify/hiddify-next/releases' }
+      { name: 'Play Market', icon: 'Smartphone', url: 'https://play.google.com/store/apps/details?id=app.happ.android' },
+      { name: 'App Store', icon: 'Apple', url: 'https://apps.apple.com/app/happ/id1611891905' },
+      { name: 'Windows', icon: 'Monitor', url: 'https://github.com/happ-ai/releases' }
     ]
   },
   {
