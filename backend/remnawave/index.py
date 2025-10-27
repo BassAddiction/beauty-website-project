@@ -241,23 +241,22 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             print(f'📅 Extending subscription for {user_uuid} until {expire_at}')
             
             try:
-                # Используем POST /api/users/update-user-expire
+                # Используем PUT /api/users/{uuid} для обновления expireAt
                 update_payload = {
-                    'uuid': user_uuid,
                     'expireAt': expire_at
                 }
                 
-                update_response = requests.post(
-                    f'{api_url}/api/users/update-user-expire',
+                update_response = requests.put(
+                    f'{api_url}/api/users/{user_uuid}',
                     headers=headers,
                     json=update_payload,
                     timeout=10
                 )
                 
-                print(f'🔹 POST update-user-expire response: {update_response.status_code} - {update_response.text[:300]}')
+                print(f'🔹 PUT /api/users/{user_uuid} response: {update_response.status_code} - {update_response.text[:300]}')
                 
                 if update_response.status_code in [200, 201]:
-                    print(f'✅ Subscription extended via update-user-expire')
+                    print(f'✅ Subscription extended successfully')
                     return {
                         'statusCode': 200,
                         'headers': cors_headers,
@@ -265,29 +264,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'isBase64Encoded': False
                     }
                 
-                # Если не получилось - пробуем альтернативный способ через PATCH /api/users/expire/{uuid}
-                print(f'⚠️ Trying alternative PATCH /api/users/expire/{user_uuid}')
-                
-                patch_response = requests.patch(
-                    f'{api_url}/api/users/expire/{user_uuid}',
-                    headers=headers,
-                    json={'expireAt': expire_at},
-                    timeout=10
-                )
-                
-                print(f'🔹 PATCH expire response: {patch_response.status_code} - {patch_response.text[:300]}')
-                
-                if patch_response.status_code in [200, 201]:
-                    print(f'✅ Subscription extended via PATCH expire')
-                    return {
-                        'statusCode': 200,
-                        'headers': cors_headers,
-                        'body': patch_response.text,
-                        'isBase64Encoded': False
-                    }
-                
-                # Если оба не сработали - возвращаем ошибку
-                print(f'❌ All methods failed, returning first error')
+                # Если не получилось - возвращаем ошибку
+                print(f'❌ Failed to extend subscription')
                 return {
                     'statusCode': update_response.status_code,
                     'headers': cors_headers,
