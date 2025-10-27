@@ -37,8 +37,14 @@ const HeroSection = () => {
                 Подключить
               </a>
             </Button>
-            <Button size="lg" variant="outline" className="rounded-full text-lg px-8 h-14" asChild>
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="rounded-full text-lg px-8 h-14 border-2 border-primary/50 hover:border-primary hover:bg-primary/10 transition-all duration-300" 
+              asChild
+            >
               <a href="https://t.me/shopspeedvpn_bot" target="_blank" rel="noopener noreferrer">
+                <Icon name="Send" className="w-5 h-5 mr-2" />
                 Подключить в Telegram
               </a>
             </Button>
