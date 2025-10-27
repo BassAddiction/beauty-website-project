@@ -343,13 +343,23 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         timeout=10
                     )
                     
+                    print(f'📡 Remnawave request URL: {remnawave_url}/api/users?username={username}')
                     print(f'📡 Remnawave response status: {user_response.status_code}')
-                    print(f'📄 Remnawave response: {user_response.text[:500]}')
                     
                     if user_response.status_code == 200:
                         response_data = user_response.json()
                         users_list = response_data.get('response', {}).get('users', [])
-                        user_data = users_list[0] if users_list else {}
+                        print(f'📊 Total users in response: {len(users_list)}')
+                        
+                        # Находим нужного пользователя по username
+                        user_data = {}
+                        for user in users_list:
+                            if user.get('username') == username:
+                                user_data = user
+                                break
+                        
+                        if not user_data and users_list:
+                            print(f'⚠️ User {username} not found in response, available: {[u.get("username") for u in users_list[:5]]}')
                         
                         print(f'👤 Full user data: {json.dumps(user_data)}')
                         
