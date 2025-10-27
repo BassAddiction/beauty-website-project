@@ -225,35 +225,43 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         if action == 'extend_subscription':
             from datetime import datetime
             
+            username = body_data.get('username')
             user_uuid = body_data.get('uuid')
             expire_timestamp = body_data.get('expire')
             
-            if not user_uuid or not expire_timestamp:
+            if not expire_timestamp or not username:
                 return {
                     'statusCode': 400,
                     'headers': cors_headers,
-                    'body': json.dumps({'error': 'uuid and expire required'}),
+                    'body': json.dumps({'error': 'username and expire required'}),
                     'isBase64Encoded': False
                 }
             
             expire_at = datetime.fromtimestamp(expire_timestamp).isoformat() + 'Z'
             
-            print(f'📅 Extending subscription for {user_uuid} until {expire_at}')
+            print(f'📅 Extending subscription for {username} ({user_uuid}) until {expire_at}')
             
             try:
-                # Используем PATCH /api/users/{uuid} для обновления expireAt
+                # Используем POST /api/users с username - если пользователь существует, обновится expireAt
+                squad_uuids = ['6afd8de3-00d5-41db-aa52-f259fb98b2c8', '9ef43f96-83c9-4252-ae57-bb17dc9b60a9']
+                
                 update_payload = {
-                    'expireAt': expire_at
+                    'username': username,
+                    'expireAt': expire_at,
+                    'trafficLimitBytes': 32212254720,
+                    'trafficLimitStrategy': 'DAY',
+                    'activeInternalSquads': squad_uuids,
+                    'proxies': {}
                 }
                 
-                update_response = requests.patch(
-                    f'{api_url}/api/users/{user_uuid}',
+                update_response = requests.post(
+                    f'{api_url}/api/users',
                     headers=headers,
                     json=update_payload,
                     timeout=10
                 )
                 
-                print(f'🔹 PATCH /api/users/{user_uuid} response: {update_response.status_code} - {update_response.text[:300]}')
+                print(f'🔹 POST /api/users response: {update_response.status_code} - {update_response.text[:300]}')
                 
                 if update_response.status_code in [200, 201]:
                     print(f'✅ Subscription extended successfully')

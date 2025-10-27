@@ -405,6 +405,7 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int) -> Dict[
         if user_exists and user_uuid:
             payload = {
                 'action': 'extend_subscription',
+                'username': username,
                 'uuid': user_uuid,
                 'expire': expire_timestamp
             }
