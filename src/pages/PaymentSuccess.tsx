@@ -67,25 +67,25 @@ const PaymentSuccess = () => {
               </div>
 
               <div className="bg-muted p-4 rounded-lg space-y-3">
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-sm text-muted-foreground">Username:</span>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono font-bold text-sm">{username}</span>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-sm text-muted-foreground shrink-0">Username:</span>
                     <Button 
                       onClick={copyUsername}
                       size="sm"
                       variant="outline"
-                      className="h-8 px-3"
+                      className="h-8 px-3 shrink-0"
                     >
                       <Icon name="Copy" className="w-3 h-3 mr-1" />
                       Копировать
                     </Button>
                   </div>
+                  <div className="font-mono font-bold text-sm break-all">{username}</div>
                 </div>
                 {email && (
-                  <div className="flex items-center justify-between">
+                  <div className="space-y-1">
                     <span className="text-sm text-muted-foreground">Email:</span>
-                    <span className="font-mono text-sm">{email}</span>
+                    <div className="font-mono text-sm break-all">{email}</div>
                   </div>
                 )}
               </div>
