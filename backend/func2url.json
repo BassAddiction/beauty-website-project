@@ -1,7 +1,7 @@
 {
+  "remnawave": "https://functions.poehali.dev/4e61ec57-0f83-4c68-83fb-8b3049f711ab",
+  "send-email": "https://functions.poehali.dev/b7df3121-2214-4658-b0d1-8af63a4ce471",
   "update-all-users": "https://functions.poehali.dev/058e87bb-5d15-4a90-8f78-2ab58eeaf5c8",
   "get-subscription": "https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0",
-  "send-email": "https://functions.poehali.dev/02f41dd7-0d1d-4506-828c-64a917a7dda7",
-  "payment": "https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c",
-  "remnawave": "https://functions.poehali.dev/d8d680b3-23f3-481e-b8cf-ccb969e2f158"
+  "payment": "https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c"
 }

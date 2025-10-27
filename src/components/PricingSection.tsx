@@ -108,10 +108,19 @@ const PricingSection = () => {
   };
 
   const handlePayment = async (plan: Plan) => {
-    if (!username.trim()) {
+    if (!username.trim() || !email.trim()) {
       toast({
-        title: '❌ Ошибка',
-        description: 'Введите username для создания подписки',
+        title: '❌ Заполните данные',
+        description: 'Введите Username и Email перед оплатой',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast({
+        title: '❌ Некорректный email',
+        description: 'Введите правильный адрес электронной почты',
         variant: 'destructive'
       });
       return;
@@ -136,22 +145,34 @@ const PricingSection = () => {
         email: email.trim()
       });
 
-      const res = await fetch(`https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c?${params}`);
+      const res = await fetch(`https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c?${params}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`HTTP ${res.status}: ${errorText}`);
+      }
+
       const data = await res.json();
 
-      if (res.ok && data.confirmation_url) {
+      if (data.confirmation_url) {
         window.location.href = data.confirmation_url;
       } else {
         toast({
           title: '❌ Ошибка создания платежа',
-          description: data.error || 'Попробуйте позже',
+          description: data.error || 'Не получена ссылка на оплату',
           variant: 'destructive'
         });
       }
     } catch (e) {
+      console.error('Payment error:', e);
       toast({
-        title: '❌ Ошибка',
-        description: String(e),
+        title: '❌ Ошибка подключения',
+        description: e instanceof Error ? e.message : 'Проверьте интернет-соединение и попробуйте снова',
         variant: 'destructive'
       });
     } finally {

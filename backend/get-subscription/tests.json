@@ -7,6 +7,12 @@
       "expectedStatus": 200
     },
     {
+      "name": "Test GET public plans",
+      "method": "GET",
+      "path": "/?action=get_plans",
+      "expectedStatus": 200
+    },
+    {
       "name": "Test GET without username",
       "method": "GET",
       "path": "/",
