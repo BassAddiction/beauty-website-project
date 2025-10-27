@@ -21,11 +21,15 @@ const quickClients = [
 export const QuickClients = ({ subUrl }: QuickClientsProps) => {
   const handleClick = (scheme: string) => {
     try {
+      let deepLink = '';
       if (scheme === 'happ') {
-        window.location.href = `happ://add/${subUrl}`;
+        deepLink = `happ://add/${subUrl}`;
+        console.log('🔗 Happ deep link:', deepLink);
       } else if (scheme === 'v2raytun') {
-        window.location.href = `v2raytun://install-sub?url=${encodeURIComponent(subUrl)}`;
+        deepLink = `v2raytun://install-sub?url=${encodeURIComponent(subUrl)}`;
+        console.log('🔗 V2rayTUN deep link:', deepLink);
       }
+      window.location.href = deepLink;
     } catch (error) {
       console.error('Ошибка открытия приложения:', error);
       alert('Приложение не установлено. Скачайте его в разделе "VPN-клиенты" ниже.');
