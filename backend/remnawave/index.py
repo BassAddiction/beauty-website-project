@@ -242,26 +242,19 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             print(f'📅 Extending subscription for {username} ({user_uuid}) until {expire_at}')
             
             try:
-                # Используем POST /api/users с username - если пользователь существует, обновится expireAt
-                squad_uuids = ['6afd8de3-00d5-41db-aa52-f259fb98b2c8', '9ef43f96-83c9-4252-ae57-bb17dc9b60a9']
-                
+                # Используем PUT /api/users/{username} для обновления существующего пользователя
                 update_payload = {
-                    'username': username,
-                    'expireAt': expire_at,
-                    'trafficLimitBytes': 32212254720,
-                    'trafficLimitStrategy': 'DAY',
-                    'activeInternalSquads': squad_uuids,
-                    'proxies': {}
+                    'expireAt': expire_at
                 }
                 
-                update_response = requests.post(
-                    f'{api_url}/api/users',
+                update_response = requests.put(
+                    f'{api_url}/api/users/{username}',
                     headers=headers,
                     json=update_payload,
                     timeout=10
                 )
                 
-                print(f'🔹 POST /api/users response: {update_response.status_code} - {update_response.text[:300]}')
+                print(f'🔹 PUT /api/users/{username} response: {update_response.status_code} - {update_response.text[:300]}')
                 
                 if update_response.status_code in [200, 201]:
                     print(f'✅ Subscription extended successfully')
