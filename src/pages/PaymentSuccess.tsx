@@ -48,8 +48,6 @@ const PaymentSuccess = () => {
 
           {username && (
             <div className="space-y-4">
-              <h3 className="font-semibold text-lg">Данные вашей подписки:</h3>
-              
               <div className="bg-muted p-4 rounded-lg space-y-3">
                 <div className="flex items-center justify-between gap-3">
                   <span className="text-sm text-muted-foreground">Username:</span>
@@ -83,6 +81,13 @@ const PaymentSuccess = () => {
                 </p>
               </div>
 
+              <div className="bg-gradient-to-r from-primary/10 to-purple-500/10 p-6 rounded-lg border border-primary/20 text-center">
+                <h3 className="font-bold text-xl mb-2">Авторизуйтесь в личном кабинете</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Используйте ваш Username для входа и получения инструкций по подключению
+                </p>
+              </div>
+
               <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg space-y-2">
                 <p className="text-sm text-blue-800 dark:text-blue-200">
                   <strong>📧 Важно!</strong> На ваш email <strong>{email}</strong> отправлена инструкция по подключению к VPN.
@@ -93,13 +98,6 @@ const PaymentSuccess = () => {
               </div>
             </div>
           )}
-
-          <div className="bg-gradient-to-r from-primary/10 to-purple-500/10 p-6 rounded-lg border border-primary/20 text-center">
-            <h3 className="font-bold text-xl mb-2">Авторизуйтесь в личном кабинете</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Используйте ваш Username для входа и получения инструкций по подключению
-            </p>
-          </div>
 
           <div className="space-y-3 pt-2">
             <Button 
