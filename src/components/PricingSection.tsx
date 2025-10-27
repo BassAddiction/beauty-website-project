@@ -261,10 +261,11 @@ const PricingSection = () => {
                   </Button>
                 ) : (
                   <Button 
-                    className="w-full rounded-full button-glow"
+                    className="w-full rounded-full button-glow relative overflow-hidden group"
                     asChild
                   >
-                    <a href="https://t.me/shopspeedvpn_bot" target="_blank" rel="noopener noreferrer">
+                    <a href="https://t.me/shopspeedvpn_bot" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
+                      <Icon name="Send" className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                       Telegram
                     </a>
                   </Button>
