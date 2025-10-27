@@ -24,10 +24,8 @@ export const QuickClients = ({ subUrl }: QuickClientsProps) => {
       let deepLink = '';
       if (scheme === 'happ') {
         deepLink = `happ://add/${subUrl}`;
-        console.log('🔗 Happ deep link:', deepLink);
       } else if (scheme === 'v2raytun') {
-        deepLink = `v2raytun://install-sub?url=${encodeURIComponent(subUrl)}`;
-        console.log('🔗 V2rayTUN deep link:', deepLink);
+        deepLink = `v2raytun://add/${subUrl}`;
       }
       window.location.href = deepLink;
     } catch (error) {
