@@ -241,19 +241,19 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             print(f'📅 Extending subscription for {user_uuid} until {expire_at}')
             
             try:
-                # Используем PUT /api/users/{uuid} для обновления expireAt
+                # Используем PATCH /api/users/{uuid} для обновления expireAt
                 update_payload = {
                     'expireAt': expire_at
                 }
                 
-                update_response = requests.put(
+                update_response = requests.patch(
                     f'{api_url}/api/users/{user_uuid}',
                     headers=headers,
                     json=update_payload,
                     timeout=10
                 )
                 
-                print(f'🔹 PUT /api/users/{user_uuid} response: {update_response.status_code} - {update_response.text[:300]}')
+                print(f'🔹 PATCH /api/users/{user_uuid} response: {update_response.status_code} - {update_response.text[:300]}')
                 
                 if update_response.status_code in [200, 201]:
                     print(f'✅ Subscription extended successfully')
