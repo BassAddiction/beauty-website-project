@@ -29,6 +29,7 @@ const Footer = () => {
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><a href="#faq" className="hover:text-primary transition-colors">FAQ</a></li>
               <li><a href="https://t.me/gospeedvpn" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Связаться с нами</a></li>
+              <li><a href="/terms" className="hover:text-primary transition-colors">Публичная оферта</a></li>
             </ul>
           </div>
 
