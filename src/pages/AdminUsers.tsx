@@ -27,6 +27,7 @@ const AdminUsers = () => {
   const [loading, setLoading] = useState(false);
   const [deletingUser, setDeletingUser] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
   const ADMIN_USERS_URL = 'https://functions.poehali.dev/e99b698b-6c6b-46cc-9206-1d6dac7e8575';
 
@@ -178,6 +179,74 @@ const AdminUsers = () => {
     });
   };
 
+  const toggleSelectAll = () => {
+    if (selectedUsers.length === uniqueUsers.length) {
+      setSelectedUsers([]);
+    } else {
+      setSelectedUsers(uniqueUsers.map(u => u.username));
+    }
+  };
+
+  const toggleSelectUser = (username: string) => {
+    setSelectedUsers(prev => 
+      prev.includes(username) 
+        ? prev.filter(u => u !== username)
+        : [...prev, username]
+    );
+  };
+
+  const handleDeleteSelected = async () => {
+    if (selectedUsers.length === 0) {
+      toast({
+        title: '⚠️ Предупреждение',
+        description: 'Выберите пользователей для удаления',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    if (!confirm(`Вы уверены, что хотите удалить ${selectedUsers.length} пользователей?\n\nЭто удалит их из:\n- Базы данных\n- RemnaWave панели`)) {
+      return;
+    }
+
+    const savedKey = localStorage.getItem('admin_key');
+    if (!savedKey) return;
+
+    setLoading(true);
+    let successCount = 0;
+    let failCount = 0;
+
+    for (const username of selectedUsers) {
+      try {
+        const response = await fetch(`${ADMIN_USERS_URL}?username=${encodeURIComponent(username)}`, {
+          method: 'DELETE',
+          headers: {
+            'X-Admin-Key': savedKey
+          }
+        });
+
+        if (response.ok) {
+          successCount++;
+        } else {
+          failCount++;
+        }
+      } catch (error) {
+        console.error(`Failed to delete ${username}:`, error);
+        failCount++;
+      }
+    }
+
+    toast({
+      title: successCount > 0 ? '✅ Удаление завершено' : '❌ Ошибка',
+      description: `Успешно: ${successCount}, Ошибок: ${failCount}`,
+      variant: failCount > 0 ? 'destructive' : 'default'
+    });
+
+    setSelectedUsers([]);
+    await loadUsers();
+    setLoading(false);
+  };
+
   useEffect(() => {
     const savedKey = localStorage.getItem('admin_key');
     if (savedKey) {
@@ -265,16 +334,41 @@ const AdminUsers = () => {
 
         <Card className="mb-6">
           <CardContent className="pt-6">
-            <div className="flex gap-2">
-              <Input
-                placeholder="Поиск по имени пользователя или email..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1"
-              />
-              <Button variant="outline" onClick={() => setSearchQuery('')}>
-                <Icon name="X" size={16} />
-              </Button>
+            <div className="flex flex-col gap-4">
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Поиск по имени пользователя или email..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="flex-1"
+                />
+                <Button variant="outline" onClick={() => setSearchQuery('')}>
+                  <Icon name="X" size={16} />
+                </Button>
+              </div>
+              {selectedUsers.length > 0 && (
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary">
+                    Выбрано: {selectedUsers.length}
+                  </Badge>
+                  <Button 
+                    variant="destructive" 
+                    size="sm"
+                    onClick={handleDeleteSelected}
+                    disabled={loading}
+                  >
+                    <Icon name="Trash2" size={16} className="mr-2" />
+                    Удалить выбранных
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setSelectedUsers([])}
+                  >
+                    Отменить
+                  </Button>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -285,6 +379,14 @@ const AdminUsers = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-12">
+                      <input 
+                        type="checkbox"
+                        checked={selectedUsers.length === uniqueUsers.length && uniqueUsers.length > 0}
+                        onChange={toggleSelectAll}
+                        className="cursor-pointer w-4 h-4"
+                      />
+                    </TableHead>
                     <TableHead>Username</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Тариф</TableHead>
@@ -297,19 +399,27 @@ const AdminUsers = () => {
                 <TableBody>
                   {loading ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8">
+                      <TableCell colSpan={8} className="text-center py-8">
                         <Icon name="Loader2" size={32} className="animate-spin mx-auto text-primary" />
                       </TableCell>
                     </TableRow>
                   ) : uniqueUsers.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                         Пользователи не найдены
                       </TableCell>
                     </TableRow>
                   ) : (
                     uniqueUsers.map((user) => (
                       <TableRow key={user.username}>
+                        <TableCell>
+                          <input 
+                            type="checkbox"
+                            checked={selectedUsers.includes(user.username)}
+                            onChange={() => toggleSelectUser(user.username)}
+                            className="cursor-pointer w-4 h-4"
+                          />
+                        </TableCell>
                         <TableCell className="font-mono text-sm">{user.username}</TableCell>
                         <TableCell>{user.email}</TableCell>
                         <TableCell>{user.plan_name}</TableCell>
