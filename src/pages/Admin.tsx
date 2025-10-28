@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
 import { useToast } from "@/hooks/use-toast";
 import UsersManagement from "@/components/UsersManagement";
+import RegisterPlansManagement from "@/components/RegisterPlansManagement";
 
 interface Plan {
   plan_id: number;
@@ -35,7 +36,7 @@ const Admin = () => {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'plans' | 'clients' | 'users'>('plans');
+  const [activeTab, setActiveTab] = useState<'plans' | 'clients' | 'users' | 'register-plans'>('plans');
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
   const { toast } = useToast();
 
@@ -260,6 +261,13 @@ const Admin = () => {
             <Icon name="UserCog" className="w-4 h-4 mr-2" />
             Пользователи
           </Button>
+          <Button
+            variant={activeTab === 'register-plans' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('register-plans')}
+          >
+            <Icon name="ShoppingCart" className="w-4 h-4 mr-2" />
+            Тарифы регистрации
+          </Button>
         </div>
 
         {/* Plans Tab */}
@@ -376,6 +384,11 @@ const Admin = () => {
         {/* Users Tab */}
         {activeTab === 'users' && (
           <UsersManagement adminPassword={password} />
+        )}
+
+        {/* Register Plans Tab */}
+        {activeTab === 'register-plans' && (
+          <RegisterPlansManagement adminPassword={password} />
         )}
 
         {/* Edit Plan Modal */}
