@@ -32,16 +32,29 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     
     # Проверяем admin ключ
     headers = event.get('headers', {})
-    admin_key = headers.get('x-admin-key', '')
+    
+    # Заголовки могут быть в любом регистре, ищем все варианты
+    admin_key = (
+        headers.get('x-admin-key') or 
+        headers.get('X-Admin-Key') or 
+        headers.get('X-ADMIN-KEY') or ''
+    )
+    
     expected_admin_key = os.environ.get('ADMIN_PASSWORD', '')
     
+    print(f'🔐 Auth check: admin_key={admin_key[:5] if admin_key else "EMPTY"}..., expected={expected_admin_key[:5] if expected_admin_key else "EMPTY"}...')
+    print(f'📋 All headers: {list(headers.keys())}')
+    
     if not admin_key or admin_key != expected_admin_key:
+        print(f'❌ Auth failed: key_present={bool(admin_key)}, match={admin_key == expected_admin_key}')
         return {
             'statusCode': 401,
             'headers': cors_headers,
-            'body': json.dumps({'error': 'Unauthorized'}),
+            'body': json.dumps({'error': 'Unauthorized', 'debug': f'Key present: {bool(admin_key)}'}),
             'isBase64Encoded': False
         }
+    
+    print(f'✅ Auth successful')
     
     if method == 'GET':
         return get_users_list(cors_headers)
