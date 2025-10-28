@@ -34,7 +34,7 @@ def get_public_plans(cors_headers: Dict[str, str]) -> Dict[str, Any]:
             plans.append({
                 'plan_id': row[0],
                 'name': row[1],
-                'price': row[2],
+                'price': float(row[2]),
                 'days': row[3],
                 'traffic': row[4],
                 'custom': row[5],
@@ -85,7 +85,7 @@ def handle_admin(event: Dict[str, Any], context: Any, cors_headers: Dict[str, st
                 plans.append({
                     'plan_id': row[0],
                     'name': row[1],
-                    'price': row[2],
+                    'price': float(row[2]),
                     'days': row[3],
                     'traffic_gb': row[4],
                     'is_active': row[5],
