@@ -1,34 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import Icon from "@/components/ui/icon";
 import { useToast } from "@/hooks/use-toast";
 import UsersManagement from "@/components/UsersManagement";
-
-interface Plan {
-  plan_id: number;
-  name: string;
-  price: number;
-  days: number;
-  traffic_gb: number;
-  is_active: boolean;
-  is_custom: boolean;
-  sort_order: number;
-  features: string[];
-  show_on: string[];
-}
-
-interface Client {
-  username: string;
-  email: string;
-  last_payment: string;
-  total_paid: number;
-  payment_count: number;
-}
+import { AdminLogin } from "@/components/admin/AdminLogin";
+import { AdminHeader } from "@/components/admin/AdminHeader";
+import { AdminTabs } from "@/components/admin/AdminTabs";
+import { PlansTab, Plan } from "@/components/admin/PlansTab";
+import { ClientsTab, Client } from "@/components/admin/ClientsTab";
+import { PlanEditModal } from "@/components/admin/PlanEditModal";
 
 const Admin = () => {
   const [password, setPassword] = useState('');
@@ -188,337 +166,51 @@ const Admin = () => {
 
   if (!isAuthorized) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center px-4">
-        <Card className="max-w-md w-full">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Icon name="Lock" className="w-6 h-6" />
-              Админ-панель Speed VPN
-            </CardTitle>
-            <CardDescription>Введите пароль для доступа</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Пароль</Label>
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
-                placeholder="Введите пароль"
-              />
-            </div>
-            <Button 
-              className="w-full" 
-              onClick={() => handleLogin()}
-              disabled={loading || !password}
-            >
-              {loading ? 'Проверка...' : 'Войти'}
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+      <AdminLogin
+        password={password}
+        setPassword={setPassword}
+        handleLogin={() => handleLogin()}
+        loading={loading}
+      />
     );
   }
 
   return (
     <div className="min-h-screen bg-background px-4 py-8">
       <div className="container mx-auto max-w-7xl">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold">Админ-панель Speed VPN</h1>
-            <p className="text-muted-foreground">Управление тарифами и клиентами</p>
-          </div>
-          <Button variant="outline" onClick={handleLogout}>
-            <Icon name="LogOut" className="w-4 h-4 mr-2" />
-            Выход
-          </Button>
-        </div>
+        <AdminHeader handleLogout={handleLogout} />
 
-        {/* Tabs */}
-        <div className="flex gap-2 mb-6">
-          <Button
-            variant={activeTab === 'plans' ? 'default' : 'outline'}
-            onClick={() => setActiveTab('plans')}
-          >
-            <Icon name="Package" className="w-4 h-4 mr-2" />
-            Тарифы ({plans.length})
-          </Button>
-          <Button
-            variant={activeTab === 'clients' ? 'default' : 'outline'}
-            onClick={() => {
-              setActiveTab('clients');
-              loadClients();
-            }}
-          >
-            <Icon name="Users" className="w-4 h-4 mr-2" />
-            Клиенты ({clients.length})
-          </Button>
-          <Button
-            variant={activeTab === 'users' ? 'default' : 'outline'}
-            onClick={() => setActiveTab('users')}
-          >
-            <Icon name="UserCog" className="w-4 h-4 mr-2" />
-            Пользователи
-          </Button>
+        <AdminTabs
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          plansCount={plans.length}
+          clientsCount={clients.length}
+          loadClients={loadClients}
+        />
 
-        </div>
-
-        {/* Plans Tab */}
         {activeTab === 'plans' && (
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <div>
-                  <CardTitle>Управление тарифами</CardTitle>
-                  <CardDescription>Редактируйте цены и параметры тарифов</CardDescription>
-                </div>
-                <Button onClick={() => setEditingPlan({
-                  plan_id: 0,
-                  name: '',
-                  price: 0,
-                  days: 30,
-                  traffic_gb: 30,
-                  is_active: true,
-                  is_custom: false,
-                  sort_order: plans.length + 1,
-                  features: [],
-                  show_on: ['register', 'pricing']
-                })}>
-                  <Icon name="Plus" className="w-4 h-4 mr-2" />
-                  Добавить тариф
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>ID</TableHead>
-                    <TableHead>Название</TableHead>
-                    <TableHead>Цена</TableHead>
-                    <TableHead>Дни</TableHead>
-                    <TableHead>ГБ/день</TableHead>
-                    <TableHead>Статус</TableHead>
-                    <TableHead>Действия</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {plans.map((plan) => (
-                    <TableRow key={plan.plan_id}>
-                      <TableCell>{plan.plan_id}</TableCell>
-                      <TableCell className="font-medium">{plan.name}</TableCell>
-                      <TableCell>{plan.price}₽</TableCell>
-                      <TableCell>{plan.days}</TableCell>
-                      <TableCell>{plan.traffic_gb}</TableCell>
-                      <TableCell>
-                        <Badge variant={plan.is_active ? 'default' : 'secondary'}>
-                          {plan.is_active ? 'Активен' : 'Неактивен'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="space-x-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setEditingPlan(plan)}
-                        >
-                          <Icon name="Edit" className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => handleDeletePlan(plan.plan_id)}
-                        >
-                          <Icon name="Trash" className="w-4 h-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+          <PlansTab
+            plans={plans}
+            setEditingPlan={setEditingPlan}
+            handleDeletePlan={handleDeletePlan}
+          />
         )}
 
-        {/* Clients Tab */}
         {activeTab === 'clients' && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Список клиентов</CardTitle>
-              <CardDescription>Все пользователи VPN</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Username</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Последний платёж</TableHead>
-                    <TableHead>Всего оплачено</TableHead>
-                    <TableHead>Платежей</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {clients.map((client) => (
-                    <TableRow key={client.username}>
-                      <TableCell className="font-mono">{client.username}</TableCell>
-                      <TableCell>{client.email}</TableCell>
-                      <TableCell>
-                        {client.last_payment ? new Date(client.last_payment).toLocaleString('ru-RU') : '—'}
-                      </TableCell>
-                      <TableCell>{client.total_paid}₽</TableCell>
-                      <TableCell>{client.payment_count}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+          <ClientsTab clients={clients} />
         )}
 
-        {/* Users Tab */}
         {activeTab === 'users' && (
           <UsersManagement adminPassword={password} />
         )}
 
-        {/* Register Plans Tab */}
-        {activeTab === 'register-plans' && (
-          <RegisterPlansManagement adminPassword={password} />
-        )}
-
-        {/* Edit Plan Modal */}
         {editingPlan && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <CardHeader>
-                <CardTitle>
-                  {editingPlan.plan_id ? 'Редактировать тариф' : 'Новый тариф'}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Название</Label>
-                    <Input
-                      value={editingPlan.name}
-                      onChange={(e) => setEditingPlan({...editingPlan, name: e.target.value})}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Цена (₽)</Label>
-                    <Input
-                      type="number"
-                      value={editingPlan.price}
-                      onChange={(e) => setEditingPlan({...editingPlan, price: parseInt(e.target.value)})}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Дней</Label>
-                    <Input
-                      type="number"
-                      value={editingPlan.days}
-                      onChange={(e) => setEditingPlan({...editingPlan, days: parseInt(e.target.value)})}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>ГБ/день</Label>
-                    <Input
-                      type="number"
-                      value={editingPlan.traffic_gb}
-                      onChange={(e) => setEditingPlan({...editingPlan, traffic_gb: parseInt(e.target.value)})}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Показывать на страницах</Label>
-                  <div className="flex gap-4">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={(editingPlan.show_on || []).includes('register')}
-                        onChange={(e) => {
-                          const current = editingPlan.show_on || [];
-                          const updated = e.target.checked
-                            ? [...current.filter(p => p !== 'register'), 'register']
-                            : current.filter(p => p !== 'register');
-                          setEditingPlan({...editingPlan, show_on: updated});
-                        }}
-                        className="w-4 h-4"
-                      />
-                      <span>Register (регистрация)</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={(editingPlan.show_on || []).includes('pricing')}
-                        onChange={(e) => {
-                          const current = editingPlan.show_on || [];
-                          const updated = e.target.checked
-                            ? [...current.filter(p => p !== 'pricing'), 'pricing']
-                            : current.filter(p => p !== 'pricing');
-                          setEditingPlan({...editingPlan, show_on: updated});
-                        }}
-                        className="w-4 h-4"
-                      />
-                      <span>Pricing (главная)</span>
-                    </label>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Описание возможностей (по одному на строку)</Label>
-                  <div className="space-y-2">
-                    {(editingPlan.features || []).map((feature, idx) => (
-                      <div key={idx} className="flex gap-2">
-                        <Input
-                          value={feature}
-                          onChange={(e) => {
-                            const newFeatures = [...(editingPlan.features || [])];
-                            newFeatures[idx] = e.target.value;
-                            setEditingPlan({...editingPlan, features: newFeatures});
-                          }}
-                          placeholder="Например: Безлимитный трафик"
-                        />
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => {
-                            const newFeatures = editingPlan.features.filter((_, i) => i !== idx);
-                            setEditingPlan({...editingPlan, features: newFeatures});
-                          }}
-                        >
-                          <Icon name="Trash" className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    ))}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setEditingPlan({
-                          ...editingPlan,
-                          features: [...(editingPlan.features || []), '']
-                        });
-                      }}
-                    >
-                      <Icon name="Plus" className="w-4 h-4 mr-2" />
-                      Добавить возможность
-                    </Button>
-                  </div>
-                </div>
-                
-                <div className="flex gap-4 pt-4">
-                  <Button onClick={handleSavePlan} disabled={loading}>
-                    {loading ? 'Сохранение...' : 'Сохранить'}
-                  </Button>
-                  <Button variant="outline" onClick={() => setEditingPlan(null)}>
-                    Отмена
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <PlanEditModal
+            editingPlan={editingPlan}
+            setEditingPlan={setEditingPlan}
+            handleSavePlan={handleSavePlan}
+            loading={loading}
+          />
         )}
       </div>
     </div>
