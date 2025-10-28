@@ -12,6 +12,7 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import GetAccess from "./pages/GetAccess";
 import Admin from "./pages/Admin";
 import AdminUpdate from "./pages/AdminUpdate";
+import AdminUsers from "./pages/AdminUsers";
 import TestWebhook from "./pages/TestWebhook";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin/update" element={<AdminUpdate />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/test-webhook" element={<TestWebhook />} />
           <Route path="/terms" element={<Terms />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

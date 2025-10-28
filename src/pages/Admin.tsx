@@ -227,10 +227,16 @@ const Admin = () => {
             <h1 className="text-3xl font-bold">Админ-панель Speed VPN</h1>
             <p className="text-muted-foreground">Управление тарифами и клиентами</p>
           </div>
-          <Button variant="outline" onClick={handleLogout}>
-            <Icon name="LogOut" className="w-4 h-4 mr-2" />
-            Выход
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => window.location.href = '/admin/users'}>
+              <Icon name="Users" className="w-4 h-4 mr-2" />
+              Управление юзерами
+            </Button>
+            <Button variant="outline" onClick={handleLogout}>
+              <Icon name="LogOut" className="w-4 h-4 mr-2" />
+              Выход
+            </Button>
+          </div>
         </div>
 
         {/* Tabs */}
