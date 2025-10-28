@@ -22,7 +22,7 @@ def get_public_plans(cors_headers: Dict[str, str]) -> Dict[str, Any]:
     try:
         cursor.execute("""
             SELECT plan_id, name, price, days, traffic_gb, is_custom, features
-            FROM subscription_plans
+            FROM t_p66544974_beauty_website_proje.subscription_plans
             WHERE is_active = true
             ORDER BY sort_order, plan_id
         """)
@@ -75,7 +75,7 @@ def handle_admin(event: Dict[str, Any], context: Any, cors_headers: Dict[str, st
             cursor.execute("""
                 SELECT plan_id, name, price, days, traffic_gb, is_active, is_custom, 
                        sort_order, features
-                FROM subscription_plans
+                FROM t_p66544974_beauty_website_proje.subscription_plans
                 ORDER BY sort_order, plan_id
             """)
             rows = cursor.fetchall()
@@ -139,7 +139,7 @@ def handle_admin(event: Dict[str, Any], context: Any, cors_headers: Dict[str, st
             if plan_id and plan_id > 0:
                 # UPDATE
                 cursor.execute("""
-                    UPDATE subscription_plans
+                    UPDATE t_p66544974_beauty_website_proje.subscription_plans
                     SET name = %s, price = %s, days = %s, traffic_gb = %s,
                         is_active = %s, is_custom = %s, sort_order = %s, features = %s
                     WHERE plan_id = %s
@@ -164,7 +164,7 @@ def handle_admin(event: Dict[str, Any], context: Any, cors_headers: Dict[str, st
             else:
                 # INSERT
                 cursor.execute("""
-                    INSERT INTO subscription_plans (name, price, days, traffic_gb, is_active, is_custom, sort_order, features)
+                    INSERT INTO t_p66544974_beauty_website_proje.subscription_plans (name, price, days, traffic_gb, is_active, is_custom, sort_order, features)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                     RETURNING plan_id
                 """, (
@@ -197,7 +197,7 @@ def handle_admin(event: Dict[str, Any], context: Any, cors_headers: Dict[str, st
                     'isBase64Encoded': False
                 }
             
-            cursor.execute("DELETE FROM subscription_plans WHERE plan_id = %s", (plan_id,))
+            cursor.execute("DELETE FROM t_p66544974_beauty_website_proje.subscription_plans WHERE plan_id = %s", (plan_id,))
             conn.commit()
             return {
                 'statusCode': 200,
