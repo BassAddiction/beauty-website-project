@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,18 +7,13 @@ import Icon from "@/components/ui/icon";
 import { useNavigate } from 'react-router-dom';
 
 interface Plan {
+  id: number;
   name: string;
   price: number;
   days: number;
   traffic: number;
+  features: string[];
 }
-
-const PLANS: Plan[] = [
-  { name: '1 месяц', price: 200, days: 30, traffic: 30 },
-  { name: '3 месяца', price: 500, days: 90, traffic: 30 },
-  { name: '6 месяцев', price: 900, days: 180, traffic: 30 },
-  { name: '12 месяцев', price: 1200, days: 365, traffic: 30 }
-];
 
 const Register = () => {
   const navigate = useNavigate();
@@ -27,6 +22,25 @@ const Register = () => {
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [loadingPlans, setLoadingPlans] = useState(true);
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const response = await fetch('https://functions.poehali.dev/fbbbfbaf-a8c7-4eec-8f61-5976ed535592');
+        const data = await response.json();
+        setPlans(data.plans || []);
+      } catch (err) {
+        console.error('Failed to load plans:', err);
+        setError('Не удалось загрузить тарифы');
+      } finally {
+        setLoadingPlans(false);
+      }
+    };
+    
+    fetchPlans();
+  }, []);
 
   const handleSelectPlan = (plan: Plan) => {
     setSelectedPlan(plan);
@@ -177,45 +191,42 @@ const Register = () => {
 
         {step === 1 && (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {PLANS.map((plan) => (
-                <Card 
-                  key={plan.name} 
-                  className="border-2 hover:border-primary transition-all cursor-pointer"
-                  onClick={() => handleSelectPlan(plan)}
-                >
-                  <CardHeader>
-                    <CardTitle className="text-xl">{plan.name}</CardTitle>
-                    <CardDescription>
-                      <span className="text-4xl font-bold text-foreground">{plan.price}₽</span>
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center gap-2">
-                        <Icon name="Check" className="w-4 h-4 text-green-500" />
-                        <span>{plan.traffic} ГБ/сутки</span>
+            {loadingPlans ? (
+              <div className="text-center py-8">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <p className="mt-2 text-muted-foreground">Загрузка тарифов...</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {plans.map((plan) => (
+                  <Card 
+                    key={plan.id} 
+                    className="border-2 hover:border-primary transition-all cursor-pointer"
+                    onClick={() => handleSelectPlan(plan)}
+                  >
+                    <CardHeader>
+                      <CardTitle className="text-xl">{plan.name}</CardTitle>
+                      <CardDescription>
+                        <span className="text-4xl font-bold text-foreground">{plan.price}₽</span>
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="space-y-2 text-sm">
+                        {plan.features.map((feature, idx) => (
+                          <div key={idx} className="flex items-center gap-2">
+                            <Icon name="Check" className="w-4 h-4 text-green-500" />
+                            <span>{feature}</span>
+                          </div>
+                        ))}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Icon name="Check" className="w-4 h-4 text-green-500" />
-                        <span>{plan.days} дней</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Icon name="Check" className="w-4 h-4 text-green-500" />
-                        <span>Любые локации</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Icon name="Check" className="w-4 h-4 text-green-500" />
-                        <span>Неограниченные устройства</span>
-                      </div>
-                    </div>
-                    <Button className="w-full button-glow">
-                      Выбрать тариф
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                      <Button className="w-full button-glow">
+                        Выбрать тариф
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
 
             <div className="text-center pt-4">
               <p className="text-sm text-muted-foreground mb-3">
