@@ -243,15 +243,20 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     
     params = event.get('queryStringParameters') or {}
     action = params.get('action', '')
+    headers = event.get('headers', {})
     
     # ПУБЛИЧНЫЙ ЗАПРОС ТАРИФОВ (без пароля)
     if action == 'get_plans':
         return get_public_plans(cors_headers)
     
-    # АДМИНКА - требует пароль
-    if action in ['plans', 'clients', 'plan_update', 'plan_delete']:
-        headers = event.get('headers', {})
-        admin_password = headers.get('x-admin-password') or headers.get('X-Admin-Password')
+    # Проверка админского пароля для POST/DELETE или админских action
+    admin_password = headers.get('x-admin-password') or headers.get('X-Admin-Password')
+    is_admin_request = (
+        action in ['plans', 'clients', 'plan_update', 'plan_delete'] or 
+        method in ['POST', 'PUT', 'DELETE']
+    )
+    
+    if is_admin_request:
         expected_password = os.environ.get('ADMIN_PASSWORD', 'admin123')
         
         if admin_password != expected_password:
