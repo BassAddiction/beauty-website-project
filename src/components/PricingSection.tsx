@@ -34,7 +34,7 @@ const PricingSection = () => {
         const data = await response.json();
         
         const formattedPlans = data.plans
-          .filter((plan: any) => !plan.show_on || plan.show_on.length === 0 || plan.show_on.includes('pricing'))
+          .filter((plan: any) => plan.show_on && plan.show_on.includes('pricing'))
           .map((plan: any, index: number) => ({
             name: plan.name,
             price: plan.price.toString(),
