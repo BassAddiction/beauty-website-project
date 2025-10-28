@@ -164,11 +164,13 @@ const Register = () => {
     <div className="min-h-screen bg-background px-4 py-8">
       <div className="container mx-auto max-w-4xl">
         <div className="text-center mb-8">
-          <img 
-            src="https://cdn.poehali.dev/files/299c507f-f10f-4048-a927-9fa71def332e.jpg" 
-            alt="Speed VPN" 
-            className="w-20 h-20 rounded-full object-cover border-2 border-primary mx-auto mb-4"
-          />
+          <a href="/" className="inline-block transition-transform hover:scale-105 mb-4">
+            <img 
+              src="https://cdn.poehali.dev/files/299c507f-f10f-4048-a927-9fa71def332e.jpg" 
+              alt="Speed VPN" 
+              className="w-20 h-20 rounded-full object-cover border-2 border-primary mx-auto"
+            />
+          </a>
           <h1 className="text-3xl font-bold mb-2">Регистрация в Speed VPN</h1>
           <p className="text-muted-foreground">Выберите тариф и создайте аккаунт</p>
         </div>

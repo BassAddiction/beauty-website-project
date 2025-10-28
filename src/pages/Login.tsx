@@ -64,11 +64,13 @@ const Login = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <img 
-              src="https://cdn.poehali.dev/files/299c507f-f10f-4048-a927-9fa71def332e.jpg" 
-              alt="Speed VPN" 
-              className="w-20 h-20 rounded-full object-cover border-2 border-primary"
-            />
+            <a href="/" className="transition-transform hover:scale-105">
+              <img 
+                src="https://cdn.poehali.dev/files/299c507f-f10f-4048-a927-9fa71def332e.jpg" 
+                alt="Speed VPN" 
+                className="w-20 h-20 rounded-full object-cover border-2 border-primary"
+              />
+            </a>
           </div>
           <CardTitle className="text-2xl">Вход в личный кабинет</CardTitle>
           <CardDescription>
