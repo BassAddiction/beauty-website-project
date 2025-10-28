@@ -19,6 +19,7 @@ interface Plan {
   is_custom: boolean;
   sort_order: number;
   features: string[];
+  show_on: string[];
 }
 
 interface Client {
@@ -281,7 +282,8 @@ const Admin = () => {
                   is_active: true,
                   is_custom: false,
                   sort_order: plans.length + 1,
-                  features: []
+                  features: [],
+                  show_on: ['register', 'pricing']
                 })}>
                   <Icon name="Plus" className="w-4 h-4 mr-2" />
                   Добавить тариф
@@ -425,6 +427,42 @@ const Admin = () => {
                       value={editingPlan.traffic_gb}
                       onChange={(e) => setEditingPlan({...editingPlan, traffic_gb: parseInt(e.target.value)})}
                     />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Показывать на страницах</Label>
+                  <div className="flex gap-4">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={(editingPlan.show_on || []).includes('register')}
+                        onChange={(e) => {
+                          const current = editingPlan.show_on || [];
+                          const updated = e.target.checked
+                            ? [...current.filter(p => p !== 'register'), 'register']
+                            : current.filter(p => p !== 'register');
+                          setEditingPlan({...editingPlan, show_on: updated});
+                        }}
+                        className="w-4 h-4"
+                      />
+                      <span>Register (регистрация)</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={(editingPlan.show_on || []).includes('pricing')}
+                        onChange={(e) => {
+                          const current = editingPlan.show_on || [];
+                          const updated = e.target.checked
+                            ? [...current.filter(p => p !== 'pricing'), 'pricing']
+                            : current.filter(p => p !== 'pricing');
+                          setEditingPlan({...editingPlan, show_on: updated});
+                        }}
+                        className="w-4 h-4"
+                      />
+                      <span>Pricing (главная)</span>
+                    </label>
                   </div>
                 </div>
 

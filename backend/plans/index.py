@@ -52,7 +52,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     cursor.execute('''
         SELECT plan_id, name, price, days, traffic_gb, features
         FROM t_p66544974_beauty_website_proje.subscription_plans
-        WHERE is_active = true
+        WHERE is_active = true AND 'register' = ANY(show_on)
         ORDER BY sort_order ASC
     ''')
     
