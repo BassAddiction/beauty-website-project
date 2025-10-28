@@ -62,10 +62,17 @@ const TrainingSection = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <a 
+                  href="/register"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full font-bold transition-all button-glow"
+                >
+                  <Icon name="Globe" size={20} />
+                  Подключить на сайте
+                </a>
+                <a 
                   href="https://t.me/shopspeedvpn_bot" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full font-bold transition-all button-glow"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-full font-bold transition-all"
                 >
                   <Icon name="Send" size={20} />
                   Начать в Telegram
