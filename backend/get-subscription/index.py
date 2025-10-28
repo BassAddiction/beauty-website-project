@@ -151,7 +151,7 @@ def handle_admin(event: Dict[str, Any], context: Any, cors_headers: Dict[str, st
                     body.get('is_active'),
                     body.get('is_custom'),
                     body.get('sort_order'),
-                    json.dumps(body.get('features', [])),
+                    body.get('features', []),
                     plan_id
                 ))
                 conn.commit()
@@ -175,7 +175,7 @@ def handle_admin(event: Dict[str, Any], context: Any, cors_headers: Dict[str, st
                     body.get('is_active', True),
                     body.get('is_custom', False),
                     body.get('sort_order', 0),
-                    json.dumps(body.get('features', []))
+                    body.get('features', [])
                 ))
                 new_plan_id = cursor.fetchone()[0]
                 conn.commit()
