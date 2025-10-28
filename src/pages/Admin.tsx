@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
 import { useToast } from "@/hooks/use-toast";
+import UsersManagement from "@/components/UsersManagement";
 
 interface Plan {
   plan_id: number;
@@ -34,7 +35,7 @@ const Admin = () => {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'plans' | 'clients'>('plans');
+  const [activeTab, setActiveTab] = useState<'plans' | 'clients' | 'users'>('plans');
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
   const { toast } = useToast();
 
@@ -227,16 +228,10 @@ const Admin = () => {
             <h1 className="text-3xl font-bold">Админ-панель Speed VPN</h1>
             <p className="text-muted-foreground">Управление тарифами и клиентами</p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => window.location.href = '/admin/users'}>
-              <Icon name="Users" className="w-4 h-4 mr-2" />
-              Управление юзерами
-            </Button>
-            <Button variant="outline" onClick={handleLogout}>
-              <Icon name="LogOut" className="w-4 h-4 mr-2" />
-              Выход
-            </Button>
-          </div>
+          <Button variant="outline" onClick={handleLogout}>
+            <Icon name="LogOut" className="w-4 h-4 mr-2" />
+            Выход
+          </Button>
         </div>
 
         {/* Tabs */}
@@ -257,6 +252,13 @@ const Admin = () => {
           >
             <Icon name="Users" className="w-4 h-4 mr-2" />
             Клиенты ({clients.length})
+          </Button>
+          <Button
+            variant={activeTab === 'users' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('users')}
+          >
+            <Icon name="UserCog" className="w-4 h-4 mr-2" />
+            Пользователи
           </Button>
         </div>
 
@@ -369,6 +371,11 @@ const Admin = () => {
               </Table>
             </CardContent>
           </Card>
+        )}
+
+        {/* Users Tab */}
+        {activeTab === 'users' && (
+          <UsersManagement adminPassword={password} />
         )}
 
         {/* Edit Plan Modal */}
