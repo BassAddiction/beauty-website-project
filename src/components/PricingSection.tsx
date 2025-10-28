@@ -33,14 +33,16 @@ const PricingSection = () => {
         const response = await fetch('https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0?action=get_plans');
         const data = await response.json();
         
-        const formattedPlans = data.plans.map((plan: any, index: number) => ({
-          name: plan.name,
-          price: plan.price.toString(),
-          period: '₽',
-          popular: index === 0,
-          custom: plan.custom,
-          features: plan.features || []
-        }));
+        const formattedPlans = data.plans
+          .filter((plan: any) => plan.show_on && plan.show_on.includes('pricing'))
+          .map((plan: any, index: number) => ({
+            name: plan.name,
+            price: plan.price.toString(),
+            period: '₽',
+            popular: index === 0,
+            custom: plan.custom,
+            features: plan.features || []
+          }));
         
         setPlans(formattedPlans);
       } catch (error) {
