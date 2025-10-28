@@ -1,4 +1,5 @@
 {
+  "send-email-unisender": "https://functions.poehali.dev/95bf9883-efc6-4a14-92a2-90aad3d6dffc",
   "remnawave": "https://functions.poehali.dev/4e61ec57-0f83-4c68-83fb-8b3049f711ab",
   "send-email": "https://functions.poehali.dev/b7df3121-2214-4658-b0d1-8af63a4ce471",
   "update-all-users": "https://functions.poehali.dev/058e87bb-5d15-4a90-8f78-2ab58eeaf5c8",
