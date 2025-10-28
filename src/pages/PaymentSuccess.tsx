@@ -34,7 +34,16 @@ const PaymentSuccess = () => {
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
       <Card className="max-w-2xl w-full border-green-500">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-green-600">
+          <div className="flex justify-center mb-4">
+            <a href="/" className="transition-transform hover:scale-105">
+              <img 
+                src="https://cdn.poehali.dev/files/299c507f-f10f-4048-a927-9fa71def332e.jpg" 
+                alt="Speed VPN" 
+                className="w-16 h-16 rounded-full object-cover border-2 border-primary"
+              />
+            </a>
+          </div>
+          <CardTitle className="flex items-center gap-2 text-green-600 justify-center">
             <Icon name="CheckCircle" className="w-8 h-8" />
             Оплата успешна!
           </CardTitle>
