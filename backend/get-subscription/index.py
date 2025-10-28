@@ -21,7 +21,7 @@ def get_public_plans(cors_headers: Dict[str, str]) -> Dict[str, Any]:
     
     try:
         cursor.execute("""
-            SELECT plan_id, name, price, days, traffic_gb, is_custom, features
+            SELECT plan_id, name, price, days, traffic_gb, is_custom, features, show_on
             FROM t_p66544974_beauty_website_proje.subscription_plans
             WHERE is_active = true
             ORDER BY sort_order, plan_id
@@ -38,7 +38,8 @@ def get_public_plans(cors_headers: Dict[str, str]) -> Dict[str, Any]:
                 'days': row[3],
                 'traffic': row[4],
                 'custom': row[5],
-                'features': row[6]
+                'features': row[6],
+                'show_on': row[7] or []
             })
         
         return {
