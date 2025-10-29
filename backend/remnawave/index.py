@@ -167,7 +167,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     print(f'⚠️ Failed to save test payment: {str(e)}')
             
             # Создать пользователя со всеми параметрами сразу
-            squad_uuids = ['6afd8de3-00d5-41db-aa52-f259fb98b2c8', '9ef43f96-83c9-4252-ae57-bb17dc9b60a9']
+            # Используем переданные squad_uuids или дефолтные
+            squad_uuids = internal_squads if internal_squads else ['6afd8de3-00d5-41db-aa52-f259fb98b2c8', '9ef43f96-83c9-4252-ae57-bb17dc9b60a9']
             
             create_payload = {
                 'username': username,
@@ -179,7 +180,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'activeInternalSquads': squad_uuids
             }
             
-            print(f'🔹 Creating user with activeInternalSquads: {squad_uuids}')
+            print(f'🔹 Creating user with activeInternalSquads: {squad_uuids} (from payload: {internal_squads})')
             
             print(f'🔹 Creating user {username} with full config')
             print(f'🔹 Payload: {json.dumps(create_payload, indent=2)}')
