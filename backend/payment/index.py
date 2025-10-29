@@ -63,6 +63,7 @@ def handle_create_payment_get(event: Dict[str, Any], cors_headers: Dict[str, str
     amount = params.get('amount', '')
     plan_name = params.get('plan_name', '')
     plan_days = params.get('plan_days', '')
+    custom_plan_str = params.get('custom_plan', '')
     
     if not all([username, email, amount, plan_name, plan_days]):
         return {
@@ -75,7 +76,14 @@ def handle_create_payment_get(event: Dict[str, Any], cors_headers: Dict[str, str
             'isBase64Encoded': False
         }
     
-    return create_yookassa_payment(username, email, float(amount), plan_name, int(plan_days), cors_headers)
+    custom_plan = None
+    if custom_plan_str:
+        try:
+            custom_plan = json.loads(custom_plan_str)
+        except:
+            pass
+    
+    return create_yookassa_payment(username, email, float(amount), plan_name, int(plan_days), custom_plan, cors_headers)
 
 
 def handle_create_payment_post(body_data: Dict[str, Any], cors_headers: Dict[str, str]) -> Dict[str, Any]:
@@ -85,6 +93,7 @@ def handle_create_payment_post(body_data: Dict[str, Any], cors_headers: Dict[str
     amount = body_data.get('amount', 0)
     plan_name = body_data.get('plan_name', '')
     plan_days = body_data.get('plan_days', 0)
+    custom_plan = body_data.get('custom_plan')
     
     if not all([username, email, amount, plan_name, plan_days]):
         return {
@@ -97,10 +106,10 @@ def handle_create_payment_post(body_data: Dict[str, Any], cors_headers: Dict[str
             'isBase64Encoded': False
         }
     
-    return create_yookassa_payment(username, email, float(amount), plan_name, int(plan_days), cors_headers)
+    return create_yookassa_payment(username, email, float(amount), plan_name, int(plan_days), custom_plan, cors_headers)
 
 
-def create_yookassa_payment(username: str, email: str, amount: float, plan_name: str, plan_days: int, cors_headers: Dict[str, str]) -> Dict[str, Any]:
+def create_yookassa_payment(username: str, email: str, amount: float, plan_name: str, plan_days: int, custom_plan: Any, cors_headers: Dict[str, str]) -> Dict[str, Any]:
     '''Создаёт платёж в YooKassa'''
     try:
         shop_id = os.environ.get('YOOKASSA_SHOP_ID', '')
@@ -135,7 +144,8 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
                 'username': username,
                 'email': email,
                 'plan_name': plan_name,
-                'plan_days': str(plan_days)
+                'plan_days': str(plan_days),
+                'custom_plan': json.dumps(custom_plan) if custom_plan else ''
             },
             'receipt': {
                 'customer': {
@@ -224,6 +234,14 @@ def handle_yookassa_webhook(webhook_data: Dict[str, Any], cors_headers: Dict[str
         email = metadata.get('email', '')
         plan_name = metadata.get('plan_name', '')
         plan_days = int(metadata.get('plan_days', 0))
+        custom_plan_str = metadata.get('custom_plan', '')
+        
+        custom_plan = None
+        if custom_plan_str:
+            try:
+                custom_plan = json.loads(custom_plan_str)
+            except:
+                pass
         
         # Получаем email из receipt если не в metadata
         if not email:
@@ -235,6 +253,8 @@ def handle_yookassa_webhook(webhook_data: Dict[str, Any], cors_headers: Dict[str
         print(f'📋 Payment ID: {payment_id}, Status: {payment_status}')
         print(f'👤 Username: {username}, Email: {email}')
         print(f'💰 Amount: {amount} RUB, Plan: {plan_name} ({plan_days} days)')
+        if custom_plan:
+            print(f'🎯 Custom plan: {custom_plan}')
         
         # Обновляем платёж в БД
         update_payment_status(payment_id, payment_status)
@@ -244,7 +264,7 @@ def handle_yookassa_webhook(webhook_data: Dict[str, Any], cors_headers: Dict[str
             print(f'✅ Payment succeeded, creating user in Remnawave...')
             
             # Создаём пользователя в Remnawave
-            remnawave_result = create_user_in_remnawave(username, email, plan_days)
+            remnawave_result = create_user_in_remnawave(username, email, plan_days, custom_plan)
             
             if remnawave_result.get('success'):
                 subscription_url = remnawave_result.get('subscription_url', '')
@@ -348,7 +368,7 @@ def update_payment_status(payment_id: str, status: str):
         print(f'⚠️ Failed to update payment status: {str(e)}')
 
 
-def create_user_in_remnawave(username: str, email: str, plan_days: int) -> Dict[str, Any]:
+def create_user_in_remnawave(username: str, email: str, plan_days: int, custom_plan: Any = None) -> Dict[str, Any]:
     '''Создаёт или продлевает пользователя в Remnawave'''
     try:
         # ВАЖНО: используем актуальный URL из func2url.json
@@ -416,6 +436,32 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int) -> Dict[
         # 30 GB в байтах = 30 * 1024 * 1024 * 1024
         data_limit = 32212254720
         
+        # Получаем squad_uuid из custom_plan
+        squad_uuids = []
+        if custom_plan and isinstance(custom_plan, dict):
+            locations_data = custom_plan.get('locations', [])
+            if locations_data:
+                location_ids = [loc.get('location_id') for loc in locations_data if loc.get('location_id')]
+                if location_ids:
+                    db_url = os.environ.get('DATABASE_URL', '')
+                    if db_url:
+                        import psycopg2
+                        conn = psycopg2.connect(db_url)
+                        cursor = conn.cursor()
+                        placeholders = ','.join(['%s'] * len(location_ids))
+                        cursor.execute(f"""
+                            SELECT squad_uuid FROM t_p66544974_beauty_website_proje.locations 
+                            WHERE location_id IN ({placeholders}) AND squad_uuid IS NOT NULL
+                        """, location_ids)
+                        squad_uuids = [row[0] for row in cursor.fetchall()]
+                        cursor.close()
+                        conn.close()
+                        print(f'🎯 Custom plan squads: {squad_uuids}')
+        
+        # Если нет custom_plan, используем дефолтный squad
+        if not squad_uuids:
+            squad_uuids = ['e742f30b-82fb-431a-918b-1b4d22d6ba4d']
+        
         # Если пользователь существует И НЕ только что создан - продлеваем, иначе создаём
         if user_exists and user_uuid and not user_created_recently:
             payload = {
@@ -436,9 +482,9 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int) -> Dict[
                 'data_limit': data_limit,
                 'expire': expire_timestamp,
                 'data_limit_reset_strategy': 'day',
-                'internalSquads': ['e742f30b-82fb-431a-918b-1b4d22d6ba4d']
+                'internalSquads': squad_uuids
             }
-            print(f'🔹 Creating user in Remnawave: {username}')
+            print(f'🔹 Creating user in Remnawave: {username} with squads: {squad_uuids}')
         
         response = requests.post(
             remnawave_url,
@@ -460,14 +506,14 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int) -> Dict[
             time.sleep(1)
             
             # Добавляем пользователя в squad через update_user
-            if user_uuid:
-                print(f'🔹 Adding user to squad via update_user...')
+            if user_uuid and squad_uuids:
+                print(f'🔹 Adding user to squads via update_user: {squad_uuids}')
                 
                 update_payload = {
                     'action': 'update_user',
                     'uuid': user_uuid,
                     'inbounds': {
-                        'vless-reality': ['e742f30b-82fb-431a-918b-1b4d22d6ba4d']
+                        'vless-reality': squad_uuids
                     }
                 }
                 
@@ -479,7 +525,7 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int) -> Dict[
                 )
                 
                 if update_response.status_code in [200, 201]:
-                    print(f'✅ User successfully added to squad!')
+                    print(f'✅ User successfully added to squads!')
                 else:
                     print(f'⚠️ Squad assignment failed: {update_response.status_code} - {update_response.text}')
             

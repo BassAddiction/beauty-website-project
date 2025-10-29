@@ -152,16 +152,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             if existing:
                 cursor.execute("""
                     UPDATE t_p66544974_beauty_website_proje.locations
-                    SET name = %s, flag_emoji = %s
+                    SET name = %s, flag_emoji = %s, squad_uuid = %s
                     WHERE country_code = %s
-                """, (country_name, flag, country_code))
+                """, (country_name, flag, squad_id, country_code))
                 updated += 1
             else:
                 cursor.execute("""
                     INSERT INTO t_p66544974_beauty_website_proje.locations
-                    (name, country_code, flag_emoji, price_per_day, traffic_gb_per_day, is_active, sort_order)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s)
-                """, (country_name, country_code, flag, 5.0, 1, True, idx + 1))
+                    (name, country_code, flag_emoji, price_per_day, traffic_gb_per_day, is_active, sort_order, squad_uuid)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                """, (country_name, country_code, flag, 5.0, 1, True, idx + 1, squad_id))
                 synced += 1
         
         conn.commit()
