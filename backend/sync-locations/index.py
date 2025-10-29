@@ -106,8 +106,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         print(f'Raw response type: {type(squads_data)}')
         print(f'Raw response sample: {str(squads_data)[:500]}')
         
-        # Handle different response formats
-        if isinstance(squads_data, dict):
+        # Extract internalSquads from response
+        if isinstance(squads_data, dict) and 'response' in squads_data:
+            response_obj = squads_data['response']
+            squads = response_obj.get('internalSquads', [])
+        elif isinstance(squads_data, dict):
             squads = squads_data.get('squads', squads_data.get('data', []))
         else:
             squads = squads_data
@@ -128,10 +131,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 skipped += 1
                 continue
                 
-            squad_id = squad.get('id')
+            squad_id = squad.get('uuid') or squad.get('id')
             squad_name = squad.get('name', '')
             
             if not squad_id or not squad_name:
+                print(f'Skipping squad {idx}: missing id or name. Squad: {squad}')
                 skipped += 1
                 continue
             
