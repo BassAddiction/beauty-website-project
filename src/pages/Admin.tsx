@@ -7,18 +7,23 @@ import { AdminTabs } from "@/components/admin/AdminTabs";
 import { PlansTab, Plan } from "@/components/admin/PlansTab";
 import { ClientsTab, Client } from "@/components/admin/ClientsTab";
 import { PlanEditModal } from "@/components/admin/PlanEditModal";
+import { LocationsTab, Location } from "@/components/admin/LocationsTab";
+import { LocationEditModal } from "@/components/admin/LocationEditModal";
 
 const Admin = () => {
   const [password, setPassword] = useState('');
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [plans, setPlans] = useState<Plan[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'plans' | 'clients' | 'users'>('plans');
+  const [activeTab, setActiveTab] = useState<'plans' | 'clients' | 'users' | 'locations'>('plans');
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
+  const [editingLocation, setEditingLocation] = useState<Location | null>(null);
   const { toast } = useToast();
 
   const API_URL = 'https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0';
+  const LOCATIONS_API = 'https://functions.poehali.dev/3271c5a0-f0f4-42e8-b230-c35b772c0024';
 
   useEffect(() => {
     const savedPassword = localStorage.getItem('admin_password');
@@ -214,6 +219,149 @@ const Admin = () => {
     }
   };
 
+  const loadLocations = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${LOCATIONS_API}?admin=true`, {
+        headers: {
+          'X-Admin-Password': password
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setLocations(data.locations || []);
+      }
+    } catch (error) {
+      toast({
+        title: '❌ Ошибка загрузки локаций',
+        description: String(error),
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveLocation = async () => {
+    if (!editingLocation) return;
+    
+    setLoading(true);
+    try {
+      const response = await fetch(LOCATIONS_API, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Password': password
+        },
+        body: JSON.stringify(editingLocation)
+      });
+      
+      if (response.ok) {
+        toast({
+          title: '✅ Сохранено',
+          description: 'Локация успешно обновлена'
+        });
+        setEditingLocation(null);
+        loadLocations();
+      }
+    } catch (error) {
+      toast({
+        title: '❌ Ошибка сохранения',
+        description: String(error),
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteLocation = async (locationId: number) => {
+    if (!confirm('Удалить локацию?')) return;
+    
+    setLoading(true);
+    try {
+      const response = await fetch(`${LOCATIONS_API}?location_id=${locationId}`, {
+        method: 'DELETE',
+        headers: {
+          'X-Admin-Password': password
+        }
+      });
+      
+      if (response.ok) {
+        toast({
+          title: '✅ Удалено',
+          description: 'Локация удалена'
+        });
+        loadLocations();
+      }
+    } catch (error) {
+      toast({
+        title: '❌ Ошибка удаления',
+        description: String(error),
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMoveLocation = async (locationId: number, direction: 'up' | 'down') => {
+    const currentIndex = locations.findIndex(l => l.location_id === locationId);
+    if (currentIndex === -1) return;
+    
+    const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    if (targetIndex < 0 || targetIndex >= locations.length) return;
+    
+    const currentLocation = locations[currentIndex];
+    const targetLocation = locations[targetIndex];
+    
+    setLoading(true);
+    try {
+      const newCurrentOrder = targetLocation.sort_order;
+      const newTargetOrder = currentLocation.sort_order;
+      
+      await fetch(LOCATIONS_API, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Password': password
+        },
+        body: JSON.stringify({
+          ...currentLocation,
+          sort_order: newCurrentOrder
+        })
+      });
+      
+      await fetch(LOCATIONS_API, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Password': password
+        },
+        body: JSON.stringify({
+          ...targetLocation,
+          sort_order: newTargetOrder
+        })
+      });
+      
+      toast({
+        title: '✅ Порядок изменён',
+        description: 'Локации переупорядочены'
+      });
+      
+      loadLocations();
+    } catch (error) {
+      toast({
+        title: '❌ Ошибка',
+        description: String(error),
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleLogout = () => {
     setIsAuthorized(false);
     setPassword('');
@@ -241,7 +389,9 @@ const Admin = () => {
           setActiveTab={setActiveTab}
           plansCount={plans.length}
           clientsCount={clients.length}
+          locationsCount={locations.length}
           loadClients={loadClients}
+          loadLocations={loadLocations}
         />
 
         {activeTab === 'plans' && (
@@ -261,11 +411,29 @@ const Admin = () => {
           <UsersManagement adminPassword={password} />
         )}
 
+        {activeTab === 'locations' && (
+          <LocationsTab
+            locations={locations}
+            setEditingLocation={setEditingLocation}
+            handleDeleteLocation={handleDeleteLocation}
+            handleMoveLocation={handleMoveLocation}
+          />
+        )}
+
         {editingPlan && (
           <PlanEditModal
             editingPlan={editingPlan}
             setEditingPlan={setEditingPlan}
             handleSavePlan={handleSavePlan}
+            loading={loading}
+          />
+        )}
+
+        {editingLocation && (
+          <LocationEditModal
+            editingLocation={editingLocation}
+            setEditingLocation={setEditingLocation}
+            handleSaveLocation={handleSaveLocation}
             loading={loading}
           />
         )}

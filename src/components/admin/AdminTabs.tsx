@@ -2,14 +2,16 @@ import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 
 interface AdminTabsProps {
-  activeTab: 'plans' | 'clients' | 'users';
-  setActiveTab: (tab: 'plans' | 'clients' | 'users') => void;
+  activeTab: 'plans' | 'clients' | 'users' | 'locations';
+  setActiveTab: (tab: 'plans' | 'clients' | 'users' | 'locations') => void;
   plansCount: number;
   clientsCount: number;
+  locationsCount: number;
   loadClients: () => void;
+  loadLocations: () => void;
 }
 
-export const AdminTabs = ({ activeTab, setActiveTab, plansCount, clientsCount, loadClients }: AdminTabsProps) => {
+export const AdminTabs = ({ activeTab, setActiveTab, plansCount, clientsCount, locationsCount, loadClients, loadLocations }: AdminTabsProps) => {
   return (
     <div className="flex gap-2 mb-6">
       <Button
@@ -35,6 +37,16 @@ export const AdminTabs = ({ activeTab, setActiveTab, plansCount, clientsCount, l
       >
         <Icon name="UserCog" className="w-4 h-4 mr-2" />
         Пользователи
+      </Button>
+      <Button
+        variant={activeTab === 'locations' ? 'default' : 'outline'}
+        onClick={() => {
+          setActiveTab('locations');
+          loadLocations();
+        }}
+      >
+        <Icon name="Globe" className="w-4 h-4 mr-2" />
+        Локации ({locationsCount})
       </Button>
     </div>
   );
