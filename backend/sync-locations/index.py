@@ -83,21 +83,27 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         }
     
     try:
+        print(f'Fetching squads from {api_url}/api/internal-squads')
         response = requests.get(
             f'{api_url}/api/internal-squads',
             headers={'Authorization': f'Bearer {api_token}'},
             timeout=10
         )
         
+        print(f'Remnawave API response: {response.status_code}')
+        
         if response.status_code != 200:
+            error_body = response.text[:200]
+            print(f'Error from Remnawave: {error_body}')
             return {
                 'statusCode': response.status_code,
                 'headers': cors_headers,
-                'body': json.dumps({'error': 'Failed to fetch squads from Remnawave'}),
+                'body': json.dumps({'error': f'Failed to fetch squads: {error_body}'}),
                 'isBase64Encoded': False
             }
         
         squads = response.json()
+        print(f'Received {len(squads)} squads from Remnawave')
         
         conn = psycopg2.connect(db_url)
         cursor = conn.cursor()
@@ -115,6 +121,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 continue
             
             country_code, flag, country_name = parse_country_from_name(squad_name)
+            print(f'Squad: {squad_name} -> {country_code} {flag} {country_name}')
             
             cursor.execute("""
                 SELECT location_id FROM t_p66544974_beauty_website_proje.locations
@@ -142,6 +149,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         cursor.close()
         conn.close()
         
+        print(f'Sync completed: synced={synced}, updated={updated}, skipped={skipped}')
+        
         return {
             'statusCode': 200,
             'headers': cors_headers,
@@ -156,9 +165,13 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         }
     
     except Exception as e:
+        import traceback
+        error_trace = traceback.format_exc()
+        print(f'Sync error: {str(e)}')
+        print(f'Traceback: {error_trace}')
         return {
             'statusCode': 500,
             'headers': cors_headers,
-            'body': json.dumps({'error': str(e)}),
+            'body': json.dumps({'error': str(e), 'trace': error_trace[:500]}),
             'isBase64Encoded': False
         }

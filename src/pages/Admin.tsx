@@ -367,28 +367,40 @@ const Admin = () => {
   const handleSyncLocations = async () => {
     setSyncing(true);
     try {
+      console.log('Syncing locations from Remnawave...');
       const response = await fetch(SYNC_LOCATIONS_API, {
         headers: {
           'X-Admin-Password': password
         }
       });
       
+      console.log('Sync response status:', response.status);
+      const responseText = await response.text();
+      console.log('Sync response body:', responseText);
+      
       if (response.ok) {
-        const data = await response.json();
+        const data = JSON.parse(responseText);
         toast({
           title: '✅ Синхронизация завершена',
           description: `Добавлено: ${data.synced}, Обновлено: ${data.updated}, Пропущено: ${data.skipped}`
         });
         loadLocations();
       } else {
-        const error = await response.json();
+        let errorMsg = 'Не удалось синхронизировать локации';
+        try {
+          const error = JSON.parse(responseText);
+          errorMsg = error.error || errorMsg;
+        } catch (e) {
+          errorMsg = responseText || errorMsg;
+        }
         toast({
           title: '❌ Ошибка синхронизации',
-          description: error.error || 'Не удалось синхронизировать локации',
+          description: errorMsg,
           variant: 'destructive'
         });
       }
     } catch (error) {
+      console.error('Sync error:', error);
       toast({
         title: '❌ Ошибка',
         description: String(error),
