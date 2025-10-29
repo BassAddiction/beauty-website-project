@@ -444,13 +444,15 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int, plan_id:
             expire_timestamp = int(datetime.now().timestamp()) + (plan_days * 86400)
             print(f'📅 New subscription: {plan_days} days, expire={expire_timestamp}')
         
-        # 30 GB в байтах = 30 * 1024 * 1024 * 1024
-        data_limit = 32212254720
-        
-        # Получаем squad_uuid из custom_plan ИЛИ из тарифа
+        # Получаем traffic_gb и squad_uuid из custom_plan ИЛИ из тарифа
         squad_uuids = []
+        traffic_gb = 30  # дефолтное значение
+        
         if custom_plan and isinstance(custom_plan, dict):
-            # Кастомный тариф - берём squad из локаций
+            # Кастомный тариф - берём squad из локаций и traffic из плана
+            traffic_gb = custom_plan.get('traffic_gb', 30)
+            print(f'📊 Custom plan traffic: {traffic_gb} GB')
+            
             locations_data = custom_plan.get('locations', [])
             if locations_data:
                 location_ids = [loc.get('location_id') for loc in locations_data if loc.get('location_id')]
@@ -470,7 +472,7 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int, plan_id:
                         conn.close()
                         print(f'🎯 Custom plan squads from locations: {squad_uuids}')
         else:
-            # Обычный тариф - берём squad_uuids из таблицы plans
+            # Обычный тариф - берём squad_uuids и traffic_gb из таблицы plans
             db_url = os.environ.get('DATABASE_URL', '')
             if db_url:
                 import psycopg2
@@ -480,7 +482,7 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int, plan_id:
                 # Если есть plan_id - используем его (точное совпадение)
                 if plan_id:
                     cursor.execute("""
-                        SELECT squad_uuids FROM t_p66544974_beauty_website_proje.subscription_plans 
+                        SELECT squad_uuids, traffic_gb FROM t_p66544974_beauty_website_proje.subscription_plans 
                         WHERE plan_id = %s AND is_active = true
                         LIMIT 1
                     """, (plan_id,))
@@ -488,18 +490,26 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int, plan_id:
                 else:
                     # Fallback: ищем по name и days (может быть неточным!)
                     cursor.execute("""
-                        SELECT squad_uuids FROM t_p66544974_beauty_website_proje.subscription_plans 
+                        SELECT squad_uuids, traffic_gb FROM t_p66544974_beauty_website_proje.subscription_plans 
                         WHERE name = %s AND days = %s AND is_active = true
                         LIMIT 1
                     """, (plan_name, plan_days))
                     print(f'⚠️ Looking up plan by name/days (fallback): {plan_name}, {plan_days}')
                 
                 row = cursor.fetchone()
-                if row and row[0]:
-                    squad_uuids = row[0]
-                    print(f'🎯 Regular plan squads from plans table: {squad_uuids}')
+                if row:
+                    if row[0]:
+                        squad_uuids = row[0]
+                        print(f'🎯 Regular plan squads from plans table: {squad_uuids}')
+                    if row[1]:
+                        traffic_gb = row[1]
+                        print(f'📊 Regular plan traffic: {traffic_gb} GB')
                 cursor.close()
                 conn.close()
+        
+        # Переводим GB в байты
+        data_limit = traffic_gb * 1024 * 1024 * 1024
+        print(f'📊 Final traffic limit: {traffic_gb} GB = {data_limit} bytes')
         
         # Если нет custom_plan, используем дефолтный squad
         if not squad_uuids:
