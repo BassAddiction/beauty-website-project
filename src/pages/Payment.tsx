@@ -12,7 +12,7 @@ interface CustomPlan {
   name: string;
   price: number;
   days: number;
-  traffic: number;
+  traffic_gb: number;
   locations: any[];
 }
 
@@ -71,6 +71,7 @@ const Payment = () => {
         username: username.trim(),
         email: email.trim(),
         custom_plan: JSON.stringify({
+          traffic_gb: customPlan.traffic_gb,
           locations: customPlan.locations.map(loc => ({
             location_id: loc.location_id,
             days: loc.days
@@ -147,7 +148,7 @@ const Payment = () => {
               </div>
               <div className="flex items-center justify-between">
                 <span className="font-semibold">Трафик:</span>
-                <span>{customPlan.traffic} ГБ</span>
+                <span>{customPlan.traffic_gb} ГБ</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="font-semibold">Локации:</span>

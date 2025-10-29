@@ -100,7 +100,7 @@ const SubscriptionBuilder = () => {
           name: 'Собранная подписка',
           price: calculateTotal(),
           days: Math.max(...selectedLocations.map(l => l.days)),
-          traffic: calculateTotalTraffic(),
+          traffic_gb: calculateTotalTraffic(),
           locations: selectedLocations
         }
       }
