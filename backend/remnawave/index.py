@@ -230,6 +230,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             username = body_data.get('username')
             user_uuid = body_data.get('uuid')
             expire_timestamp = body_data.get('expire')
+            internal_squads = body_data.get('internalSquads', [])
             
             if not expire_timestamp or not username:
                 return {
@@ -242,6 +243,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             expire_at = datetime.fromtimestamp(expire_timestamp).isoformat() + 'Z'
             
             print(f'📅 Extending subscription for {username} ({user_uuid}) until {expire_at}')
+            print(f'🎯 Squads to assign: {internal_squads}')
             
             try:
                 # Шаг 1: Удаляем старого пользователя
@@ -254,8 +256,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 
                 print(f'🔹 DELETE response: {delete_response.status_code}')
                 
-                # Шаг 2: Создаём пользователя заново с новым expire
-                squad_uuids = ['6afd8de3-00d5-41db-aa52-f259fb98b2c8', '9ef43f96-83c9-4252-ae57-bb17dc9b60a9']
+                # Шаг 2: Создаём пользователя заново с новым expire и squad
+                squad_uuids = internal_squads if internal_squads else ['e742f30b-82fb-431a-918b-1b4d22d6ba4d']
                 
                 create_payload = {
                     'username': username,
