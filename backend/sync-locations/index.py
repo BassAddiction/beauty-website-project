@@ -102,7 +102,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         
-        squads = response.json()
+        squads_data = response.json()
+        print(f'Raw response type: {type(squads_data)}')
+        print(f'Raw response sample: {str(squads_data)[:500]}')
+        
+        # Handle different response formats
+        if isinstance(squads_data, dict):
+            squads = squads_data.get('squads', squads_data.get('data', []))
+        else:
+            squads = squads_data
+        
         print(f'Received {len(squads)} squads from Remnawave')
         
         conn = psycopg2.connect(db_url)
@@ -113,6 +122,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         skipped = 0
         
         for idx, squad in enumerate(squads):
+            # Check if squad is a dict or has get method
+            if isinstance(squad, str):
+                print(f'Skipping squad {idx}: squad is a string, not dict')
+                skipped += 1
+                continue
+                
             squad_id = squad.get('id')
             squad_name = squad.get('name', '')
             
