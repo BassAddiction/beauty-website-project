@@ -481,10 +481,10 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int, plan_id:
                 if plan_id:
                     cursor.execute("""
                         SELECT squad_uuids FROM t_p66544974_beauty_website_proje.subscription_plans 
-                        WHERE id = %s AND is_active = true
+                        WHERE plan_id = %s AND is_active = true
                         LIMIT 1
                     """, (plan_id,))
-                    print(f'🎯 Looking up plan by ID: {plan_id}')
+                    print(f'🎯 Looking up plan by plan_id: {plan_id}')
                 else:
                     # Fallback: ищем по name и days (может быть неточным!)
                     cursor.execute("""
