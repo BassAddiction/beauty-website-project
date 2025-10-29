@@ -53,7 +53,9 @@ const PricingSection = () => {
         
         if (settingsResponse.ok) {
           const settingsData = await settingsResponse.json();
+          console.log('Pricing settings data:', settingsData);
           const showButton = settingsData.settings?.show_on_pricing;
+          console.log('Show button on pricing:', showButton);
           setShowBuilderButton(showButton !== undefined ? showButton : true);
         } else {
           setShowBuilderButton(true);
