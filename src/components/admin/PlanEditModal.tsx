@@ -100,7 +100,13 @@ export const PlanEditModal = ({ editingPlan, setEditingPlan, handleSavePlan, loa
               {locations.length === 0 ? (
                 <p className="text-sm text-muted-foreground">Загрузка локаций...</p>
               ) : (
-                locations.map(loc => (
+                locations
+                  .sort((a, b) => {
+                    if (a.name === 'Vless-Reality') return -1;
+                    if (b.name === 'Vless-Reality') return 1;
+                    return a.name.localeCompare(b.name);
+                  })
+                  .map(loc => (
                   <label key={loc.location_id} className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
