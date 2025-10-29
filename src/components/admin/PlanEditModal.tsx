@@ -29,18 +29,27 @@ export const PlanEditModal = ({ editingPlan, setEditingPlan, handleSavePlan, loa
   useEffect(() => {
     const loadLocations = async () => {
       try {
+        console.log('Loading locations with password:', adminPassword ? 'present' : 'missing');
         const response = await fetch(`${LOCATIONS_API}?admin=true`, {
           headers: { 'X-Admin-Password': adminPassword }
         });
+        console.log('Locations response status:', response.status);
         if (response.ok) {
           const data = await response.json();
-          setLocations(data.locations.filter((l: Location) => l.squad_uuid));
+          console.log('Locations data:', data);
+          const filteredLocations = (data.locations || []).filter((l: Location) => l.squad_uuid);
+          console.log('Filtered locations with squad_uuid:', filteredLocations);
+          setLocations(filteredLocations);
+        } else {
+          console.error('Locations response not ok:', response.status, await response.text());
         }
       } catch (error) {
         console.error('Failed to load locations:', error);
       }
     };
-    loadLocations();
+    if (adminPassword) {
+      loadLocations();
+    }
   }, [adminPassword]);
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
