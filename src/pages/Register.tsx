@@ -68,71 +68,7 @@ const Register = () => {
       const emailPrefix = email.split('@')[0].replace(/[^a-zA-Z0-9_-]/g, '');
       const username = emailPrefix + '_' + Date.now();
       
-      const createUserResponse = await fetch(
-        'https://functions.poehali.dev/4e61ec57-0f83-4c68-83fb-8b3049f711ab',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'create_user',
-            username: username,
-            email: email,
-            proxies: {
-              'vless-reality': {}
-            },
-            data_limit: 32212254720,
-            expire: Math.floor(Date.now() / 1000) + (selectedPlan.days * 86400),
-            data_limit_reset_strategy: 'day'
-          })
-        }
-      );
-
-      if (!createUserResponse.ok) {
-        const errorData = await createUserResponse.text();
-        throw new Error(`Ошибка создания аккаунта: ${errorData}`);
-      }
-
-      // Получаем данные созданного пользователя
-      const createUserData = await createUserResponse.json();
-      const responseData = createUserData.response || createUserData;
-      const subscriptionUrl = responseData.subscriptionUrl || responseData.subscription_url || '';
-      
-      // Сохраняем subscriptionUrl сразу после создания
-      if (subscriptionUrl) {
-        localStorage.setItem('vpn_subscription_url', subscriptionUrl);
-      }
-
-      // Ждём 1 секунду перед добавлением в squad (API нужно время для индексации)
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Добавляем пользователя в squad используя UUID из ответа
-      try {
-        const userUuid = responseData.uuid;
-        
-        const squadResponse = await fetch(
-          'https://functions.poehali.dev/4e61ec57-0f83-4c68-83fb-8b3049f711ab',
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              action: 'update_user',
-              uuid: userUuid,
-              inbounds: {
-                'vless-reality': ['e742f30b-82fb-431a-918b-1b4d22d6ba4d']
-              }
-            })
-          }
-        );
-        
-        if (!squadResponse.ok) {
-          console.error('Ошибка добавления в squad:', await squadResponse.text());
-        } else {
-          console.log('✅ Пользователь добавлен в squad');
-        }
-      } catch (squadError) {
-        console.error('Не удалось добавить в squad:', squadError);
-      }
-
+      // Создаём платёж - webhook после оплаты создаст пользователя со squad
       const paymentResponse = await fetch(
         'https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c',
         {
