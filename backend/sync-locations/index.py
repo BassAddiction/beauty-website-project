@@ -32,7 +32,11 @@ def parse_country_from_name(name: str) -> tuple:
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     method: str = event.get('httpMethod', 'GET')
     headers_in = event.get('headers', {})
-    admin_password = headers_in.get('X-Admin-Password', '')
+    
+    if isinstance(headers_in, str):
+        admin_password = ''
+    else:
+        admin_password = headers_in.get('X-Admin-Password', '') if headers_in else ''
     
     cors_headers = {
         'Content-Type': 'application/json',
