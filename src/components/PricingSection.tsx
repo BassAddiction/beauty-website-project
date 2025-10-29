@@ -53,7 +53,10 @@ const PricingSection = () => {
         
         if (settingsResponse.ok) {
           const settingsData = await settingsResponse.json();
-          setShowBuilderButton(settingsData.settings?.show_on_pricing ?? true);
+          const showButton = settingsData.settings?.show_on_pricing;
+          setShowBuilderButton(showButton !== undefined ? showButton : true);
+        } else {
+          setShowBuilderButton(true);
         }
       } catch (error) {
         console.error('Failed to load data:', error);
@@ -246,7 +249,7 @@ const PricingSection = () => {
                   </div>
                 </CardContent>
               </Card>
-              </div>
+            </div>
             )}
 
             <div className={`grid md:grid-cols-2 lg:grid-cols-6 gap-6 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>

@@ -39,7 +39,10 @@ const Register = () => {
         
         if (settingsResponse.ok) {
           const settingsData = await settingsResponse.json();
-          setShowBuilderButton(settingsData.settings?.show_on_register ?? true);
+          const showButton = settingsData.settings?.show_on_register;
+          setShowBuilderButton(showButton !== undefined ? showButton : true);
+        } else {
+          setShowBuilderButton(true);
         }
       } catch (err) {
         console.error('Failed to load data:', err);
