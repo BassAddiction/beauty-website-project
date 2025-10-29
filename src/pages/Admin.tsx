@@ -158,6 +158,62 @@ const Admin = () => {
     }
   };
 
+  const handleMovePlan = async (planId: number, direction: 'up' | 'down') => {
+    const currentIndex = plans.findIndex(p => p.plan_id === planId);
+    if (currentIndex === -1) return;
+    
+    const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    if (targetIndex < 0 || targetIndex >= plans.length) return;
+    
+    const currentPlan = plans[currentIndex];
+    const targetPlan = plans[targetIndex];
+    
+    setLoading(true);
+    try {
+      const newCurrentOrder = targetPlan.sort_order;
+      const newTargetOrder = currentPlan.sort_order;
+      
+      await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Password': password
+        },
+        body: JSON.stringify({
+          ...currentPlan,
+          sort_order: newCurrentOrder
+        })
+      });
+      
+      await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Password': password
+        },
+        body: JSON.stringify({
+          ...targetPlan,
+          sort_order: newTargetOrder
+        })
+      });
+      
+      toast({
+        title: '✅ Порядок изменён',
+        description: 'Тарифы переупорядочены'
+      });
+      
+      handleLogin(password);
+    } catch (error) {
+      toast({
+        title: '❌ Ошибка',
+        description: String(error),
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleLogout = () => {
     setIsAuthorized(false);
     setPassword('');
@@ -193,6 +249,7 @@ const Admin = () => {
             plans={plans}
             setEditingPlan={setEditingPlan}
             handleDeletePlan={handleDeletePlan}
+            handleMovePlan={handleMovePlan}
           />
         )}
 

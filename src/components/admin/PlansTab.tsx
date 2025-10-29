@@ -21,9 +21,10 @@ interface PlansTabProps {
   plans: Plan[];
   setEditingPlan: (plan: Plan) => void;
   handleDeletePlan: (planId: number) => void;
+  handleMovePlan: (planId: number, direction: 'up' | 'down') => void;
 }
 
-export const PlansTab = ({ plans, setEditingPlan, handleDeletePlan }: PlansTabProps) => {
+export const PlansTab = ({ plans, setEditingPlan, handleDeletePlan, handleMovePlan }: PlansTabProps) => {
   return (
     <Card>
       <CardHeader>
@@ -59,7 +60,7 @@ export const PlansTab = ({ plans, setEditingPlan, handleDeletePlan }: PlansTabPr
               <TableHead>Дни</TableHead>
               <TableHead>ГБ/день</TableHead>
               <TableHead>Статус</TableHead>
-              <TableHead>Сортировка</TableHead>
+              <TableHead>Порядок</TableHead>
               <TableHead>Действия</TableHead>
             </TableRow>
           </TableHeader>
@@ -76,7 +77,26 @@ export const PlansTab = ({ plans, setEditingPlan, handleDeletePlan }: PlansTabPr
                     {plan.is_active ? 'Активен' : 'Неактивен'}
                   </Badge>
                 </TableCell>
-                <TableCell>{plan.sort_order}</TableCell>
+                <TableCell>
+                  <div className="flex gap-1">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => handleMovePlan(plan.plan_id, 'up')}
+                      disabled={plans.indexOf(plan) === 0}
+                    >
+                      <Icon name="ChevronUp" className="w-4 h-4" />
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => handleMovePlan(plan.plan_id, 'down')}
+                      disabled={plans.indexOf(plan) === plans.length - 1}
+                    >
+                      <Icon name="ChevronDown" className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </TableCell>
                 <TableCell>
                   <div className="flex gap-2">
                     <Button size="sm" variant="outline" onClick={() => setEditingPlan(plan)}>
