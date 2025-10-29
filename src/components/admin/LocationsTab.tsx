@@ -20,9 +20,11 @@ interface LocationsTabProps {
   setEditingLocation: (location: Location) => void;
   handleDeleteLocation: (locationId: number) => void;
   handleMoveLocation: (locationId: number, direction: 'up' | 'down') => void;
+  handleSyncLocations: () => void;
+  syncing: boolean;
 }
 
-export const LocationsTab = ({ locations, setEditingLocation, handleDeleteLocation, handleMoveLocation }: LocationsTabProps) => {
+export const LocationsTab = ({ locations, setEditingLocation, handleDeleteLocation, handleMoveLocation, handleSyncLocations, syncing }: LocationsTabProps) => {
   return (
     <Card>
       <CardHeader>
@@ -31,19 +33,38 @@ export const LocationsTab = ({ locations, setEditingLocation, handleDeleteLocati
             <CardTitle>Управление локациями</CardTitle>
             <CardDescription>Редактируйте страны и их параметры для конструктора</CardDescription>
           </div>
-          <Button onClick={() => setEditingLocation({
-            location_id: 0,
-            name: '',
-            country_code: '',
-            flag: '',
-            price_per_day: 0,
-            traffic_gb_per_day: 1,
-            is_active: true,
-            sort_order: locations.length + 1
-          })}>
-            <Icon name="Plus" className="w-4 h-4 mr-2" />
-            Добавить локацию
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline"
+              onClick={handleSyncLocations}
+              disabled={syncing}
+            >
+              {syncing ? (
+                <>
+                  <Icon name="Loader2" className="w-4 h-4 mr-2 animate-spin" />
+                  Синхронизация...
+                </>
+              ) : (
+                <>
+                  <Icon name="RefreshCw" className="w-4 h-4 mr-2" />
+                  Синхронизировать с Remnawave
+                </>
+              )}
+            </Button>
+            <Button onClick={() => setEditingLocation({
+              location_id: 0,
+              name: '',
+              country_code: '',
+              flag: '',
+              price_per_day: 0,
+              traffic_gb_per_day: 1,
+              is_active: true,
+              sort_order: locations.length + 1
+            })}>
+              <Icon name="Plus" className="w-4 h-4 mr-2" />
+              Добавить локацию
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent>

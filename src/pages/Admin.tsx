@@ -17,6 +17,7 @@ const Admin = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [activeTab, setActiveTab] = useState<'plans' | 'clients' | 'users' | 'locations'>('plans');
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
   const [editingLocation, setEditingLocation] = useState<Location | null>(null);
@@ -24,6 +25,7 @@ const Admin = () => {
 
   const API_URL = 'https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0';
   const LOCATIONS_API = 'https://functions.poehali.dev/3271c5a0-f0f4-42e8-b230-c35b772c0024';
+  const SYNC_LOCATIONS_API = 'https://functions.poehali.dev/a93c29cf-6f89-4fe3-a7e6-717e7d5a8112';
 
   useEffect(() => {
     const savedPassword = localStorage.getItem('admin_password');
@@ -362,6 +364,41 @@ const Admin = () => {
     }
   };
 
+  const handleSyncLocations = async () => {
+    setSyncing(true);
+    try {
+      const response = await fetch(SYNC_LOCATIONS_API, {
+        headers: {
+          'X-Admin-Password': password
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        toast({
+          title: '✅ Синхронизация завершена',
+          description: `Добавлено: ${data.synced}, Обновлено: ${data.updated}, Пропущено: ${data.skipped}`
+        });
+        loadLocations();
+      } else {
+        const error = await response.json();
+        toast({
+          title: '❌ Ошибка синхронизации',
+          description: error.error || 'Не удалось синхронизировать локации',
+          variant: 'destructive'
+        });
+      }
+    } catch (error) {
+      toast({
+        title: '❌ Ошибка',
+        description: String(error),
+        variant: 'destructive'
+      });
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   const handleLogout = () => {
     setIsAuthorized(false);
     setPassword('');
@@ -417,6 +454,8 @@ const Admin = () => {
             setEditingLocation={setEditingLocation}
             handleDeleteLocation={handleDeleteLocation}
             handleMoveLocation={handleMoveLocation}
+            handleSyncLocations={handleSyncLocations}
+            syncing={syncing}
           />
         )}
 
