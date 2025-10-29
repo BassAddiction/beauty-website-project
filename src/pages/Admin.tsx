@@ -9,6 +9,7 @@ import { ClientsTab, Client } from "@/components/admin/ClientsTab";
 import { PlanEditModal } from "@/components/admin/PlanEditModal";
 import { LocationsTab, Location } from "@/components/admin/LocationsTab";
 import { LocationEditModal } from "@/components/admin/LocationEditModal";
+import BuilderButtonSettings from "@/components/admin/BuilderButtonSettings";
 
 const Admin = () => {
   const [password, setPassword] = useState('');
@@ -18,7 +19,7 @@ const Admin = () => {
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
-  const [activeTab, setActiveTab] = useState<'plans' | 'clients' | 'users' | 'locations'>('plans');
+  const [activeTab, setActiveTab] = useState<'plans' | 'clients' | 'users' | 'locations' | 'settings'>('plans');
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
   const [editingLocation, setEditingLocation] = useState<Location | null>(null);
   const { toast } = useToast();
@@ -469,6 +470,10 @@ const Admin = () => {
             handleSyncLocations={handleSyncLocations}
             syncing={syncing}
           />
+        )}
+
+        {activeTab === 'settings' && (
+          <BuilderButtonSettings adminPassword={password} />
         )}
 
         {editingPlan && (

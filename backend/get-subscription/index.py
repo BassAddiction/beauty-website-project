@@ -134,9 +134,49 @@ def handle_admin(event: Dict[str, Any], context: Any, cors_headers: Dict[str, st
                 'isBase64Encoded': False
             }
         
-        # POST - создать/обновить тариф
+        # GET /admin?action=get_builder_settings - получить настройки кнопки конструктора
+        elif action == 'get_builder_settings':
+            cursor.execute("""
+                SELECT setting_value
+                FROM t_p66544974_beauty_website_proje.site_settings
+                WHERE setting_key = 'builder_button'
+            """)
+            row = cursor.fetchone()
+            
+            if row:
+                settings = row[0]
+            else:
+                settings = {'show_on_register': True, 'show_on_pricing': True}
+            
+            return {
+                'statusCode': 200,
+                'headers': cors_headers,
+                'body': json.dumps({'settings': settings}),
+                'isBase64Encoded': False
+            }
+        
+        # POST - создать/обновить тариф или настройки
         elif method == 'POST':
             body = json.loads(event.get('body', '{}'))
+            body_action = body.get('action')
+            
+            # Обновление настроек кнопки конструктора
+            if body_action == 'update_builder_settings':
+                settings = body.get('settings', {})
+                cursor.execute("""
+                    INSERT INTO t_p66544974_beauty_website_proje.site_settings (setting_key, setting_value, description, updated_at)
+                    VALUES ('builder_button', %s, 'Отображение кнопки "Создать свой тариф" на страницах', NOW())
+                    ON CONFLICT (setting_key) 
+                    DO UPDATE SET setting_value = EXCLUDED.setting_value, updated_at = NOW()
+                """, (json.dumps(settings),))
+                conn.commit()
+                return {
+                    'statusCode': 200,
+                    'headers': cors_headers,
+                    'body': json.dumps({'message': 'Builder settings updated'}),
+                    'isBase64Encoded': False
+                }
+            
             plan_id = body.get('plan_id')
             
             if plan_id and plan_id > 0:
