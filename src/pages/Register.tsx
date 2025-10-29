@@ -24,22 +24,32 @@ const Register = () => {
   const [error, setError] = useState('');
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loadingPlans, setLoadingPlans] = useState(true);
+  const [showBuilderButton, setShowBuilderButton] = useState(false);
 
   useEffect(() => {
-    const fetchPlans = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch('https://functions.poehali.dev/fbbbfbaf-a8c7-4eec-8f61-5976ed535592');
-        const data = await response.json();
-        setPlans(data.plans || []);
+        const [plansResponse, settingsResponse] = await Promise.all([
+          fetch('https://functions.poehali.dev/fbbbfbaf-a8c7-4eec-8f61-5976ed535592'),
+          fetch('https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0?action=get_builder_settings')
+        ]);
+        
+        const plansData = await plansResponse.json();
+        setPlans(plansData.plans || []);
+        
+        if (settingsResponse.ok) {
+          const settingsData = await settingsResponse.json();
+          setShowBuilderButton(settingsData.settings?.show_on_register ?? true);
+        }
       } catch (err) {
-        console.error('Failed to load plans:', err);
+        console.error('Failed to load data:', err);
         setError('Не удалось загрузить тарифы');
       } finally {
         setLoadingPlans(false);
       }
     };
     
-    fetchPlans();
+    fetchData();
   }, []);
 
   const handleSelectPlan = (plan: Plan) => {
@@ -165,33 +175,35 @@ const Register = () => {
               </div>
             )}
 
-            <div className="flex justify-center mb-6">
-              <Card className="max-w-md w-full border-2 border-purple-500/30 bg-gradient-to-br from-purple-500/5 to-pink-500/5 hover:border-purple-500/50 transition-all">
-                <CardContent className="pt-6">
-                  <div className="text-center space-y-4">
-                    <div className="flex justify-center">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-                        <Icon name="Sparkles" className="w-6 h-6 text-white" />
+            {showBuilderButton && (
+              <div className="flex justify-center mb-6">
+                <Card className="max-w-md w-full border-2 border-purple-500/30 bg-gradient-to-br from-purple-500/5 to-pink-500/5 hover:border-purple-500/50 transition-all">
+                  <CardContent className="pt-6">
+                    <div className="text-center space-y-4">
+                      <div className="flex justify-center">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                          <Icon name="Sparkles" className="w-6 h-6 text-white" />
+                        </div>
                       </div>
+                      <div>
+                        <h3 className="text-xl font-bold mb-2">Создайте свою подписку</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Выберите нужные страны и настройте тариф под себя
+                        </p>
+                      </div>
+                      <Button 
+                        size="lg" 
+                        className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 hover:opacity-90"
+                        onClick={() => navigate('/builder')}
+                      >
+                        <Icon name="Wrench" className="w-5 h-5 mr-2" />
+                        Собрать свою подписку
+                      </Button>
                     </div>
-                    <div>
-                      <h3 className="text-xl font-bold mb-2">Создайте свою подписку</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Выберите нужные страны и настройте тариф под себя
-                      </p>
-                    </div>
-                    <Button 
-                      size="lg" 
-                      className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 hover:opacity-90"
-                      onClick={() => navigate('/builder')}
-                    >
-                      <Icon name="Wrench" className="w-5 h-5 mr-2" />
-                      Собрать свою подписку
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
 
             <div className="text-center pt-4">
               <p className="text-sm text-muted-foreground mb-3">

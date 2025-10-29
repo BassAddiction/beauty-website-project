@@ -26,14 +26,19 @@ const PricingSection = () => {
   const [email, setEmail] = useState('');
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showBuilderButton, setShowBuilderButton] = useState(false);
 
   useEffect(() => {
-    const loadPlans = async () => {
+    const loadData = async () => {
       try {
-        const response = await fetch('https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0?action=get_plans');
-        const data = await response.json();
+        const [plansResponse, settingsResponse] = await Promise.all([
+          fetch('https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0?action=get_plans'),
+          fetch('https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0?action=get_builder_settings')
+        ]);
         
-        const formattedPlans = data.plans
+        const plansData = await plansResponse.json();
+        
+        const formattedPlans = plansData.plans
           .filter((plan: any) => plan.show_on && plan.show_on.includes('pricing'))
           .map((plan: any, index: number) => ({
             name: plan.name,
@@ -45,15 +50,20 @@ const PricingSection = () => {
           }));
         
         setPlans(formattedPlans);
+        
+        if (settingsResponse.ok) {
+          const settingsData = await settingsResponse.json();
+          setShowBuilderButton(settingsData.settings?.show_on_pricing ?? true);
+        }
       } catch (error) {
-        console.error('Failed to load plans:', error);
+        console.error('Failed to load data:', error);
         setPlans(getDefaultPlans());
       } finally {
         setLoading(false);
       }
     };
     
-    loadPlans();
+    loadData();
   }, []);
 
   const getDefaultPlans = () => [
@@ -209,25 +219,26 @@ const PricingSection = () => {
           </div>
         ) : (
           <>
-            <div className="flex justify-center mb-8">
-              <Card className="max-w-md w-full border-2 border-purple-500/30 bg-gradient-to-br from-purple-500/5 to-pink-500/5 hover:border-purple-500/50 transition-all">
-                <CardContent className="pt-6">
-                  <div className="text-center space-y-4">
-                    <div className="flex justify-center">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-                        <Icon name="Sparkles" className="w-6 h-6 text-white" />
+            {showBuilderButton && (
+              <div className="flex justify-center mb-8">
+                <Card className="max-w-md w-full border-2 border-purple-500/30 bg-gradient-to-br from-purple-500/5 to-pink-500/5 hover:border-purple-500/50 transition-all">
+                  <CardContent className="pt-6">
+                    <div className="text-center space-y-4">
+                      <div className="flex justify-center">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                          <Icon name="Sparkles" className="w-6 h-6 text-white" />
+                        </div>
                       </div>
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold mb-2">Создайте свою подписку</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Выберите нужные страны и настройте тариф под себя
-                      </p>
-                    </div>
-                    <Button 
-                      size="lg" 
-                      className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 hover:opacity-90"
-                      onClick={() => window.location.href = '/builder'}
+                      <div>
+                        <h3 className="text-xl font-bold mb-2">Создайте свою подписку</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Выберите нужные страны и настройте тариф под себя
+                        </p>
+                      </div>
+                      <Button 
+                        size="lg" 
+                        className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 hover:opacity-90"
+                        onClick={() => window.location.href = '/builder'}
                     >
                       <Icon name="Wrench" className="w-5 h-5 mr-2" />
                       Собрать свою подписку
@@ -235,7 +246,8 @@ const PricingSection = () => {
                   </div>
                 </CardContent>
               </Card>
-            </div>
+              </div>
+            )}
 
             <div className={`grid md:grid-cols-2 lg:grid-cols-6 gap-6 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
               {plans.map((plan, index) => (
