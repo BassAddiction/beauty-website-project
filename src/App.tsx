@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import Payment from "./pages/Payment";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import GetAccess from "./pages/GetAccess";
 import Admin from "./pages/Admin";
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/payment" element={<Payment />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/get-access" element={<GetAccess />} />
           <Route path="/dashboard" element={<Dashboard />} />
