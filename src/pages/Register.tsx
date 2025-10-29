@@ -144,7 +144,8 @@ const Register = () => {
             email: email,
             amount: selectedPlan.price,
             plan_name: selectedPlan.name,
-            plan_days: selectedPlan.days
+            plan_days: selectedPlan.days,
+            plan_id: selectedPlan.id
           })
         }
       );

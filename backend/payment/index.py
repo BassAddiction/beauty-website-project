@@ -10,7 +10,7 @@ import os
 import uuid
 import psycopg2
 import requests
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from datetime import datetime
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
@@ -83,7 +83,8 @@ def handle_create_payment_get(event: Dict[str, Any], cors_headers: Dict[str, str
         except:
             pass
     
-    return create_yookassa_payment(username, email, float(amount), plan_name, int(plan_days), custom_plan, cors_headers)
+    plan_id = int(params.get('plan_id', 0)) if params.get('plan_id') else None
+    return create_yookassa_payment(username, email, float(amount), plan_name, int(plan_days), plan_id, custom_plan, cors_headers)
 
 
 def handle_create_payment_post(body_data: Dict[str, Any], cors_headers: Dict[str, str]) -> Dict[str, Any]:
@@ -93,6 +94,7 @@ def handle_create_payment_post(body_data: Dict[str, Any], cors_headers: Dict[str
     amount = body_data.get('amount', 0)
     plan_name = body_data.get('plan_name', '')
     plan_days = body_data.get('plan_days', 0)
+    plan_id = body_data.get('plan_id')
     custom_plan = body_data.get('custom_plan')
     
     if not all([username, email, amount, plan_name, plan_days]):
@@ -106,10 +108,10 @@ def handle_create_payment_post(body_data: Dict[str, Any], cors_headers: Dict[str
             'isBase64Encoded': False
         }
     
-    return create_yookassa_payment(username, email, float(amount), plan_name, int(plan_days), custom_plan, cors_headers)
+    return create_yookassa_payment(username, email, float(amount), plan_name, int(plan_days), plan_id, custom_plan, cors_headers)
 
 
-def create_yookassa_payment(username: str, email: str, amount: float, plan_name: str, plan_days: int, custom_plan: Any, cors_headers: Dict[str, str]) -> Dict[str, Any]:
+def create_yookassa_payment(username: str, email: str, amount: float, plan_name: str, plan_days: int, plan_id: Optional[int], custom_plan: Any, cors_headers: Dict[str, str]) -> Dict[str, Any]:
     '''Создаёт платёж в YooKassa'''
     try:
         shop_id = os.environ.get('YOOKASSA_SHOP_ID', '')
@@ -145,6 +147,7 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
                 'email': email,
                 'plan_name': plan_name,
                 'plan_days': str(plan_days),
+                'plan_id': str(plan_id) if plan_id else '',
                 'custom_plan': json.dumps(custom_plan) if custom_plan else ''
             },
             'receipt': {
@@ -235,11 +238,19 @@ def handle_yookassa_webhook(webhook_data: Dict[str, Any], cors_headers: Dict[str
         plan_name = metadata.get('plan_name', '')
         plan_days = int(metadata.get('plan_days', 0))
         custom_plan_str = metadata.get('custom_plan', '')
+        plan_id_str = metadata.get('plan_id', '')
         
         custom_plan = None
         if custom_plan_str:
             try:
                 custom_plan = json.loads(custom_plan_str)
+            except:
+                pass
+        
+        plan_id = None
+        if plan_id_str:
+            try:
+                plan_id = int(plan_id_str)
             except:
                 pass
         
@@ -252,7 +263,7 @@ def handle_yookassa_webhook(webhook_data: Dict[str, Any], cors_headers: Dict[str
         print(f'🔔 Webhook received: {event_type}')
         print(f'📋 Payment ID: {payment_id}, Status: {payment_status}')
         print(f'👤 Username: {username}, Email: {email}')
-        print(f'💰 Amount: {amount} RUB, Plan: {plan_name} ({plan_days} days)')
+        print(f'💰 Amount: {amount} RUB, Plan: {plan_name} ({plan_days} days), Plan ID: {plan_id}')
         if custom_plan:
             print(f'🎯 Custom plan: {custom_plan}')
         
@@ -264,7 +275,7 @@ def handle_yookassa_webhook(webhook_data: Dict[str, Any], cors_headers: Dict[str
             print(f'✅ Payment succeeded, creating user in Remnawave...')
             
             # Создаём пользователя в Remnawave
-            remnawave_result = create_user_in_remnawave(username, email, plan_days, custom_plan)
+            remnawave_result = create_user_in_remnawave(username, email, plan_days, plan_id, plan_name, custom_plan)
             
             if remnawave_result.get('success'):
                 subscription_url = remnawave_result.get('subscription_url', '')
@@ -368,7 +379,7 @@ def update_payment_status(payment_id: str, status: str):
         print(f'⚠️ Failed to update payment status: {str(e)}')
 
 
-def create_user_in_remnawave(username: str, email: str, plan_days: int, custom_plan: Any = None) -> Dict[str, Any]:
+def create_user_in_remnawave(username: str, email: str, plan_days: int, plan_id: Optional[int] = None, plan_name: str = '', custom_plan: Any = None) -> Dict[str, Any]:
     '''Создаёт или продлевает пользователя в Remnawave'''
     try:
         # ВАЖНО: используем актуальный URL из func2url.json
@@ -465,11 +476,24 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int, custom_p
                 import psycopg2
                 conn = psycopg2.connect(db_url)
                 cursor = conn.cursor()
-                cursor.execute("""
-                    SELECT squad_uuids FROM t_p66544974_beauty_website_proje.subscription_plans 
-                    WHERE name = %s AND days = %s AND is_active = true
-                    LIMIT 1
-                """, (plan_name, plan_days))
+                
+                # Если есть plan_id - используем его (точное совпадение)
+                if plan_id:
+                    cursor.execute("""
+                        SELECT squad_uuids FROM t_p66544974_beauty_website_proje.subscription_plans 
+                        WHERE id = %s AND is_active = true
+                        LIMIT 1
+                    """, (plan_id,))
+                    print(f'🎯 Looking up plan by ID: {plan_id}')
+                else:
+                    # Fallback: ищем по name и days (может быть неточным!)
+                    cursor.execute("""
+                        SELECT squad_uuids FROM t_p66544974_beauty_website_proje.subscription_plans 
+                        WHERE name = %s AND days = %s AND is_active = true
+                        LIMIT 1
+                    """, (plan_name, plan_days))
+                    print(f'⚠️ Looking up plan by name/days (fallback): {plan_name}, {plan_days}')
+                
                 row = cursor.fetchone()
                 if row and row[0]:
                     squad_uuids = row[0]
