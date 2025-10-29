@@ -505,15 +505,15 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int, plan_id:
         if not squad_uuids:
             squad_uuids = ['e742f30b-82fb-431a-918b-1b4d22d6ba4d']
         
-        # Если пользователь существует И НЕ только что создан - продлеваем, иначе создаём
+        # Если пользователь существует И НЕ только что создан - обновляем через update_user
         if user_exists and user_uuid and not user_created_recently:
             payload = {
-                'action': 'extend_subscription',
-                'username': username,
+                'action': 'update_user',
                 'uuid': user_uuid,
-                'expire': expire_timestamp
+                'expire': expire_timestamp,
+                'internalSquads': squad_uuids
             }
-            print(f'🔄 Extending user subscription in Remnawave: {username}')
+            print(f'🔄 Updating user subscription in Remnawave: {username}, squads: {squad_uuids}')
         else:
             payload = {
                 'action': 'create_user',

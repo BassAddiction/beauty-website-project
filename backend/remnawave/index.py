@@ -342,11 +342,18 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             'isBase64Encoded': False
                         }
                 
+                # Обработка expire timestamp
+                expire_at = None
+                if body_data.get('expire'):
+                    from datetime import datetime
+                    expire_at = datetime.fromtimestamp(body_data['expire']).isoformat() + 'Z'
+                
                 update_payload = {
                     'trafficLimitBytes': body_data.get('data_limit'),
                     'trafficLimitStrategy': body_data.get('data_limit_reset_strategy', 'day').upper().replace('_', '_'),
                     'status': body_data.get('status', 'active').upper(),
-                    'activeInternalSquads': body_data.get('internalSquads')
+                    'activeInternalSquads': body_data.get('internalSquads'),
+                    'expireAt': expire_at
                 }
                 
                 # Обработка inbounds (например: {"vless-reality": ["uuid1", "uuid2"]})
@@ -367,16 +374,26 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 # Удаляем None значения
                 update_payload = {k: v for k, v in update_payload.items() if v is not None}
                 
-                # Пробуем добавить пользователя в squads через PATCH /api/users/{uuid}
+                # Формируем PATCH payload
+                patch_payload = {}
+                
+                # Добавляем squads если есть
                 if inbounds and 'activeInternalSquads' in update_payload:
                     squad_ids = update_payload['activeInternalSquads']
-                    
-                    # Пробуем PATCH с inboundUuids
-                    print(f'🔹 Trying PATCH /api/users/{user_uuid} with inboundUuids: {squad_ids}')
-                    
-                    patch_payload = {
-                        'inboundUuids': squad_ids
-                    }
+                    patch_payload['inboundUuids'] = squad_ids
+                    print(f'🔹 Will update inboundUuids: {squad_ids}')
+                elif 'activeInternalSquads' in update_payload and update_payload['activeInternalSquads']:
+                    patch_payload['inboundUuids'] = update_payload['activeInternalSquads']
+                    print(f'🔹 Will update inboundUuids from internalSquads: {update_payload["activeInternalSquads"]}')
+                
+                # Добавляем expireAt если есть
+                if 'expireAt' in update_payload and update_payload['expireAt']:
+                    patch_payload['expireAt'] = update_payload['expireAt']
+                    print(f'🔹 Will update expireAt: {update_payload["expireAt"]}')
+                
+                # Если есть что обновлять - делаем PATCH
+                if patch_payload:
+                    print(f'🔹 PATCH /api/users/{user_uuid} with payload: {json.dumps(patch_payload)}')
                     
                     patch_response = requests.patch(
                         f'{api_url}/api/users/{user_uuid}',
@@ -389,7 +406,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     print(f'🔹 Response body: {patch_response.text[:500]}')
                     
                     if patch_response.status_code in [200, 201]:
-                        print(f'✅ User squads updated via PATCH')
+                        print(f'✅ User updated via PATCH')
                         return {
                             'statusCode': patch_response.status_code,
                             'headers': cors_headers,
@@ -402,17 +419,17 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             'statusCode': patch_response.status_code,
                             'headers': cors_headers,
                             'body': json.dumps({
-                                'error': 'Failed to update squads',
+                                'error': 'Failed to update user',
                                 'details': patch_response.text
                             }),
                             'isBase64Encoded': False
                         }
                 
-                # Если не было inbounds - возвращаем успех
+                # Если нечего обновлять - возвращаем успех
                 return {
                     'statusCode': 200,
                     'headers': cors_headers,
-                    'body': json.dumps({'success': True, 'message': 'User updated'}),
+                    'body': json.dumps({'success': True, 'message': 'Nothing to update'}),
                     'isBase64Encoded': False
                 }
             except Exception as e:
