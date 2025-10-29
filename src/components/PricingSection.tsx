@@ -208,8 +208,21 @@ const PricingSection = () => {
             <p className="mt-4 text-muted-foreground">Загрузка тарифов...</p>
           </div>
         ) : (
-          <div className={`grid md:grid-cols-2 lg:grid-cols-6 gap-6 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            {plans.map((plan, index) => (
+          <>
+            <div className="text-center mb-8">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 hover:opacity-90"
+                onClick={() => window.location.href = '/builder'}
+              >
+                <Icon name="Sparkles" className="w-5 h-5 mr-2" />
+                Собрать свою подписку
+              </Button>
+            </div>
+
+            <div className={`grid md:grid-cols-2 lg:grid-cols-6 gap-6 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+              {plans.map((plan, index) => (
             <Card key={index} className={`relative border-2 transition-all duration-300 hover:scale-105 ${plan.popular ? 'border-primary shadow-xl' : plan.custom ? 'border-purple-500 shadow-lg' : 'hover:border-primary'}`}>
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-bold">
@@ -274,7 +287,8 @@ const PricingSection = () => {
               </CardFooter>
             </Card>
             ))}
-          </div>
+            </div>
+          </>
         )}
       </div>
     </section>
