@@ -477,6 +477,7 @@ const Admin = () => {
             setEditingPlan={setEditingPlan}
             handleSavePlan={handleSavePlan}
             loading={loading}
+            adminPassword={password}
           />
         )}
 

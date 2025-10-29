@@ -436,9 +436,10 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int, custom_p
         # 30 GB в байтах = 30 * 1024 * 1024 * 1024
         data_limit = 32212254720
         
-        # Получаем squad_uuid из custom_plan
+        # Получаем squad_uuid из custom_plan ИЛИ из тарифа
         squad_uuids = []
         if custom_plan and isinstance(custom_plan, dict):
+            # Кастомный тариф - берём squad из локаций
             locations_data = custom_plan.get('locations', [])
             if locations_data:
                 location_ids = [loc.get('location_id') for loc in locations_data if loc.get('location_id')]
@@ -456,7 +457,25 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int, custom_p
                         squad_uuids = [row[0] for row in cursor.fetchall()]
                         cursor.close()
                         conn.close()
-                        print(f'🎯 Custom plan squads: {squad_uuids}')
+                        print(f'🎯 Custom plan squads from locations: {squad_uuids}')
+        else:
+            # Обычный тариф - берём squad_uuids из таблицы plans
+            db_url = os.environ.get('DATABASE_URL', '')
+            if db_url:
+                import psycopg2
+                conn = psycopg2.connect(db_url)
+                cursor = conn.cursor()
+                cursor.execute("""
+                    SELECT squad_uuids FROM t_p66544974_beauty_website_proje.subscription_plans 
+                    WHERE name = %s AND days = %s AND is_active = true
+                    LIMIT 1
+                """, (plan_name, plan_days))
+                row = cursor.fetchone()
+                if row and row[0]:
+                    squad_uuids = row[0]
+                    print(f'🎯 Regular plan squads from plans table: {squad_uuids}')
+                cursor.close()
+                conn.close()
         
         # Если нет custom_plan, используем дефолтный squad
         if not squad_uuids:

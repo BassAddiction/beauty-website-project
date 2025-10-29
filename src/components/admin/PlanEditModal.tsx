@@ -4,15 +4,44 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Icon from "@/components/ui/icon";
 import { Plan } from "./PlansTab";
+import { useState, useEffect } from 'react';
+
+interface Location {
+  location_id: number;
+  name: string;
+  squad_uuid: string;
+  flag_emoji: string;
+  country_code: string;
+}
 
 interface PlanEditModalProps {
   editingPlan: Plan;
   setEditingPlan: (plan: Plan) => void;
   handleSavePlan: () => void;
   loading: boolean;
+  adminPassword: string;
 }
 
-export const PlanEditModal = ({ editingPlan, setEditingPlan, handleSavePlan, loading }: PlanEditModalProps) => {
+export const PlanEditModal = ({ editingPlan, setEditingPlan, handleSavePlan, loading, adminPassword }: PlanEditModalProps) => {
+  const [locations, setLocations] = useState<Location[]>([]);
+  const LOCATIONS_API = 'https://functions.poehali.dev/3271c5a0-f0f4-42e8-b230-c35b772c0024';
+
+  useEffect(() => {
+    const loadLocations = async () => {
+      try {
+        const response = await fetch(`${LOCATIONS_API}?admin=true`, {
+          headers: { 'X-Admin-Password': adminPassword }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setLocations(data.locations.filter((l: Location) => l.squad_uuid));
+        }
+      } catch (error) {
+        console.error('Failed to load locations:', error);
+      }
+    };
+    loadLocations();
+  }, [adminPassword]);
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -54,6 +83,37 @@ export const PlanEditModal = ({ editingPlan, setEditingPlan, handleSavePlan, loa
                 onChange={(e) => setEditingPlan({...editingPlan, traffic_gb: parseInt(e.target.value)})}
               />
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Squad (группы серверов)</Label>
+            <div className="space-y-2 p-3 border rounded-lg">
+              {locations.length === 0 ? (
+                <p className="text-sm text-muted-foreground">Загрузка локаций...</p>
+              ) : (
+                locations.map(loc => (
+                  <label key={loc.location_id} className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={(editingPlan.squad_uuids || []).includes(loc.squad_uuid)}
+                      onChange={(e) => {
+                        const current = editingPlan.squad_uuids || [];
+                        const updated = e.target.checked
+                          ? [...current, loc.squad_uuid]
+                          : current.filter(uuid => uuid !== loc.squad_uuid);
+                        setEditingPlan({...editingPlan, squad_uuids: updated});
+                      }}
+                      className="w-4 h-4"
+                    />
+                    <span>{loc.flag_emoji} {loc.name} ({loc.country_code})</span>
+                    <code className="text-xs text-muted-foreground ml-auto">{loc.squad_uuid.slice(0, 8)}...</code>
+                  </label>
+                ))
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Если не выбрано ничего - пользователь будет создан без squad (без доступа к серверам)
+            </p>
           </div>
 
           <div className="space-y-2">

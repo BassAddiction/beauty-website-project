@@ -15,6 +15,7 @@ export interface Plan {
   sort_order: number;
   features: string[];
   show_on: string[];
+  squad_uuids?: string[];
 }
 
 interface PlansTabProps {
@@ -43,7 +44,8 @@ export const PlansTab = ({ plans, setEditingPlan, handleDeletePlan, handleMovePl
             is_custom: false,
             sort_order: plans.length + 1,
             features: [],
-            show_on: ['register', 'pricing']
+            show_on: ['register', 'pricing'],
+            squad_uuids: []
           })}>
             <Icon name="Plus" className="w-4 h-4 mr-2" />
             Добавить тариф

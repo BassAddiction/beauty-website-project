@@ -75,7 +75,7 @@ def handle_admin(event: Dict[str, Any], context: Any, cors_headers: Dict[str, st
         if action == 'plans':
             cursor.execute("""
                 SELECT plan_id, name, price, days, traffic_gb, is_active, is_custom, 
-                       sort_order, features, show_on
+                       sort_order, features, show_on, squad_uuids
                 FROM t_p66544974_beauty_website_proje.subscription_plans
                 ORDER BY sort_order, plan_id
             """)
@@ -93,7 +93,8 @@ def handle_admin(event: Dict[str, Any], context: Any, cors_headers: Dict[str, st
                     'is_custom': row[6],
                     'sort_order': row[7],
                     'features': row[8],
-                    'show_on': row[9] or ['register', 'pricing']
+                    'show_on': row[9] or ['register', 'pricing'],
+                    'squad_uuids': row[10] or []
                 })
             
             return {
@@ -143,7 +144,7 @@ def handle_admin(event: Dict[str, Any], context: Any, cors_headers: Dict[str, st
                 cursor.execute("""
                     UPDATE t_p66544974_beauty_website_proje.subscription_plans
                     SET name = %s, price = %s, days = %s, traffic_gb = %s,
-                        is_active = %s, is_custom = %s, sort_order = %s, features = %s, show_on = %s
+                        is_active = %s, is_custom = %s, sort_order = %s, features = %s, show_on = %s, squad_uuids = %s
                     WHERE plan_id = %s
                 """, (
                     body.get('name'),
@@ -155,6 +156,7 @@ def handle_admin(event: Dict[str, Any], context: Any, cors_headers: Dict[str, st
                     body.get('sort_order'),
                     body.get('features', []),
                     body.get('show_on', ['register', 'pricing']),
+                    body.get('squad_uuids', []),
                     plan_id
                 ))
                 conn.commit()
@@ -167,8 +169,8 @@ def handle_admin(event: Dict[str, Any], context: Any, cors_headers: Dict[str, st
             else:
                 # INSERT
                 cursor.execute("""
-                    INSERT INTO t_p66544974_beauty_website_proje.subscription_plans (name, price, days, traffic_gb, is_active, is_custom, sort_order, features, show_on)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    INSERT INTO t_p66544974_beauty_website_proje.subscription_plans (name, price, days, traffic_gb, is_active, is_custom, sort_order, features, show_on, squad_uuids)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     RETURNING plan_id
                 """, (
                     body.get('name'),
@@ -179,7 +181,8 @@ def handle_admin(event: Dict[str, Any], context: Any, cors_headers: Dict[str, st
                     body.get('is_custom', False),
                     body.get('sort_order', 0),
                     body.get('features', []),
-                    body.get('show_on', ['register', 'pricing'])
+                    body.get('show_on', ['register', 'pricing']),
+                    body.get('squad_uuids', [])
                 ))
                 new_plan_id = cursor.fetchone()[0]
                 conn.commit()
