@@ -58,7 +58,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             if admin_mode:
                 cursor.execute("""
                     SELECT location_id, name, country_code, flag_emoji, 
-                           price_per_day, traffic_gb_per_day, is_active, sort_order
+                           price_per_day, traffic_gb_per_day, is_active, sort_order, squad_uuid
                     FROM t_p66544974_beauty_website_proje.locations
                     ORDER BY sort_order, location_id
                 """)
@@ -75,7 +75,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             locations = []
             
             for row in rows:
-                locations.append({
+                location_dict = {
                     'location_id': row[0],
                     'name': row[1],
                     'country_code': row[2],
@@ -84,7 +84,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'traffic_gb_per_day': row[5],
                     'is_active': row[6],
                     'sort_order': row[7]
-                })
+                }
+                if admin_mode and len(row) > 8:
+                    location_dict['squad_uuid'] = row[8]
+                locations.append(location_dict)
             
             return {
                 'statusCode': 200,
