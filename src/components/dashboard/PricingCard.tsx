@@ -1,22 +1,56 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface PricingCardProps {
   paymentLoading: boolean;
   onPayment: (plan: { name: string; price: number; days: number }) => void;
 }
 
-const plans = [
-  { name: '1 месяц', price: 200, days: 30 },
-  { name: '3 месяца', price: 500, days: 90 },
-  { name: '6 месяцев', price: 900, days: 180 },
-  { name: '1 год', price: 1200, days: 365 }
-];
+interface Plan {
+  name: string;
+  price: number;
+  days: number;
+  features?: string[];
+}
 
 export const PricingCard = ({ paymentLoading, onPayment }: PricingCardProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadPlans = async () => {
+      try {
+        const response = await fetch('https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0?action=get_plans');
+        const data = await response.json();
+        
+        const formattedPlans = data.plans
+          .filter((plan: any) => plan.show_on && plan.show_on.includes('dashboard'))
+          .map((plan: any) => ({
+            name: plan.name,
+            price: plan.price,
+            days: plan.days,
+            features: plan.features || []
+          }));
+        
+        setPlans(formattedPlans);
+      } catch (error) {
+        console.error('Failed to load plans:', error);
+        setPlans([
+          { name: '1 месяц', price: 200, days: 30, features: [] },
+          { name: '3 месяца', price: 500, days: 90, features: [] },
+          { name: '6 месяцев', price: 900, days: 180, features: [] },
+          { name: '1 год', price: 1200, days: 365, features: [] }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadPlans();
+  }, []);
 
   return (
     <Card className="mb-6">
@@ -37,6 +71,12 @@ export const PricingCard = ({ paymentLoading, onPayment }: PricingCardProps) => 
       </CardHeader>
       {isOpen && (
       <CardContent>
+        {loading ? (
+          <div className="text-center py-8">
+            <Icon name="Loader2" className="w-8 h-8 animate-spin mx-auto text-primary" />
+            <p className="mt-2 text-muted-foreground">Загрузка тарифов...</p>
+          </div>
+        ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {plans.map((plan) => (
             <div
@@ -83,6 +123,7 @@ export const PricingCard = ({ paymentLoading, onPayment }: PricingCardProps) => 
             </div>
           ))}
         </div>
+        )}
       </CardContent>
       )}
     </Card>
