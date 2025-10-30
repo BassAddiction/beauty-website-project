@@ -208,6 +208,9 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
         # Сохраняем платёж в БД со статусом pending
         save_payment_to_db(payment_id, username, email, amount, plan_name, plan_days, 'pending')
         
+        # Сохраняем данные чека в БД
+        save_receipt_to_db(payment_id, email, amount, plan_name, 3, 4)
+        
         return {
             'statusCode': 200,
             'headers': cors_headers,
@@ -359,6 +362,39 @@ def save_payment_to_db(payment_id: str, username: str, email: str, amount: float
         
     except Exception as e:
         print(f'⚠️ Failed to save payment to DB: {str(e)}')
+
+
+def save_receipt_to_db(payment_id: str, email: str, amount: float, plan_name: str, tax_system: int, vat_code: int):
+    '''Сохраняет данные чека в БД'''
+    try:
+        db_url = os.environ.get('DATABASE_URL', '')
+        if not db_url:
+            print('⚠️ DATABASE_URL not configured')
+            return
+        
+        conn = psycopg2.connect(db_url)
+        cursor = conn.cursor()
+        
+        items_json = json.dumps([{
+            'description': f'VPN подписка {plan_name}',
+            'quantity': '1',
+            'amount': {'value': f'{amount:.2f}', 'currency': 'RUB'},
+            'vat_code': vat_code
+        }])
+        
+        cursor.execute("""
+            INSERT INTO receipts (payment_id, tax_system_code, vat_code, amount, email, items, status, created_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, NOW())
+        """, (payment_id, tax_system, vat_code, amount, email, items_json, 'pending'))
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        print(f'📋 Receipt saved to DB: {payment_id}')
+        
+    except Exception as e:
+        print(f'⚠️ Failed to save receipt to DB: {str(e)}')
 
 
 def update_payment_status(payment_id: str, status: str):

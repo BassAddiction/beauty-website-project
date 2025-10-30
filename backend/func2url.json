@@ -1,4 +1,5 @@
 {
+  "get-receipts": "https://functions.poehali.dev/2eb021b7-8d70-47e2-b4ca-6e113a73d436",
   "sync-locations": "https://functions.poehali.dev/a93c29cf-6f89-4fe3-a7e6-717e7d5a8112",
   "locations": "https://functions.poehali.dev/3271c5a0-f0f4-42e8-b230-c35b772c0024",
   "plans": "https://functions.poehali.dev/fbbbfbaf-a8c7-4eec-8f61-5976ed535592",
