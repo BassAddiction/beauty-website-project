@@ -157,6 +157,7 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
                 'customer': {
                     'email': email
                 },
+                'tax_system_code': 2,
                 'items': [
                     {
                         'description': f'VPN подписка {plan_name}',
