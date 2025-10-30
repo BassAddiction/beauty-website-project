@@ -10,6 +10,7 @@ import TrainingSection from "@/components/TrainingSection";
 import FAQSection from "@/components/FAQSection";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
+import { NewsFeed } from "@/components/NewsFeed";
 
 const Index = () => {
   const [searchParams] = useSearchParams();
@@ -34,6 +35,9 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <HeroSection />
+      <div className="container mx-auto px-4">
+        <NewsFeed />
+      </div>
       <PricingSection />
       <FeaturesSection />
       <TrainingSection />
