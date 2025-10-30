@@ -398,14 +398,17 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int, plan_id:
         if remnawave_api_url and remnawave_token:
             try:
                 check_response = requests.get(
-                    f'{remnawave_api_url}/api/user/{username}',
+                    f'{remnawave_api_url}/api/users',
                     headers={'Authorization': f'Bearer {remnawave_token}'},
                     timeout=10
                 )
-                print(f'🔍 Check user response: status={check_response.status_code}')
+                print(f'🔍 Check users list response: status={check_response.status_code}')
                 if check_response.status_code == 200:
-                    user_data = check_response.json()
-                    print(f'🔍 User data: {user_data}')
+                    users_response = check_response.json()
+                    users_list = users_response.get('response', {}).get('users', [])
+                    # Ищем пользователя по username
+                    user_data = next((u for u in users_list if u.get('username') == username), None)
+                    print(f'🔍 Found user: {user_data is not None}')
                     if user_data and user_data.get('uuid'):
                         user_exists = True
                         user_uuid = user_data.get('uuid')
