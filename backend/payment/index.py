@@ -402,8 +402,10 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int, plan_id:
                     headers={'Authorization': f'Bearer {remnawave_token}'},
                     timeout=10
                 )
+                print(f'🔍 Check user response: status={check_response.status_code}')
                 if check_response.status_code == 200:
                     user_data = check_response.json()
+                    print(f'🔍 User data: {user_data}')
                     if user_data and user_data.get('uuid'):
                         user_exists = True
                         user_uuid = user_data.get('uuid')
