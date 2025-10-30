@@ -1,0 +1,22 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS request (CORS preflight)",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Get public news",
+      "method": "GET",
+      "path": "/?public=true",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Unauthorized admin access",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 401
+    }
+  ]
+}

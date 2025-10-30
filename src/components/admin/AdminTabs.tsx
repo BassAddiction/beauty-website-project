@@ -2,16 +2,18 @@ import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 
 interface AdminTabsProps {
-  activeTab: 'plans' | 'clients' | 'users' | 'locations' | 'settings' | 'receipts';
-  setActiveTab: (tab: 'plans' | 'clients' | 'users' | 'locations' | 'settings' | 'receipts') => void;
+  activeTab: 'plans' | 'clients' | 'users' | 'locations' | 'settings' | 'receipts' | 'news';
+  setActiveTab: (tab: 'plans' | 'clients' | 'users' | 'locations' | 'settings' | 'receipts' | 'news') => void;
   plansCount: number;
   clientsCount: number;
   locationsCount: number;
+  newsCount: number;
   loadClients: () => void;
   loadLocations: () => void;
+  loadNews: () => void;
 }
 
-export const AdminTabs = ({ activeTab, setActiveTab, plansCount, clientsCount, locationsCount, loadClients, loadLocations }: AdminTabsProps) => {
+export const AdminTabs = ({ activeTab, setActiveTab, plansCount, clientsCount, locationsCount, newsCount, loadClients, loadLocations, loadNews }: AdminTabsProps) => {
   return (
     <div className="flex gap-2 mb-6">
       <Button
@@ -47,6 +49,16 @@ export const AdminTabs = ({ activeTab, setActiveTab, plansCount, clientsCount, l
       >
         <Icon name="Globe" className="w-4 h-4 mr-2" />
         Локации ({locationsCount})
+      </Button>
+      <Button
+        variant={activeTab === 'news' ? 'default' : 'outline'}
+        onClick={() => {
+          setActiveTab('news');
+          loadNews();
+        }}
+      >
+        <Icon name="Newspaper" className="w-4 h-4 mr-2" />
+        Новости ({newsCount})
       </Button>
       <Button
         variant={activeTab === 'receipts' ? 'default' : 'outline'}
