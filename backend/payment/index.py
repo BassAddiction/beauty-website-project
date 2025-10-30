@@ -163,7 +163,8 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
                             'currency': 'RUB'
                         },
                         'vat_code': 1,
-                        'payment_subject': 'service'
+                        'payment_subject': 'service',
+                        'payment_mode': 'full_payment'
                     }
                 ]
             }
