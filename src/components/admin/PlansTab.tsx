@@ -102,10 +102,10 @@ export const PlansTab = ({ plans, setEditingPlan, handleDeletePlan, handleMovePl
                 <TableCell>
                   <div className="flex gap-2">
                     <Button size="sm" variant="outline" onClick={() => setEditingPlan(plan)}>
-                      <Icon name="Edit" className="w-4 h-4" />
+                      <Icon name="Pencil" className="w-4 h-4" />
                     </Button>
                     <Button size="sm" variant="destructive" onClick={() => handleDeletePlan(plan.plan_id)}>
-                      <Icon name="Trash" className="w-4 h-4" />
+                      <Icon name="Trash2" className="w-4 h-4" />
                     </Button>
                   </div>
                 </TableCell>
