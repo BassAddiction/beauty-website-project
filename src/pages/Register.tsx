@@ -278,7 +278,7 @@ const Register = () => {
                     <p className="text-xs text-muted-foreground">
                       Нажимая кнопку оплаты, вы принимаете{' '}
                       <a 
-                        href="/offer" 
+                        href="/terms" 
                         target="_blank" 
                         className="text-primary hover:underline"
                       >
@@ -286,7 +286,7 @@ const Register = () => {
                       </a>
                       {' '}и{' '}
                       <a 
-                        href="/privacy" 
+                        href="/terms" 
                         target="_blank" 
                         className="text-primary hover:underline"
                       >
