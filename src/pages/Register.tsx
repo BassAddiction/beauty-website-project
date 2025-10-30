@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import Icon from "@/components/ui/icon";
 import { useNavigate } from 'react-router-dom';
 
@@ -25,6 +26,7 @@ const Register = () => {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loadingPlans, setLoadingPlans] = useState(true);
   const [showBuilderButton, setShowBuilderButton] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,6 +72,11 @@ const Register = () => {
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setError('Введите корректный email');
+      return;
+    }
+
+    if (!agreedToTerms) {
+      setError('Необходимо принять условия оферты');
       return;
     }
 
@@ -254,6 +261,41 @@ const Register = () => {
                   </div>
                 )}
 
+                <div className="flex items-start space-x-3 p-4 bg-muted rounded-lg">
+                  <Checkbox 
+                    id="terms" 
+                    checked={agreedToTerms}
+                    onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
+                    className="mt-1"
+                  />
+                  <div className="space-y-1">
+                    <label
+                      htmlFor="terms"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                    >
+                      Я согласен с условиями оферты
+                    </label>
+                    <p className="text-xs text-muted-foreground">
+                      Нажимая кнопку оплаты, вы принимаете{' '}
+                      <a 
+                        href="/offer" 
+                        target="_blank" 
+                        className="text-primary hover:underline"
+                      >
+                        публичную оферту
+                      </a>
+                      {' '}и{' '}
+                      <a 
+                        href="/privacy" 
+                        target="_blank" 
+                        className="text-primary hover:underline"
+                      >
+                        политику конфиденциальности
+                      </a>
+                    </p>
+                  </div>
+                </div>
+
                 <div className="flex gap-2">
                   <Button
                     type="button"
@@ -264,7 +306,7 @@ const Register = () => {
                   >
                     Назад
                   </Button>
-                  <Button type="submit" disabled={loading} className="flex-1 button-glow">
+                  <Button type="submit" disabled={loading || !agreedToTerms} className="flex-1 button-glow">
                     {loading ? (
                       <>
                         <Icon name="Loader2" className="w-4 h-4 mr-2 animate-spin" />
