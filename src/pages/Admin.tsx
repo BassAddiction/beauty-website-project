@@ -40,8 +40,12 @@ const Admin = () => {
   useEffect(() => {
     const loadInitialPlans = async () => {
       const result = await auth.handleLogin(auth.password);
-      if (result.success) {
+      console.log('Login result:', result);
+      if (result && result.success && result.plans) {
+        console.log('Setting plans:', result.plans);
         plansManagement.setPlans(result.plans);
+      } else {
+        console.error('Failed to load plans:', result);
       }
     };
     
