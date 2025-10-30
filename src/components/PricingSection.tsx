@@ -6,6 +6,8 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Plan {
   plan_id?: number;
@@ -26,6 +28,9 @@ const PricingSection = () => {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
   const [showBuilderButton, setShowBuilderButton] = useState(false);
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -122,7 +127,16 @@ const PricingSection = () => {
     }
   };
 
-  const handlePayment = async (plan: Plan) => {
+  const handleOpenPaymentDialog = (plan: Plan) => {
+    setSelectedPlan(plan);
+    setShowPaymentDialog(true);
+  };
+
+  const handlePayment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!selectedPlan) return;
+
     if (!email.trim()) {
       toast({
         title: '❌ Заполните email',
@@ -141,16 +155,25 @@ const PricingSection = () => {
       return;
     }
 
+    if (!agreedToTerms) {
+      toast({
+        title: '❌ Примите условия',
+        description: 'Необходимо принять условия оферты',
+        variant: 'destructive'
+      });
+      return;
+    }
+
     setPaying(true);
     try {
       const emailPrefix = email.split('@')[0].replace(/[^a-zA-Z0-9_-]/g, '');
       const generatedUsername = emailPrefix + '_' + Date.now();
       
-      const price = parseInt(plan.price);
-      const days = plan.name === '1 Месяц' ? 30 : 
-                   plan.name === '3 Месяца' ? 90 :
-                   plan.name === '6 Месяцев' ? 180 :
-                   plan.name === '12 Месяцев' ? 365 : 30;
+      const price = parseInt(selectedPlan.price);
+      const days = selectedPlan.name === '1 Месяц' ? 30 : 
+                   selectedPlan.name === '3 Месяца' ? 90 :
+                   selectedPlan.name === '6 Месяцев' ? 180 :
+                   selectedPlan.name === '12 Месяцев' ? 365 : 30;
 
       const paymentResponse = await fetch(
         'https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c',
@@ -161,7 +184,7 @@ const PricingSection = () => {
             username: generatedUsername,
             email: email.trim(),
             amount: price,
-            plan_name: plan.name,
+            plan_name: selectedPlan.name,
             plan_days: days
           })
         }
@@ -305,20 +328,10 @@ const PricingSection = () => {
                 ) : (
                   <Button 
                     className="w-full rounded-full button-glow relative overflow-hidden group"
-                    disabled={paying}
-                    onClick={() => handlePayment(plan)}
+                    onClick={() => handleOpenPaymentDialog(plan)}
                   >
-                    {paying ? (
-                      <>
-                        <Icon name="Loader2" className="w-4 h-4 mr-2 animate-spin" />
-                        Обработка...
-                      </>
-                    ) : (
-                      <>
-                        <Icon name="Zap" className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                        Подключить
-                      </>
-                    )}
+                    <Icon name="Zap" className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                    Подключить
                   </Button>
                 )}
               </CardFooter>
@@ -327,6 +340,116 @@ const PricingSection = () => {
             </div>
           </>
         )}
+
+        <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold">Завершите регистрацию</DialogTitle>
+              {selectedPlan && (
+                <p className="text-muted-foreground">
+                  Вы выбрали тариф: <span className="font-bold">{selectedPlan.name}</span> за <span className="font-bold">{selectedPlan.price}₽</span>
+                </p>
+              )}
+            </DialogHeader>
+            
+            <form onSubmit={handlePayment} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+                <p className="text-xs text-muted-foreground">
+                  На этот email будут отправлены данные для входа
+                </p>
+              </div>
+
+              <div className="flex items-start space-x-2 p-4 rounded-lg bg-muted/50">
+                <Checkbox 
+                  id="terms" 
+                  checked={agreedToTerms}
+                  onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
+                />
+                <div className="grid gap-1.5 leading-none">
+                  <label
+                    htmlFor="terms"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                  >
+                    Я согласен с условиями оферты
+                  </label>
+                  <p className="text-xs text-muted-foreground">
+                    Нажимая кнопку оплаты, вы принимаете{' '}
+                    <a href="/terms" target="_blank" className="text-primary hover:underline">
+                      публичную оферту
+                    </a>{' '}
+                    и{' '}
+                    <a href="/terms" target="_blank" className="text-primary hover:underline">
+                      политику конфиденциальности
+                    </a>
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  className="flex-1"
+                  onClick={() => setShowPaymentDialog(false)}
+                  disabled={paying}
+                >
+                  Назад
+                </Button>
+                <Button 
+                  type="submit" 
+                  className="flex-1 button-glow"
+                  disabled={paying || !agreedToTerms}
+                >
+                  {paying ? (
+                    <>
+                      <Icon name="Loader2" className="w-4 h-4 mr-2 animate-spin" />
+                      Обработка...
+                    </>
+                  ) : (
+                    <>
+                      <Icon name="ShoppingCart" className="w-4 h-4 mr-2" />
+                      Купить
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              <div className="mt-4 p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                <div className="flex gap-2">
+                  <Icon name="Info" className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
+                  <div className="space-y-1 text-sm">
+                    <p className="font-medium text-blue-400">После оплаты вы получите доступ к личному кабинету с настройками подключения VPN</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+                <div className="flex gap-2">
+                  <Icon name="AlertCircle" className="w-5 h-5 text-yellow-500 shrink-0 mt-0.5" />
+                  <div className="space-y-1 text-sm">
+                    <p className="font-medium text-yellow-400">Не получили доступ после оплаты?</p>
+                    <p className="text-muted-foreground">
+                      Если после оплаты страница не загрузилась - не переживайте! Перейдите на страницу{' '}
+                      <a href="/restore" className="text-primary hover:underline font-medium">
+                        Восстановить доступ
+                      </a>{' '}
+                      и введите ваш email. Вы сразу получите ссылку на VPN.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
     </section>
   );
