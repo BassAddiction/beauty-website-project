@@ -97,7 +97,7 @@ export const LocationsTab = ({ locations, loading, syncing, onEdit, onDelete, on
                 </TableCell>
               </TableRow>
             ) : (
-              locations.filter(location => location && location.location_id).map((location) => (
+              locations.filter(location => location && typeof location === 'object' && location.location_id != null && location.location_id !== undefined).map((location) => (
                 <TableRow key={location.location_id}>
                 <TableCell>{location.location_id}</TableCell>
                 <TableCell className="text-2xl">{location.flag}</TableCell>

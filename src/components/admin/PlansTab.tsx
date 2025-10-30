@@ -81,7 +81,7 @@ export const PlansTab = ({ plans, loading, onEdit, onDelete, onMove }: PlansTabP
                 </TableCell>
               </TableRow>
             ) : (
-              plans.filter(plan => plan && plan.plan_id).map((plan) => (
+              plans.filter(plan => plan && typeof plan === 'object' && plan.plan_id != null && plan.plan_id !== undefined).map((plan) => (
                 <TableRow key={plan.plan_id}>
                 <TableCell>{plan.plan_id}</TableCell>
                 <TableCell>{plan.name}</TableCell>

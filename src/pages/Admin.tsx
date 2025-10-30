@@ -43,6 +43,7 @@ const Admin = () => {
       console.log('Login result:', result);
       if (result && result.success && result.plans) {
         console.log('Setting plans:', result.plans);
+        console.log('Plans array:', result.plans.map((p: any, i: number) => ({ index: i, plan_id: p?.plan_id, name: p?.name, hasData: !!p })));
         plansManagement.setPlans(result.plans);
       } else {
         console.error('Failed to load plans:', result);
