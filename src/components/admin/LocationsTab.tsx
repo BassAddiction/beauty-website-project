@@ -17,14 +17,15 @@ export interface Location {
 
 interface LocationsTabProps {
   locations: Location[];
-  setEditingLocation: (location: Location) => void;
-  handleDeleteLocation: (locationId: number) => void;
-  handleMoveLocation: (locationId: number, direction: 'up' | 'down') => void;
-  handleSyncLocations: () => void;
+  loading?: boolean;
   syncing: boolean;
+  onEdit: (location: Location) => void;
+  onDelete: (locationId: number) => void;
+  onSync: () => void;
+  onMove: (locationId: number, direction: 'up' | 'down') => void;
 }
 
-export const LocationsTab = ({ locations, setEditingLocation, handleDeleteLocation, handleMoveLocation, handleSyncLocations, syncing }: LocationsTabProps) => {
+export const LocationsTab = ({ locations, loading, syncing, onEdit, onDelete, onSync, onMove }: LocationsTabProps) => {
   return (
     <Card>
       <CardHeader>
@@ -36,7 +37,7 @@ export const LocationsTab = ({ locations, setEditingLocation, handleDeleteLocati
           <div className="flex gap-2">
             <Button 
               variant="outline"
-              onClick={handleSyncLocations}
+              onClick={onSync}
               disabled={syncing}
             >
               {syncing ? (
@@ -51,7 +52,7 @@ export const LocationsTab = ({ locations, setEditingLocation, handleDeleteLocati
                 </>
               )}
             </Button>
-            <Button onClick={() => setEditingLocation({
+            <Button onClick={() => onEdit({
               location_id: 0,
               name: '',
               country_code: '',
@@ -101,7 +102,7 @@ export const LocationsTab = ({ locations, setEditingLocation, handleDeleteLocati
                     <Button 
                       size="sm" 
                       variant="outline" 
-                      onClick={() => handleMoveLocation(location.location_id, 'up')}
+                      onClick={() => onMove(location.location_id, 'up')}
                       disabled={locations.indexOf(location) === 0}
                     >
                       <Icon name="ChevronUp" className="w-4 h-4" />
@@ -109,7 +110,7 @@ export const LocationsTab = ({ locations, setEditingLocation, handleDeleteLocati
                     <Button 
                       size="sm" 
                       variant="outline" 
-                      onClick={() => handleMoveLocation(location.location_id, 'down')}
+                      onClick={() => onMove(location.location_id, 'down')}
                       disabled={locations.indexOf(location) === locations.length - 1}
                     >
                       <Icon name="ChevronDown" className="w-4 h-4" />
@@ -118,10 +119,10 @@ export const LocationsTab = ({ locations, setEditingLocation, handleDeleteLocati
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" onClick={() => setEditingLocation(location)}>
+                    <Button size="sm" variant="outline" onClick={() => onEdit(location)}>
                       <Icon name="Pencil" className="w-4 h-4" />
                     </Button>
-                    <Button size="sm" variant="destructive" onClick={() => handleDeleteLocation(location.location_id)}>
+                    <Button size="sm" variant="destructive" onClick={() => onDelete(location.location_id)}>
                       <Icon name="Trash2" className="w-4 h-4" />
                     </Button>
                   </div>

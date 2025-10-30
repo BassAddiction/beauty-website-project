@@ -20,12 +20,13 @@ export interface Plan {
 
 interface PlansTabProps {
   plans: Plan[];
-  setEditingPlan: (plan: Plan) => void;
-  handleDeletePlan: (planId: number) => void;
-  handleMovePlan: (planId: number, direction: 'up' | 'down') => void;
+  loading?: boolean;
+  onEdit: (plan: Plan) => void;
+  onDelete: (planId: number) => void;
+  onMove: (planId: number, direction: 'up' | 'down') => void;
 }
 
-export const PlansTab = ({ plans, setEditingPlan, handleDeletePlan, handleMovePlan }: PlansTabProps) => {
+export const PlansTab = ({ plans, loading, onEdit, onDelete, onMove }: PlansTabProps) => {
   return (
     <Card>
       <CardHeader>
@@ -34,7 +35,7 @@ export const PlansTab = ({ plans, setEditingPlan, handleDeletePlan, handleMovePl
             <CardTitle>Управление тарифами</CardTitle>
             <CardDescription>Редактируйте цены и параметры тарифов</CardDescription>
           </div>
-          <Button onClick={() => setEditingPlan({
+          <Button onClick={() => onEdit({
             plan_id: 0,
             name: '',
             price: 0,
@@ -84,7 +85,7 @@ export const PlansTab = ({ plans, setEditingPlan, handleDeletePlan, handleMovePl
                     <Button 
                       size="sm" 
                       variant="outline" 
-                      onClick={() => handleMovePlan(plan.plan_id, 'up')}
+                      onClick={() => onMove(plan.plan_id, 'up')}
                       disabled={plans.indexOf(plan) === 0}
                     >
                       <Icon name="ChevronUp" className="w-4 h-4" />
@@ -92,7 +93,7 @@ export const PlansTab = ({ plans, setEditingPlan, handleDeletePlan, handleMovePl
                     <Button 
                       size="sm" 
                       variant="outline" 
-                      onClick={() => handleMovePlan(plan.plan_id, 'down')}
+                      onClick={() => onMove(plan.plan_id, 'down')}
                       disabled={plans.indexOf(plan) === plans.length - 1}
                     >
                       <Icon name="ChevronDown" className="w-4 h-4" />
@@ -101,10 +102,10 @@ export const PlansTab = ({ plans, setEditingPlan, handleDeletePlan, handleMovePl
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" onClick={() => setEditingPlan(plan)}>
+                    <Button size="sm" variant="outline" onClick={() => onEdit(plan)}>
                       <Icon name="Pencil" className="w-4 h-4" />
                     </Button>
-                    <Button size="sm" variant="destructive" onClick={() => handleDeletePlan(plan.plan_id)}>
+                    <Button size="sm" variant="destructive" onClick={() => onDelete(plan.plan_id)}>
                       <Icon name="Trash2" className="w-4 h-4" />
                     </Button>
                   </div>
