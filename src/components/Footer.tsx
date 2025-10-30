@@ -42,6 +42,9 @@ const Footer = () => {
               <a href="https://t.me/gospeedvpn" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center hover:bg-primary/20 transition-colors">
                 <Icon name="MessageCircle" size={20} className="text-primary" />
               </a>
+              <a href="https://t.me/channelspeedvpn" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center hover:bg-primary/20 transition-colors">
+                <Icon name="Radio" size={20} className="text-primary" />
+              </a>
             </div>
           </div>
         </div>
