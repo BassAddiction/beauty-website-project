@@ -273,7 +273,7 @@ const PricingSection = () => {
             </div>
             )}
 
-            <div className={`grid md:grid-cols-2 lg:grid-cols-6 gap-6 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <div className={`grid md:grid-cols-2 lg:grid-cols-4 gap-6 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
               {plans.map((plan, index) => (
             <Card key={index} className={`relative border-2 transition-all duration-300 hover:scale-105 ${plan.popular ? 'border-primary shadow-xl' : plan.custom ? 'border-purple-500 shadow-lg' : 'hover:border-primary'}`}>
               {plan.popular && (
@@ -294,7 +294,7 @@ const PricingSection = () => {
                     className="w-20 h-20 rounded-full object-cover border-2 border-primary logo-animated"
                   />
                 </div>
-                <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                <CardTitle className="text-2xl break-words">{plan.name}</CardTitle>
                 <div className="flex items-baseline gap-1 mt-4">
                   <span className="text-5xl font-black">{plan.price}</span>
                   <span className="text-2xl text-muted-foreground">{plan.period}</span>
@@ -305,7 +305,7 @@ const PricingSection = () => {
                   {plan.features.map((feature, featureIndex) => (
                     <li key={featureIndex} className="flex items-start gap-2">
                       <Icon name="Check" size={20} className="text-primary shrink-0 mt-0.5" />
-                      <span className="text-sm">{feature}</span>
+                      <span className="text-sm break-words">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -327,11 +327,11 @@ const PricingSection = () => {
                   </Button>
                 ) : (
                   <Button 
-                    className="w-full rounded-full button-glow relative overflow-hidden group"
+                    className="w-full rounded-full button-glow relative overflow-hidden group text-sm px-4"
                     onClick={() => handleOpenPaymentDialog(plan)}
                   >
-                    <Icon name="Zap" className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                    Подключить
+                    <Icon name="Zap" className="w-4 h-4 shrink-0 transition-transform group-hover:translate-x-1" />
+                    <span className="truncate">Подключить</span>
                   </Button>
                 )}
               </CardFooter>
