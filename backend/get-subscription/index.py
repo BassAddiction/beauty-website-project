@@ -134,26 +134,7 @@ def handle_admin(event: Dict[str, Any], context: Any, cors_headers: Dict[str, st
                 'isBase64Encoded': False
             }
         
-        # GET /admin?action=get_builder_settings - получить настройки кнопки конструктора
-        elif action == 'get_builder_settings':
-            cursor.execute("""
-                SELECT setting_value
-                FROM t_p66544974_beauty_website_proje.site_settings
-                WHERE setting_key = 'builder_button'
-            """)
-            row = cursor.fetchone()
-            
-            if row:
-                settings = row[0]
-            else:
-                settings = {'show_on_register': True, 'show_on_pricing': True}
-            
-            return {
-                'statusCode': 200,
-                'headers': cors_headers,
-                'body': json.dumps({'settings': settings}),
-                'isBase64Encoded': False
-            }
+
         
         # POST - создать/обновить тариф или настройки
         elif method == 'POST':
@@ -295,6 +276,43 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     # ПУБЛИЧНЫЙ ЗАПРОС ТАРИФОВ (без пароля)
     if action == 'get_plans':
         return get_public_plans(cors_headers)
+    
+    # ПУБЛИЧНЫЙ ЗАПРОС НАСТРОЕК КНОПКИ КОНСТРУКТОРА (без пароля)
+    if action == 'get_builder_settings':
+        db_url = os.environ.get('DATABASE_URL', '')
+        if not db_url:
+            return {
+                'statusCode': 500,
+                'headers': cors_headers,
+                'body': json.dumps({'error': 'Database not configured'}),
+                'isBase64Encoded': False
+            }
+        
+        conn = psycopg2.connect(db_url)
+        cursor = conn.cursor()
+        
+        try:
+            cursor.execute("""
+                SELECT setting_value
+                FROM t_p66544974_beauty_website_proje.site_settings
+                WHERE setting_key = 'builder_button'
+            """)
+            row = cursor.fetchone()
+            
+            if row:
+                settings = row[0]
+            else:
+                settings = {'show_on_register': True, 'show_on_pricing': True}
+            
+            return {
+                'statusCode': 200,
+                'headers': cors_headers,
+                'body': json.dumps({'settings': settings}),
+                'isBase64Encoded': False
+            }
+        finally:
+            cursor.close()
+            conn.close()
     
     # Проверка админского пароля для POST/DELETE или админских action
     admin_password = headers.get('x-admin-password') or headers.get('X-Admin-Password')
