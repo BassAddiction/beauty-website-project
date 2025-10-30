@@ -161,7 +161,7 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
                 'items': [
                     {
                         'description': f'VPN подписка {plan_name}',
-                        'quantity': '1',
+                        'quantity': '1.00',
                         'amount': {
                             'value': f'{amount:.2f}',
                             'currency': 'RUB'
@@ -173,6 +173,8 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
                 ]
             }
         }
+        
+        print(f'📋 Sending receipt with tax_system_code=3 (УСН доходы-расходы), vat_code=4 (Без НДС)')
         
         print(f'🔹 Creating YooKassa payment for {username}: {amount} RUB, {plan_days} days')
         
