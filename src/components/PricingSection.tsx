@@ -22,7 +22,6 @@ const PricingSection = () => {
   const { toast } = useToast();
   const [testing, setTesting] = useState(false);
   const [paying, setPaying] = useState(false);
-  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
@@ -124,10 +123,10 @@ const PricingSection = () => {
   };
 
   const handlePayment = async (plan: Plan) => {
-    if (!username.trim() || !email.trim()) {
+    if (!email.trim()) {
       toast({
-        title: '❌ Заполните данные',
-        description: 'Введите Username и Email перед оплатой',
+        title: '❌ Заполните email',
+        description: 'Введите Email перед оплатой',
         variant: 'destructive'
       });
       return;
@@ -144,50 +143,47 @@ const PricingSection = () => {
 
     setPaying(true);
     try {
+      const emailPrefix = email.split('@')[0].replace(/[^a-zA-Z0-9_-]/g, '');
+      const generatedUsername = emailPrefix + '_' + Date.now();
+      
       const price = parseInt(plan.price);
       const days = plan.name === '1 Месяц' ? 30 : 
                    plan.name === '3 Месяца' ? 90 :
                    plan.name === '6 Месяцев' ? 180 :
                    plan.name === '12 Месяцев' ? 365 : 30;
 
-      localStorage.setItem('vpn_username', username.trim());
-      localStorage.setItem('vpn_email', email.trim());
-
-      const params = new URLSearchParams({
-        amount: price.toString(),
-        plan_name: plan.name,
-        plan_days: days.toString(),
-        username: username.trim(),
-        email: email.trim()
-      });
-
-      const url = `https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c?${params}`;
-      console.log('Payment request:', { url, plan, username: username.trim(), email: email.trim() });
-
-      const res = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
+      const paymentResponse = await fetch(
+        'https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: generatedUsername,
+            email: email.trim(),
+            amount: price,
+            plan_name: plan.name,
+            plan_days: days
+          })
         }
-      });
+      );
 
-      console.log('Payment response status:', res.status);
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        console.error('Payment error response:', errorText);
-        throw new Error(`HTTP ${res.status}: ${errorText}`);
+      if (!paymentResponse.ok) {
+        const errorText = await paymentResponse.text();
+        throw new Error(`Ошибка создания платежа: ${errorText}`);
       }
 
-      const data = await res.json();
-      console.log('Payment data:', data);
+      const paymentData = await paymentResponse.json();
+      
+      localStorage.setItem('vpn_username', generatedUsername);
+      localStorage.setItem('vpn_email', email.trim());
+      localStorage.setItem('vpn_payment_id', paymentData.payment_id || '');
 
-      if (data.confirmation_url) {
-        window.location.href = data.confirmation_url;
+      if (paymentData.confirmation_url) {
+        window.location.href = paymentData.confirmation_url;
       } else {
         toast({
           title: '❌ Ошибка создания платежа',
-          description: data.error || 'Не получена ссылка на оплату',
+          description: paymentData.error || 'Не получена ссылка на оплату',
           variant: 'destructive'
         });
       }
