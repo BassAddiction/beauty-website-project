@@ -68,8 +68,21 @@ export const PlansTab = ({ plans, loading, onEdit, onDelete, onMove }: PlansTabP
             </TableRow>
           </TableHeader>
           <TableBody>
-            {plans.map((plan) => (
-              <TableRow key={plan.plan_id}>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center py-8">
+                  <Icon name="Loader2" className="w-8 h-8 animate-spin mx-auto" />
+                </TableCell>
+              </TableRow>
+            ) : plans.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                  Тарифы не найдены
+                </TableCell>
+              </TableRow>
+            ) : (
+              plans.filter(plan => plan && plan.plan_id).map((plan) => (
+                <TableRow key={plan.plan_id}>
                 <TableCell>{plan.plan_id}</TableCell>
                 <TableCell>{plan.name}</TableCell>
                 <TableCell>{plan.price}₽</TableCell>
@@ -111,7 +124,8 @@ export const PlansTab = ({ plans, loading, onEdit, onDelete, onMove }: PlansTabP
                   </div>
                 </TableCell>
               </TableRow>
-            ))}
+              ))
+            )}
           </TableBody>
         </Table>
       </CardContent>

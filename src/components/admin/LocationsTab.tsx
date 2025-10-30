@@ -84,8 +84,21 @@ export const LocationsTab = ({ locations, loading, syncing, onEdit, onDelete, on
             </TableRow>
           </TableHeader>
           <TableBody>
-            {locations.map((location) => (
-              <TableRow key={location.location_id}>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={9} className="text-center py-8">
+                  <Icon name="Loader2" className="w-8 h-8 animate-spin mx-auto" />
+                </TableCell>
+              </TableRow>
+            ) : locations.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                  Локации не найдены
+                </TableCell>
+              </TableRow>
+            ) : (
+              locations.filter(location => location && location.location_id).map((location) => (
+                <TableRow key={location.location_id}>
                 <TableCell>{location.location_id}</TableCell>
                 <TableCell className="text-2xl">{location.flag}</TableCell>
                 <TableCell>{location.name}</TableCell>
@@ -128,7 +141,8 @@ export const LocationsTab = ({ locations, loading, syncing, onEdit, onDelete, on
                   </div>
                 </TableCell>
               </TableRow>
-            ))}
+              ))
+            )}
           </TableBody>
         </Table>
       </CardContent>
