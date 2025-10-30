@@ -166,7 +166,7 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
                             'value': f'{amount:.2f}',
                             'currency': 'RUB'
                         },
-                        'vat_code': 4,
+                        'vat_code': 1,
                         'payment_subject': 'service',
                         'payment_mode': 'full_payment'
                     }
@@ -174,7 +174,7 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
             }
         }
         
-        print(f'📋 Sending receipt with tax_system_code=3 (УСН доходы-расходы), vat_code=4 (Без НДС)')
+        print(f'📋 Sending receipt with tax_system_code=3 (УСН доходы-расходы), vat_code=1 (Без НДС)')
         
         print(f'🔹 Creating YooKassa payment for {username}: {amount} RUB, {plan_days} days')
         
