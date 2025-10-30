@@ -130,7 +130,9 @@ export const useLocationsManagement = (
   };
 
   const handleMoveLocation = async (locationId: number, direction: 'up' | 'down') => {
-    const currentIndex = locations.findIndex(l => l.location_id === locationId);
+    if (!locations || locations.length === 0) return;
+    
+    const currentIndex = locations.findIndex(l => l?.location_id === locationId);
     if (currentIndex === -1) return;
     
     const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
@@ -138,6 +140,8 @@ export const useLocationsManagement = (
     
     const currentLocation = locations[currentIndex];
     const targetLocation = locations[targetIndex];
+    
+    if (!currentLocation || !targetLocation) return;
     
     setLoading(true);
     try {

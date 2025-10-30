@@ -96,7 +96,9 @@ export const useNewsManagement = (NEWS_API: string, password: string) => {
   };
 
   const handleMoveNews = async (newsId: number, direction: 'up' | 'down') => {
-    const currentIndex = news.findIndex(n => n.news_id === newsId);
+    if (!news || news.length === 0) return;
+    
+    const currentIndex = news.findIndex(n => n?.news_id === newsId);
     if (currentIndex === -1) return;
     
     const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
@@ -104,6 +106,8 @@ export const useNewsManagement = (NEWS_API: string, password: string) => {
     
     const currentNews = news[currentIndex];
     const targetNews = news[targetIndex];
+    
+    if (!currentNews || !targetNews) return;
     
     setLoading(true);
     try {

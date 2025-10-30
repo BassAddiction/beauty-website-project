@@ -72,7 +72,9 @@ export const usePlansManagement = (API_URL: string, password: string, reloadPlan
   };
 
   const handleMovePlan = async (planId: number, direction: 'up' | 'down') => {
-    const currentIndex = plans.findIndex(p => p.plan_id === planId);
+    if (!plans || plans.length === 0) return;
+    
+    const currentIndex = plans.findIndex(p => p?.plan_id === planId);
     if (currentIndex === -1) return;
     
     const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
@@ -80,6 +82,8 @@ export const usePlansManagement = (API_URL: string, password: string, reloadPlan
     
     const currentPlan = plans[currentIndex];
     const targetPlan = plans[targetIndex];
+    
+    if (!currentPlan || !targetPlan) return;
     
     setLoading(true);
     try {
