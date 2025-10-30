@@ -91,6 +91,53 @@ export const ReceiptsTab = ({ password }: ReceiptsTabProps) => {
     return true;
   });
 
+  const exportToCSV = () => {
+    const headers = [
+      'ID',
+      'Дата',
+      'Email',
+      'Пользователь',
+      'План',
+      'Сумма (₽)',
+      'Система налогообложения',
+      'НДС',
+      'Статус платежа',
+      'Статус чека',
+      'ID платежа'
+    ];
+
+    const rows = filteredReceipts.map(receipt => [
+      receipt.id,
+      new Date(receipt.created_at).toLocaleString('ru-RU'),
+      receipt.email,
+      receipt.username,
+      receipt.plan_name,
+      receipt.amount,
+      receipt.tax_system_name,
+      receipt.vat_name,
+      receipt.payment_status,
+      receipt.status,
+      receipt.payment_id
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+
+    const BOM = '\uFEFF';
+    const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', `receipts_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -106,10 +153,16 @@ export const ReceiptsTab = ({ password }: ReceiptsTabProps) => {
           <h2 className="text-2xl font-bold">Чеки</h2>
           <p className="text-gray-600">Всего: {total} | Показано: {filteredReceipts.length}</p>
         </div>
-        <Button onClick={loadReceipts} variant="outline">
-          <Icon name="RefreshCw" className="w-4 h-4 mr-2" />
-          Обновить
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={exportToCSV} variant="default" disabled={filteredReceipts.length === 0}>
+            <Icon name="Download" className="w-4 h-4 mr-2" />
+            Экспорт CSV
+          </Button>
+          <Button onClick={loadReceipts} variant="outline">
+            <Icon name="RefreshCw" className="w-4 h-4 mr-2" />
+            Обновить
+          </Button>
+        </div>
       </div>
 
       <Card className="p-4 mb-6">
