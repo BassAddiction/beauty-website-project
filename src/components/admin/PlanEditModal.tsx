@@ -189,7 +189,7 @@ export const PlanEditModal = ({ editingPlan, setEditingPlan, handleSavePlan, loa
                       setEditingPlan({...editingPlan, features: newFeatures});
                     }}
                   >
-                    <Icon name="Trash" className="w-4 h-4" />
+                    <Icon name="Trash2" className="w-4 h-4" />
                   </Button>
                 </div>
               ))}

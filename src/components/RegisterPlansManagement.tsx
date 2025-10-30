@@ -205,7 +205,7 @@ const RegisterPlansManagement = ({ adminPassword }: RegisterPlansManagementProps
                           variant="outline"
                           onClick={() => setEditingPlan(plan)}
                         >
-                          <Icon name="Edit" size={16} />
+                          <Icon name="Pencil" size={16} />
                         </Button>
                         <Button
                           size="sm"

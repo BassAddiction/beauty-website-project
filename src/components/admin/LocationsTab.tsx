@@ -119,10 +119,10 @@ export const LocationsTab = ({ locations, setEditingLocation, handleDeleteLocati
                 <TableCell>
                   <div className="flex gap-2">
                     <Button size="sm" variant="outline" onClick={() => setEditingLocation(location)}>
-                      <Icon name="Edit" className="w-4 h-4" />
+                      <Icon name="Pencil" className="w-4 h-4" />
                     </Button>
                     <Button size="sm" variant="destructive" onClick={() => handleDeleteLocation(location.location_id)}>
-                      <Icon name="Trash" className="w-4 h-4" />
+                      <Icon name="Trash2" className="w-4 h-4" />
                     </Button>
                   </div>
                 </TableCell>
