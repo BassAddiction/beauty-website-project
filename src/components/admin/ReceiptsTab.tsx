@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Icon from "@/components/ui/icon";
 
 interface Receipt {
@@ -37,6 +39,10 @@ export const ReceiptsTab = ({ password }: ReceiptsTabProps) => {
   const [receipts, setReceipts] = useState<Receipt[]>([]);
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
+  const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [filterDateFrom, setFilterDateFrom] = useState<string>('');
+  const [filterDateTo, setFilterDateTo] = useState<string>('');
+  const [searchEmail, setSearchEmail] = useState<string>('');
 
   useEffect(() => {
     loadReceipts();
@@ -72,6 +78,19 @@ export const ReceiptsTab = ({ password }: ReceiptsTabProps) => {
     return styles[status] || 'bg-gray-100 text-gray-800';
   };
 
+  const filteredReceipts = receipts.filter(receipt => {
+    if (filterStatus !== 'all' && receipt.payment_status !== filterStatus) return false;
+    if (searchEmail && !receipt.email.toLowerCase().includes(searchEmail.toLowerCase())) return false;
+    
+    if (filterDateFrom || filterDateTo) {
+      const receiptDate = new Date(receipt.created_at);
+      if (filterDateFrom && receiptDate < new Date(filterDateFrom)) return false;
+      if (filterDateTo && receiptDate > new Date(filterDateTo + 'T23:59:59')) return false;
+    }
+    
+    return true;
+  });
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -85,7 +104,7 @@ export const ReceiptsTab = ({ password }: ReceiptsTabProps) => {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h2 className="text-2xl font-bold">Чеки</h2>
-          <p className="text-gray-600">Всего чеков: {total}</p>
+          <p className="text-gray-600">Всего: {total} | Показано: {filteredReceipts.length}</p>
         </div>
         <Button onClick={loadReceipts} variant="outline">
           <Icon name="RefreshCw" className="w-4 h-4 mr-2" />
@@ -93,8 +112,72 @@ export const ReceiptsTab = ({ password }: ReceiptsTabProps) => {
         </Button>
       </div>
 
+      <Card className="p-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div>
+            <label className="text-sm font-medium mb-2 block">Статус платежа</label>
+            <Select value={filterStatus} onValueChange={setFilterStatus}>
+              <SelectTrigger>
+                <SelectValue placeholder="Все статусы" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Все</SelectItem>
+                <SelectItem value="pending">В ожидании</SelectItem>
+                <SelectItem value="succeeded">Успешно</SelectItem>
+                <SelectItem value="failed">Ошибка</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div>
+            <label className="text-sm font-medium mb-2 block">Email</label>
+            <Input
+              type="text"
+              placeholder="Поиск по email"
+              value={searchEmail}
+              onChange={(e) => setSearchEmail(e.target.value)}
+            />
+          </div>
+          
+          <div>
+            <label className="text-sm font-medium mb-2 block">Дата от</label>
+            <Input
+              type="date"
+              value={filterDateFrom}
+              onChange={(e) => setFilterDateFrom(e.target.value)}
+            />
+          </div>
+          
+          <div>
+            <label className="text-sm font-medium mb-2 block">Дата до</label>
+            <Input
+              type="date"
+              value={filterDateTo}
+              onChange={(e) => setFilterDateTo(e.target.value)}
+            />
+          </div>
+        </div>
+        
+        {(filterStatus !== 'all' || searchEmail || filterDateFrom || filterDateTo) && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="mt-4"
+            onClick={() => {
+              setFilterStatus('all');
+              setSearchEmail('');
+              setFilterDateFrom('');
+              setFilterDateTo('');
+            }}
+          >
+            <Icon name="X" className="w-4 h-4 mr-1" />
+            Сбросить фильтры
+          </Button>
+        )}
+      </Card>
+
       <div className="space-y-4">
-        {receipts.map((receipt) => (
+        {filteredReceipts.map((receipt) => (
           <Card key={receipt.id} className="p-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -177,6 +260,12 @@ export const ReceiptsTab = ({ password }: ReceiptsTabProps) => {
           </Card>
         ))}
 
+        {filteredReceipts.length === 0 && receipts.length > 0 && (
+          <div className="text-center py-12 text-gray-500">
+            Нет чеков по заданным фильтрам
+          </div>
+        )}
+        
         {receipts.length === 0 && (
           <div className="text-center py-12 text-gray-500">
             Чеков пока нет
