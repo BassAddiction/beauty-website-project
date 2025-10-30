@@ -15,21 +15,20 @@ interface Location {
 }
 
 interface PlanEditModalProps {
-  editingPlan: Plan;
-  setEditingPlan: (plan: Plan) => void;
-  handleSavePlan: () => void;
-  loading: boolean;
-  adminPassword: string;
+  plan: Plan;
+  onChange: (plan: Plan) => void;
+  onSave: () => void;
+  onClose: () => void;
 }
 
-export const PlanEditModal = ({ editingPlan, setEditingPlan, handleSavePlan, loading, adminPassword }: PlanEditModalProps) => {
+export const PlanEditModal = ({ plan, onChange, onSave, onClose }: PlanEditModalProps) => {
   const [locations, setLocations] = useState<Location[]>([]);
   const LOCATIONS_API = 'https://functions.poehali.dev/3271c5a0-f0f4-42e8-b230-c35b772c0024';
+  const adminPassword = localStorage.getItem('admin_password') || '';
 
   useEffect(() => {
     const loadLocations = async () => {
       try {
-        console.log('Loading locations with password:', adminPassword ? 'present' : 'missing');
         const response = await fetch(`${LOCATIONS_API}?admin=true`, {
           headers: { 'X-Admin-Password': adminPassword }
         });
@@ -56,7 +55,7 @@ export const PlanEditModal = ({ editingPlan, setEditingPlan, handleSavePlan, loa
       <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <CardHeader>
           <CardTitle>
-            {editingPlan.plan_id ? 'Редактировать тариф' : 'Новый тариф'}
+            {plan.plan_id ? 'Редактировать тариф' : 'Новый тариф'}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -64,32 +63,32 @@ export const PlanEditModal = ({ editingPlan, setEditingPlan, handleSavePlan, loa
             <div className="space-y-2">
               <Label>Название</Label>
               <Input
-                value={editingPlan.name}
-                onChange={(e) => setEditingPlan({...editingPlan, name: e.target.value})}
+                value={plan.name}
+                onChange={(e) => onChange({...plan, name: e.target.value})}
               />
             </div>
             <div className="space-y-2">
               <Label>Цена (₽)</Label>
               <Input
                 type="number"
-                value={editingPlan.price}
-                onChange={(e) => setEditingPlan({...editingPlan, price: parseInt(e.target.value)})}
+                value={plan.price}
+                onChange={(e) => onChange({...plan, price: parseInt(e.target.value)})}
               />
             </div>
             <div className="space-y-2">
               <Label>Дней</Label>
               <Input
                 type="number"
-                value={editingPlan.days}
-                onChange={(e) => setEditingPlan({...editingPlan, days: parseInt(e.target.value)})}
+                value={plan.days}
+                onChange={(e) => onChange({...plan, days: parseInt(e.target.value)})}
               />
             </div>
             <div className="space-y-2">
               <Label>ГБ/день</Label>
               <Input
                 type="number"
-                value={editingPlan.traffic_gb}
-                onChange={(e) => setEditingPlan({...editingPlan, traffic_gb: parseInt(e.target.value)})}
+                value={plan.traffic_gb}
+                onChange={(e) => onChange({...plan, traffic_gb: parseInt(e.target.value)})}
               />
             </div>
           </div>
@@ -110,13 +109,13 @@ export const PlanEditModal = ({ editingPlan, setEditingPlan, handleSavePlan, loa
                   <label key={loc.location_id} className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={(editingPlan.squad_uuids || []).includes(loc.squad_uuid)}
+                      checked={(plan.squad_uuids || []).includes(loc.squad_uuid)}
                       onChange={(e) => {
-                        const current = editingPlan.squad_uuids || [];
+                        const current = plan.squad_uuids || [];
                         const updated = e.target.checked
                           ? [...current, loc.squad_uuid]
                           : current.filter(uuid => uuid !== loc.squad_uuid);
-                        setEditingPlan({...editingPlan, squad_uuids: updated});
+                        onChange({...plan, squad_uuids: updated});
                       }}
                       className="w-4 h-4"
                     />
@@ -137,13 +136,13 @@ export const PlanEditModal = ({ editingPlan, setEditingPlan, handleSavePlan, loa
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={(editingPlan.show_on || []).includes('register')}
+                  checked={(plan.show_on || []).includes('register')}
                   onChange={(e) => {
-                    const current = editingPlan.show_on || [];
+                    const current = plan.show_on || [];
                     const updated = e.target.checked
                       ? [...current.filter(p => p !== 'register'), 'register']
                       : current.filter(p => p !== 'register');
-                    setEditingPlan({...editingPlan, show_on: updated});
+                    onChange({...plan, show_on: updated});
                   }}
                   className="w-4 h-4"
                 />
@@ -152,13 +151,13 @@ export const PlanEditModal = ({ editingPlan, setEditingPlan, handleSavePlan, loa
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={(editingPlan.show_on || []).includes('pricing')}
+                  checked={(plan.show_on || []).includes('pricing')}
                   onChange={(e) => {
-                    const current = editingPlan.show_on || [];
+                    const current = plan.show_on || [];
                     const updated = e.target.checked
                       ? [...current.filter(p => p !== 'pricing'), 'pricing']
                       : current.filter(p => p !== 'pricing');
-                    setEditingPlan({...editingPlan, show_on: updated});
+                    onChange({...plan, show_on: updated});
                   }}
                   className="w-4 h-4"
                 />
@@ -170,14 +169,14 @@ export const PlanEditModal = ({ editingPlan, setEditingPlan, handleSavePlan, loa
           <div className="space-y-2">
             <Label>Описание возможностей (по одному на строку)</Label>
             <div className="space-y-2">
-              {(editingPlan.features || []).map((feature, idx) => (
+              {(plan.features || []).map((feature, idx) => (
                 <div key={idx} className="flex gap-2">
                   <Input
                     value={feature}
                     onChange={(e) => {
-                      const newFeatures = [...(editingPlan.features || [])];
+                      const newFeatures = [...(plan.features || [])];
                       newFeatures[idx] = e.target.value;
-                      setEditingPlan({...editingPlan, features: newFeatures});
+                      onChange({...plan, features: newFeatures});
                     }}
                     placeholder="Например: Безлимитный трафик"
                   />
@@ -185,8 +184,8 @@ export const PlanEditModal = ({ editingPlan, setEditingPlan, handleSavePlan, loa
                     size="sm"
                     variant="destructive"
                     onClick={() => {
-                      const newFeatures = editingPlan.features.filter((_, i) => i !== idx);
-                      setEditingPlan({...editingPlan, features: newFeatures});
+                      const newFeatures = plan.features.filter((_, i) => i !== idx);
+                      onChange({...plan, features: newFeatures});
                     }}
                   >
                     <Icon name="Trash2" className="w-4 h-4" />
@@ -197,9 +196,9 @@ export const PlanEditModal = ({ editingPlan, setEditingPlan, handleSavePlan, loa
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                  setEditingPlan({
-                    ...editingPlan,
-                    features: [...(editingPlan.features || []), '']
+                  onChange({
+                    ...plan,
+                    features: [...(plan.features || []), '']
                   });
                 }}
               >
@@ -210,10 +209,10 @@ export const PlanEditModal = ({ editingPlan, setEditingPlan, handleSavePlan, loa
           </div>
           
           <div className="flex gap-4 pt-4">
-            <Button onClick={handleSavePlan} disabled={loading}>
-              {loading ? 'Сохранение...' : 'Сохранить'}
+            <Button onClick={onSave}>
+              Сохранить
             </Button>
-            <Button variant="outline" onClick={() => setEditingPlan(null as any)}>
+            <Button variant="outline" onClick={onClose}>
               Отмена
             </Button>
           </div>
