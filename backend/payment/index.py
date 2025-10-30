@@ -140,6 +140,9 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
                 'type': 'redirect',
                 'return_url': 'https://onproduct.pro/payment-success'
             },
+            'payment_method_data': {
+                'type': 'sbp'
+            },
             'capture': True,
             'description': f'Подписка {plan_name} для {username}',
             'metadata': {
