@@ -27,22 +27,26 @@ const Admin = () => {
   const NEWS_API = 'https://functions.poehali.dev/3b70872b-40db-4e8a-81e6-228e407e152b';
 
   const auth = useAdminAuth(API_URL);
-  
-  const reloadPlans = async () => {
+  const plansManagement = usePlansManagement(API_URL, auth.password, async () => {
     const result = await auth.handleLogin(auth.password);
     if (result.success) {
       plansManagement.setPlans(result.plans);
     }
-  };
-
-  const plansManagement = usePlansManagement(API_URL, auth.password, reloadPlans);
+  });
   const locationsManagement = useLocationsManagement(LOCATIONS_API, SYNC_LOCATIONS_API, auth.password);
   const clientsManagement = useClientsManagement(API_URL, auth.password);
   const newsManagement = useNewsManagement(NEWS_API, auth.password);
 
   useEffect(() => {
+    const loadInitialPlans = async () => {
+      const result = await auth.handleLogin(auth.password);
+      if (result.success) {
+        plansManagement.setPlans(result.plans);
+      }
+    };
+    
     if (auth.isAuthorized) {
-      reloadPlans();
+      loadInitialPlans();
     }
   }, [auth.isAuthorized]);
 
