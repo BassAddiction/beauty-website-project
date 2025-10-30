@@ -165,10 +165,10 @@ const Admin = () => {
 
       {locationsManagement.editingLocation && (
         <LocationEditModal
-          location={locationsManagement.editingLocation}
-          onSave={locationsManagement.handleSaveLocation}
-          onClose={() => locationsManagement.setEditingLocation(null)}
-          onChange={locationsManagement.setEditingLocation}
+          editingLocation={locationsManagement.editingLocation}
+          setEditingLocation={locationsManagement.setEditingLocation}
+          handleSaveLocation={locationsManagement.handleSaveLocation}
+          loading={locationsManagement.loading}
         />
       )}
 
