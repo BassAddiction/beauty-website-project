@@ -23,7 +23,7 @@ const TrainingSection = () => {
               </div>
               <CardTitle>Выберите тариф</CardTitle>
               <CardDescription>
-                Оформите подписку через удобного бота в Telegram. Мгновенная активация после оплаты
+                Оформите подписку на сайте или через удобного бота в Telegram. Мгновенная активация после оплаты
               </CardDescription>
             </CardHeader>
           </Card>
