@@ -41,6 +41,12 @@ const Admin = () => {
   const newsManagement = useNewsManagement(NEWS_API, auth.password);
 
   useEffect(() => {
+    if (auth.isAuthorized) {
+      reloadPlans();
+    }
+  }, [auth.isAuthorized]);
+
+  useEffect(() => {
     if (auth.isAuthorized && activeTab === 'clients') {
       clientsManagement.loadClients();
     }
