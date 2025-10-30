@@ -309,12 +309,20 @@ const PricingSection = () => {
                 ) : (
                   <Button 
                     className="w-full rounded-full button-glow relative overflow-hidden group"
-                    asChild
+                    disabled={paying}
+                    onClick={() => handlePayment(plan)}
                   >
-                    <a href="https://t.me/shopspeedvpn_bot" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
-                      <Icon name="Zap" className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                      Подключить
-                    </a>
+                    {paying ? (
+                      <>
+                        <Icon name="Loader2" className="w-4 h-4 mr-2 animate-spin" />
+                        Обработка...
+                      </>
+                    ) : (
+                      <>
+                        <Icon name="Zap" className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                        Подключить
+                      </>
+                    )}
                   </Button>
                 )}
               </CardFooter>
