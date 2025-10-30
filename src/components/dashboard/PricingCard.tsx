@@ -26,7 +26,9 @@ export const PricingCard = ({ paymentLoading, onPayment }: PricingCardProps) => 
         const response = await fetch('https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0?action=get_plans');
         const data = await response.json();
         
-        const formattedPlans = data.plans
+        console.log('Dashboard plans API response:', data);
+        
+        let formattedPlans = data.plans
           .filter((plan: any) => plan.show_on && plan.show_on.includes('dashboard'))
           .map((plan: any) => ({
             name: plan.name,
@@ -35,6 +37,20 @@ export const PricingCard = ({ paymentLoading, onPayment }: PricingCardProps) => 
             features: plan.features || []
           }));
         
+        // Если нет тарифов с dashboard, показываем все тарифы кроме custom
+        if (formattedPlans.length === 0) {
+          console.log('No dashboard plans found, showing all non-custom plans');
+          formattedPlans = data.plans
+            .filter((plan: any) => !plan.custom)
+            .map((plan: any) => ({
+              name: plan.name,
+              price: plan.price,
+              days: plan.days,
+              features: plan.features || []
+            }));
+        }
+        
+        console.log('Formatted plans for dashboard:', formattedPlans);
         setPlans(formattedPlans);
       } catch (error) {
         console.error('Failed to load plans:', error);
@@ -75,6 +91,10 @@ export const PricingCard = ({ paymentLoading, onPayment }: PricingCardProps) => 
           <div className="text-center py-8">
             <Icon name="Loader2" className="w-8 h-8 animate-spin mx-auto text-primary" />
             <p className="mt-2 text-muted-foreground">Загрузка тарифов...</p>
+          </div>
+        ) : plans.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-muted-foreground">Тарифы не найдены</p>
           </div>
         ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
