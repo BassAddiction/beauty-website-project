@@ -157,7 +157,7 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
                 'customer': {
                     'email': email
                 },
-                'tax_system_code': 2,
+                'tax_system_code': 3,
                 'items': [
                     {
                         'description': f'VPN подписка {plan_name}',
@@ -203,7 +203,7 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
         # Логируем детали чека для контроля
         receipt_info = payment_response.get('receipt_registration', 'not_applicable')
         print(f'✅ Payment created: {payment_id}')
-        print(f'📋 Receipt: tax_system=УСН(2), vat_code=БезНДС(4), status={receipt_info}')
+        print(f'📋 Receipt: tax_system=УСН_доходы-расходы(3), vat_code=БезНДС(4), status={receipt_info}')
         
         # Сохраняем платёж в БД со статусом pending
         save_payment_to_db(payment_id, username, email, amount, plan_name, plan_days, 'pending')
