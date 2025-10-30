@@ -57,7 +57,7 @@ export const AdminTabs = ({ activeTab, setActiveTab, plansCount, clientsCount, l
           loadNews();
         }}
       >
-        <Icon name="Newspaper" className="w-4 h-4 mr-2" />
+        <Icon name="FileText" className="w-4 h-4 mr-2" />
         Новости ({newsCount})
       </Button>
       <Button

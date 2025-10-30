@@ -59,7 +59,7 @@ export const NewsFeed = () => {
   return (
     <div className="space-y-4 mb-8">
       <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-        <Icon name="Newspaper" size={28} />
+        <Icon name="FileText" size={28} />
         Новости
       </h2>
       
