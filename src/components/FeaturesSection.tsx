@@ -8,6 +8,9 @@ const FeaturesSection = () => {
   return (
     <section ref={ref} className="py-20 px-4" id="features">
       <div className="container mx-auto max-w-6xl">
+        <h2 className="text-4xl md:text-5xl font-bold text-center mb-12">
+          Преимущества Speed VPN
+        </h2>
         <div className={`grid md:grid-cols-3 gap-8 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <Card className="border-2 hover:border-primary transition-all duration-300 hover:shadow-lg">
             <CardHeader>

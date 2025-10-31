@@ -1,5 +1,6 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { useEffect } from "react";
 
 interface FAQ {
   question: string;
@@ -24,13 +25,43 @@ const FAQSection = () => {
     },
     {
       question: "Какие способы оплаты вы принимаете?",
-      answer: "Мы принимаем все основные банковские карты, электронные кошельки и криптовалюту. Оплата полностью безопасна и защищена."
+      answer: "Мы принимаем СБП, SberPay, T-Pay и другие способы оплаты. Оплата полностью безопасна и защищена ЮKassa."
     },
     {
-      question: "Могу ли я отменить подписку?",
-      answer: "Да, вы можете отменить подписку в любой момент. При этом доступ к сервису сохранится до конца оплаченного периода."
+      question: "Как быстро активируется VPN после оплаты?",
+      answer: "VPN активируется мгновенно после успешной оплаты. Вы сразу получите инструкции на указанный email и сможете подключиться."
+    },
+    {
+      question: "Работает ли VPN в России?",
+      answer: "Да, наш VPN отлично работает в России. Мы используем протокол Vless Reality, который обходит любые блокировки и обеспечивает стабильное соединение."
+    },
+    {
+      question: "Можно ли смотреть YouTube и пользоваться ChatGPT через ваш VPN?",
+      answer: "Да, наш VPN обеспечивает полный доступ к YouTube, Instagram, ChatGPT, Netflix и другим заблокированным сервисам с высокой скоростью."
     }
   ];
+  
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": faqs.map(faq => ({
+        "@type": "Question",
+        "name": faq.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": faq.answer
+        }
+      }))
+    });
+    document.head.appendChild(script);
+    
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
 
   return (
     <section ref={ref} className="py-20 px-4 bg-black/30" id="faq">
