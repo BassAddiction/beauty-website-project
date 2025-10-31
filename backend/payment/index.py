@@ -84,7 +84,8 @@ def handle_create_payment_get(event: Dict[str, Any], cors_headers: Dict[str, str
             pass
     
     plan_id = int(params.get('plan_id', 0)) if params.get('plan_id') else None
-    return create_yookassa_payment(username, email, float(amount), plan_name, int(plan_days), plan_id, custom_plan, cors_headers)
+    payment_method = params.get('payment_method', 'sbp')
+    return create_yookassa_payment(username, email, float(amount), plan_name, int(plan_days), plan_id, custom_plan, payment_method, cors_headers)
 
 
 def handle_create_payment_post(body_data: Dict[str, Any], cors_headers: Dict[str, str]) -> Dict[str, Any]:
@@ -96,6 +97,7 @@ def handle_create_payment_post(body_data: Dict[str, Any], cors_headers: Dict[str
     plan_days = body_data.get('plan_days', 0)
     plan_id = body_data.get('plan_id')
     custom_plan = body_data.get('custom_plan')
+    payment_method = body_data.get('payment_method', 'sbp')
     
     if not all([username, email, amount, plan_name, plan_days]):
         return {
@@ -108,10 +110,10 @@ def handle_create_payment_post(body_data: Dict[str, Any], cors_headers: Dict[str
             'isBase64Encoded': False
         }
     
-    return create_yookassa_payment(username, email, float(amount), plan_name, int(plan_days), plan_id, custom_plan, cors_headers)
+    return create_yookassa_payment(username, email, float(amount), plan_name, int(plan_days), plan_id, custom_plan, payment_method, cors_headers)
 
 
-def create_yookassa_payment(username: str, email: str, amount: float, plan_name: str, plan_days: int, plan_id: Optional[int], custom_plan: Any, cors_headers: Dict[str, str]) -> Dict[str, Any]:
+def create_yookassa_payment(username: str, email: str, amount: float, plan_name: str, plan_days: int, plan_id: Optional[int], custom_plan: Any, payment_method: str, cors_headers: Dict[str, str]) -> Dict[str, Any]:
     '''Создаёт платёж в YooKassa'''
     try:
         shop_id = os.environ.get('YOOKASSA_SHOP_ID', '')
@@ -130,6 +132,15 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
         # Генерируем уникальный ID платежа
         idempotence_key = str(uuid.uuid4())
         
+        # Определяем тип платёжного метода для YooKassa
+        yookassa_payment_type = 'sbp'
+        if payment_method == 'sberpay':
+            yookassa_payment_type = 'sberbank'
+        elif payment_method == 'tpay':
+            yookassa_payment_type = 'tinkoff_bank'
+        
+        print(f'💳 Selected payment method: {payment_method} -> YooKassa type: {yookassa_payment_type}')
+        
         # Создаём платёж в YooKassa
         payment_data = {
             'amount': {
@@ -141,7 +152,7 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
                 'return_url': 'https://onproduct.pro/payment-success'
             },
             'payment_method_data': {
-                'type': 'sbp'
+                'type': yookassa_payment_type
             },
             'capture': True,
             'description': f'Подписка {plan_name} для {username}',
