@@ -145,14 +145,18 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
         
         print(f'💳 Selected payment method: {payment_method} -> YooKassa type: {yookassa_payment_type}')
         
-        # Создаём платёж в YooKassa с виджетом (embedded)
+        # Создаём платёж в YooKassa
         payment_data = {
             'amount': {
                 'value': f'{amount:.2f}',
                 'currency': 'RUB'
             },
             'confirmation': {
-                'type': 'embedded'
+                'type': 'redirect',
+                'return_url': f'https://{domain}/payment-success'
+            },
+            'payment_method_data': {
+                'type': yookassa_payment_type
             },
             'capture': True,
             'description': f'Подписка {plan_name} для {username}',
@@ -211,12 +215,11 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
         
         payment_response = response.json()
         payment_id = payment_response.get('id', '')
-        confirmation_token = payment_response.get('confirmation', {}).get('confirmation_token', '')
+        confirmation_url = payment_response.get('confirmation', {}).get('confirmation_url', '')
         
         # Логируем детали чека для контроля
         receipt_info = payment_response.get('receipt_registration', 'not_applicable')
         print(f'✅ Payment created: {payment_id}')
-        print(f'🎫 Confirmation token: {confirmation_token[:20]}...')
         print(f'📋 Receipt: tax_system=УСН_доходы-расходы(3), vat_code=БезНДС(4), status={receipt_info}')
         
         # Сохраняем платёж в БД со статусом pending
@@ -230,7 +233,7 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
             'headers': cors_headers,
             'body': json.dumps({
                 'payment_id': payment_id,
-                'confirmation_token': confirmation_token,
+                'confirmation_url': confirmation_url,
                 'status': 'pending'
             }),
             'isBase64Encoded': False

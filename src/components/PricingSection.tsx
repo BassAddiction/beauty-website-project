@@ -9,7 +9,6 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import PaymentMethodDialog from "@/components/PaymentMethodDialog";
-import YooKassaWidget from "@/components/YooKassaWidget";
 
 interface Plan {
   plan_id?: number;
@@ -35,8 +34,6 @@ const PricingSection = () => {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [showPaymentMethodDialog, setShowPaymentMethodDialog] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'sbp' | 'sberpay' | 'tpay' | null>(null);
-  const [confirmationToken, setConfirmationToken] = useState<string>('');
-  const [showPaymentWidget, setShowPaymentWidget] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -215,17 +212,14 @@ const PricingSection = () => {
       localStorage.setItem('vpn_email', email.trim());
       localStorage.setItem('vpn_payment_id', paymentData.payment_id || '');
 
-      if (paymentData.confirmation_token) {
-        setConfirmationToken(paymentData.confirmation_token);
-        setShowPaymentWidget(true);
-        setPaying(false);
+      if (paymentData.confirmation_url) {
+        window.location.href = paymentData.confirmation_url;
       } else {
         toast({
           title: '❌ Ошибка создания платежа',
-          description: paymentData.error || 'Не получен токен оплаты',
+          description: paymentData.error || 'Не получена ссылка на оплату',
           variant: 'destructive'
         });
-        setPaying(false);
       }
     } catch (e) {
       console.error('Payment error:', e);
@@ -470,31 +464,6 @@ const PricingSection = () => {
           onSelectMethod={handleSelectPaymentMethod}
           loading={paying}
         />
-
-        <Dialog open={showPaymentWidget} onOpenChange={setShowPaymentWidget}>
-          <DialogContent className="sm:max-w-[600px]">
-            <DialogHeader>
-              <DialogTitle>Оплата подписки</DialogTitle>
-            </DialogHeader>
-            {confirmationToken && (
-              <YooKassaWidget 
-                confirmationToken={confirmationToken}
-                onSuccess={() => {
-                  window.location.href = '/payment-success';
-                }}
-                onError={(error) => {
-                  console.error('Payment widget error:', error);
-                  setShowPaymentWidget(false);
-                  toast({
-                    title: '❌ Ошибка оплаты',
-                    description: error,
-                    variant: 'destructive'
-                  });
-                }}
-              />
-            )}
-          </DialogContent>
-        </Dialog>
       </div>
     </section>
   );
