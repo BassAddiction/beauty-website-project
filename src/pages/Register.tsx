@@ -360,6 +360,7 @@ const Register = () => {
           open={showPaymentMethodDialog}
           onClose={() => setShowPaymentMethodDialog(false)}
           onSelectMethod={handleSelectPaymentMethod}
+          loading={loading}
         />
       </div>
     </div>

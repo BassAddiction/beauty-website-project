@@ -236,6 +236,7 @@ const Dashboard = () => {
           open={showPaymentMethodDialog}
           onClose={() => setShowPaymentMethodDialog(false)}
           onSelectMethod={handleSelectPaymentMethod}
+          loading={paymentLoading}
         />
       </div>
     </div>

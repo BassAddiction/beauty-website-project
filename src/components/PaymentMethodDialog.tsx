@@ -6,9 +6,10 @@ interface PaymentMethodDialogProps {
   open: boolean;
   onClose: () => void;
   onSelectMethod: (method: 'sbp' | 'sberpay' | 'tpay') => void;
+  loading?: boolean;
 }
 
-const PaymentMethodDialog = ({ open, onClose, onSelectMethod }: PaymentMethodDialogProps) => {
+const PaymentMethodDialog = ({ open, onClose, onSelectMethod, loading = false }: PaymentMethodDialogProps) => {
   const paymentMethods = [
     {
       id: 'sbp' as const,
@@ -41,23 +42,31 @@ const PaymentMethodDialog = ({ open, onClose, onSelectMethod }: PaymentMethodDia
         </DialogHeader>
         
         <div className="space-y-3 pt-4">
-          {paymentMethods.map((method) => (
-            <Button
-              key={method.id}
-              variant="outline"
-              className="w-full h-auto py-4 px-4 flex items-center justify-start gap-4 hover:border-primary hover:bg-primary/5 transition-all"
-              onClick={() => onSelectMethod(method.id)}
-            >
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <Icon name={method.icon} className="w-6 h-6 text-primary" />
-              </div>
-              <div className="text-left flex-1">
-                <div className="font-semibold text-lg">{method.name}</div>
-                <div className="text-sm text-muted-foreground">{method.description}</div>
-              </div>
-              <Icon name="ChevronRight" className="w-5 h-5 text-muted-foreground" />
-            </Button>
-          ))}
+          {loading ? (
+            <div className="text-center py-12">
+              <Icon name="Loader2" className="w-12 h-12 animate-spin mx-auto text-primary mb-4" />
+              <p className="text-muted-foreground font-medium">Создание платежа...</p>
+              <p className="text-sm text-muted-foreground mt-2">Пожалуйста, подождите</p>
+            </div>
+          ) : (
+            paymentMethods.map((method) => (
+              <Button
+                key={method.id}
+                variant="outline"
+                className="w-full h-auto py-4 px-4 flex items-center justify-start gap-4 hover:border-primary hover:bg-primary/5 transition-all"
+                onClick={() => onSelectMethod(method.id)}
+              >
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <Icon name={method.icon} className="w-6 h-6 text-primary" />
+                </div>
+                <div className="text-left flex-1">
+                  <div className="font-semibold text-lg">{method.name}</div>
+                  <div className="text-sm text-muted-foreground">{method.description}</div>
+                </div>
+                <Icon name="ChevronRight" className="w-5 h-5 text-muted-foreground" />
+              </Button>
+            ))
+          )}
         </div>
       </DialogContent>
     </Dialog>

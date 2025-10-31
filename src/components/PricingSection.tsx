@@ -461,6 +461,7 @@ const PricingSection = () => {
           open={showPaymentMethodDialog}
           onClose={() => setShowPaymentMethodDialog(false)}
           onSelectMethod={handleSelectPaymentMethod}
+          loading={paying}
         />
       </div>
     </section>
