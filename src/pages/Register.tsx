@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import Icon from "@/components/ui/icon";
 import { useNavigate } from 'react-router-dom';
+import PaymentMethodDialog from '@/components/PaymentMethodDialog';
 
 interface Plan {
   id: number;
@@ -27,6 +28,8 @@ const Register = () => {
   const [loadingPlans, setLoadingPlans] = useState(true);
   const [showBuilderButton, setShowBuilderButton] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [showPaymentMethodDialog, setShowPaymentMethodDialog] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'sbp' | 'sberpay' | 'tpay' | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,6 +62,12 @@ const Register = () => {
 
   const handleSelectPlan = (plan: Plan) => {
     setSelectedPlan(plan);
+    setShowPaymentMethodDialog(true);
+  };
+
+  const handleSelectPaymentMethod = (method: 'sbp' | 'sberpay' | 'tpay') => {
+    setSelectedPaymentMethod(method);
+    setShowPaymentMethodDialog(false);
     setStep(2);
   };
 
@@ -101,7 +110,8 @@ const Register = () => {
             amount: selectedPlan.price,
             plan_name: selectedPlan.name,
             plan_days: selectedPlan.days,
-            plan_id: selectedPlan.id
+            plan_id: selectedPlan.id,
+            payment_method: selectedPaymentMethod
           })
         }
       );
@@ -354,6 +364,12 @@ const Register = () => {
             </CardContent>
           </Card>
         )}
+
+        <PaymentMethodDialog 
+          open={showPaymentMethodDialog}
+          onClose={() => setShowPaymentMethodDialog(false)}
+          onSelectMethod={handleSelectPaymentMethod}
+        />
       </div>
     </div>
   );

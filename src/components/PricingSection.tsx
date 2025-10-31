@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import PaymentMethodDialog from "@/components/PaymentMethodDialog";
 
 interface Plan {
   plan_id?: number;
@@ -31,6 +32,8 @@ const PricingSection = () => {
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [showPaymentMethodDialog, setShowPaymentMethodDialog] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'sbp' | 'sberpay' | 'tpay' | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -129,6 +132,12 @@ const PricingSection = () => {
 
   const handleOpenPaymentDialog = (plan: Plan) => {
     setSelectedPlan(plan);
+    setShowPaymentMethodDialog(true);
+  };
+
+  const handleSelectPaymentMethod = (method: 'sbp' | 'sberpay' | 'tpay') => {
+    setSelectedPaymentMethod(method);
+    setShowPaymentMethodDialog(false);
     setShowPaymentDialog(true);
   };
 
@@ -185,7 +194,8 @@ const PricingSection = () => {
             email: email.trim(),
             amount: price,
             plan_name: selectedPlan.name,
-            plan_days: days
+            plan_days: days,
+            payment_method: selectedPaymentMethod
           })
         }
       );
@@ -450,6 +460,12 @@ const PricingSection = () => {
             </form>
           </DialogContent>
         </Dialog>
+
+        <PaymentMethodDialog 
+          open={showPaymentMethodDialog}
+          onClose={() => setShowPaymentMethodDialog(false)}
+          onSelectMethod={handleSelectPaymentMethod}
+        />
       </div>
     </section>
   );
