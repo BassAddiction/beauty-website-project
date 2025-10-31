@@ -1,0 +1,47 @@
+{
+  "tests": [
+    {
+      "name": "Check IP not blocked initially",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "action": "check"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "blocked": false
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Record failed login attempt",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "action": "record",
+        "username": "testuser",
+        "success": false
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "recorded": true
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Record successful login attempt",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "action": "record",
+        "username": "testuser",
+        "success": true
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "recorded": true
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

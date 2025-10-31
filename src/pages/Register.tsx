@@ -30,6 +30,8 @@ const Register = () => {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [showPaymentMethodDialog, setShowPaymentMethodDialog] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'sbp' | 'sberpay' | 'tpay' | null>(null);
+  
+  const AUTH_CHECK_URL = 'https://functions.poehali.dev/833bc0dd-ad44-4b38-b1ac-2ff2f5b265e5';
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,7 +69,7 @@ const Register = () => {
     setStep(2);
   };
 
-  const handleProceedToPaymentMethod = () => {
+  const handleProceedToPaymentMethod = async () => {
     if (!email.trim()) {
       setError('Введите Email');
       return;
@@ -81,6 +83,23 @@ const Register = () => {
     if (!agreedToTerms) {
       setError('Необходимо принять условия оферты');
       return;
+    }
+
+    // Проверяем, не заблокирован ли IP
+    try {
+      const checkResponse = await fetch(AUTH_CHECK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'check' })
+      });
+
+      if (checkResponse.status === 429) {
+        const checkData = await checkResponse.json();
+        setError(checkData.message || 'Слишком много попыток. Попробуйте позже.');
+        return;
+      }
+    } catch (err) {
+      console.error('Auth check error:', err);
     }
 
     setError('');
