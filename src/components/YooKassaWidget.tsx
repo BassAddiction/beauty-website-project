@@ -19,13 +19,29 @@ const YooKassaWidget = ({ confirmationToken, onSuccess, onError }: YooKassaWidge
   const { toast } = useToast();
 
   useEffect(() => {
+    console.log('🔹 YooKassa Widget: Starting initialization with token:', confirmationToken?.substring(0, 20));
+    
     // Загружаем скрипт ЮКассы
     const script = document.createElement('script');
     script.src = 'https://yookassa.ru/checkout-widget/v1/checkout-widget.js';
     script.async = true;
     
     script.onload = () => {
-      if (containerRef.current && window.YooMoneyCheckoutWidget) {
+      console.log('✅ YooKassa script loaded');
+      
+      if (!window.YooMoneyCheckoutWidget) {
+        console.error('❌ YooMoneyCheckoutWidget not found in window');
+        onError('Не удалось загрузить виджет оплаты');
+        return;
+      }
+      
+      if (!containerRef.current) {
+        console.error('❌ Container ref is null');
+        return;
+      }
+      
+      try {
+        console.log('🔹 Creating widget instance...');
         // Инициализируем виджет с кастомизацией
         widgetRef.current = new window.YooMoneyCheckoutWidget({
           confirmation_token: confirmationToken,
@@ -47,7 +63,7 @@ const YooKassaWidget = ({ confirmationToken, onSuccess, onError }: YooKassaWidge
           },
           
           error_callback: (error: any) => {
-            console.error('YooKassa widget error:', error);
+            console.error('❌ YooKassa widget error:', error);
             onError(error.error || 'Ошибка оплаты');
             toast({
               title: '❌ Ошибка оплаты',
@@ -57,11 +73,15 @@ const YooKassaWidget = ({ confirmationToken, onSuccess, onError }: YooKassaWidge
           }
         });
 
+        console.log('🔹 Rendering widget...');
         // Рендерим виджет
         widgetRef.current.render(containerRef.current);
 
+        console.log('✅ Widget rendered successfully');
+
         // Слушаем успешную оплату
         widgetRef.current.on('success', () => {
+          console.log('✅ Payment success event received');
           toast({
             title: '✅ Оплата успешна',
             description: 'Перенаправляем...'
@@ -70,7 +90,15 @@ const YooKassaWidget = ({ confirmationToken, onSuccess, onError }: YooKassaWidge
             onSuccess();
           }, 1000);
         });
+      } catch (error) {
+        console.error('❌ Error creating widget:', error);
+        onError('Ошибка инициализации виджета');
       }
+    };
+    
+    script.onerror = () => {
+      console.error('❌ Failed to load YooKassa script');
+      onError('Не удалось загрузить виджет оплаты');
     };
 
     document.body.appendChild(script);
