@@ -7,11 +7,11 @@ import Icon from "@/components/ui/icon";
 interface AdminLoginProps {
   password: string;
   setPassword: (password: string) => void;
-  handleLogin: () => void;
+  onLogin: () => void;
   loading: boolean;
 }
 
-export const AdminLogin = ({ password, setPassword, handleLogin, loading }: AdminLoginProps) => {
+export const AdminLogin = ({ password, setPassword, onLogin, loading }: AdminLoginProps) => {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
       <Card className="max-w-md w-full">
@@ -29,13 +29,13 @@ export const AdminLogin = ({ password, setPassword, handleLogin, loading }: Admi
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
+              onKeyDown={(e) => e.key === 'Enter' && onLogin()}
               placeholder="Введите пароль"
             />
           </div>
           <Button 
             className="w-full" 
-            onClick={handleLogin}
+            onClick={onLogin}
             disabled={loading || !password}
           >
             {loading ? 'Проверка...' : 'Войти'}
