@@ -7,6 +7,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import Icon from "@/components/ui/icon";
 import { useNavigate } from 'react-router-dom';
 import PaymentMethodDialog from '@/components/PaymentMethodDialog';
+import YooKassaWidget from '@/components/YooKassaWidget';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface Plan {
   id: number;
@@ -30,6 +32,8 @@ const Register = () => {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [showPaymentMethodDialog, setShowPaymentMethodDialog] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'sbp' | 'sberpay' | 'tpay' | null>(null);
+  const [confirmationToken, setConfirmationToken] = useState<string>('');
+  const [showPaymentWidget, setShowPaymentWidget] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -126,10 +130,12 @@ const Register = () => {
       localStorage.setItem('vpn_email', email);
       localStorage.setItem('vpn_payment_id', paymentData.payment_id || '');
       
-      if (paymentData.confirmation_url) {
-        window.location.href = paymentData.confirmation_url;
+      if (paymentData.confirmation_token) {
+        setConfirmationToken(paymentData.confirmation_token);
+        setShowPaymentWidget(true);
+        setLoading(false);
       } else {
-        throw new Error('Не получена ссылка на оплату');
+        throw new Error('Не получен токен оплаты');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ошибка регистрации');
@@ -363,6 +369,27 @@ const Register = () => {
           onSelectMethod={handleSelectPaymentMethod}
           loading={loading}
         />
+
+        <Dialog open={showPaymentWidget} onOpenChange={setShowPaymentWidget}>
+          <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+              <DialogTitle>Оплата подписки</DialogTitle>
+            </DialogHeader>
+            {confirmationToken && (
+              <YooKassaWidget 
+                confirmationToken={confirmationToken}
+                onSuccess={() => {
+                  window.location.href = '/payment-success';
+                }}
+                onError={(error) => {
+                  console.error('Payment widget error:', error);
+                  setShowPaymentWidget(false);
+                  setError(error);
+                }}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
