@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import Icon from "@/components/ui/icon";
 import { useNavigate } from 'react-router-dom';
 
+const AUTH_CHECK_URL = 'https://functions.poehali.dev/833bc0dd-ad44-4b38-b1ac-2ff2f5b265e5';
+
 const Login = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
@@ -24,6 +26,27 @@ const Login = () => {
     setError('');
 
     try {
+      console.log('🔐 [User Login] Checking IP block status...');
+      
+      // Проверяем, не заблокирован ли IP
+      const checkResponse = await fetch(AUTH_CHECK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'check' })
+      });
+
+      console.log('🔐 [User Login] IP check response:', checkResponse.status);
+
+      if (checkResponse.status === 429) {
+        const checkData = await checkResponse.json();
+        console.log('🚫 [User Login] IP is blocked!', checkData);
+        setError(checkData.message || 'Слишком много попыток. Попробуйте позже.');
+        setLoading(false);
+        return;
+      }
+
+      console.log('🔐 [User Login] Checking user existence...');
+      
       // Проверяем существование пользователя через API
       const response = await fetch(
         `https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0?username=${encodeURIComponent(username.trim())}`,
@@ -36,19 +59,66 @@ const Login = () => {
       );
 
       const data = await response.json();
+      
+      console.log('🔐 [User Login] User check response:', response.status);
 
       if (response.status === 404 || !response.ok) {
-        // Пользователь не найден
-        setError(data.error || 'Пользователь не найден. Проверьте правильность username.');
+        console.log('❌ [User Login] User not found - recording failed attempt');
+        
+        // Записываем неудачную попытку
+        await fetch(AUTH_CHECK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            action: 'record', 
+            username: username.trim(),
+            success: false 
+          })
+        });
+
+        console.log('🔐 [User Login] Rechecking IP block status after failed attempt...');
+        
+        // Проверяем, не заблокирован ли IP после этой попытки
+        const recheckResponse = await fetch(AUTH_CHECK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'check' })
+        });
+
+        console.log('🔐 [User Login] Recheck response:', recheckResponse.status);
+
+        if (recheckResponse.status === 429) {
+          const recheckData = await recheckResponse.json();
+          console.log('🚫 [User Login] IP now blocked after this attempt!', recheckData);
+          setError(recheckData.message || 'Слишком много неудачных попыток!');
+        } else {
+          console.log('⚠️ [User Login] Wrong username, but not blocked yet');
+          setError(data.error || 'Пользователь не найден. Проверьте правильность username.');
+        }
+        
         setLoading(false);
         return;
       }
 
       if (data.username) {
+        console.log('✅ [User Login] Login successful - recording success');
+        
+        // Записываем успешную попытку
+        await fetch(AUTH_CHECK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            action: 'record', 
+            username: username.trim(),
+            success: true 
+          })
+        });
+        
         // Пользователь найден - сохраняем и переходим в кабинет
         localStorage.setItem('vpn_username', username.trim());
         navigate('/dashboard');
       } else {
+        console.log('❌ [User Login] No username in response');
         setError('Пользователь не найден. Проверьте правильность username.');
         setLoading(false);
       }
