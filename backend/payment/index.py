@@ -149,7 +149,7 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
             },
             'confirmation': {
                 'type': 'redirect',
-                'return_url': 'https://onproduct.pro/payment-success'
+                'return_url': 'https://speedvpn.io/payment-success'
             },
             'payment_method_data': {
                 'type': yookassa_payment_type
