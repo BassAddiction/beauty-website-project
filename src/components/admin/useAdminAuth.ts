@@ -22,6 +22,8 @@ export const useAdminAuth = (API_URL: string) => {
     setLoading(true);
     
     try {
+      console.log('🔐 Checking IP block status...');
+      
       // Проверяем, не заблокирован ли IP (проверка ПЕРЕД попыткой входа)
       const checkResponse = await fetch(AUTH_CHECK_URL, {
         method: 'POST',
@@ -29,8 +31,11 @@ export const useAdminAuth = (API_URL: string) => {
         body: JSON.stringify({ action: 'check' })
       });
 
+      console.log('🔐 IP check response:', checkResponse.status);
+
       if (checkResponse.status === 429) {
         const checkData = await checkResponse.json();
+        console.log('🚫 IP is blocked!', checkData);
         toast({
           title: '🚫 Доступ временно заблокирован',
           description: checkData.message,
@@ -43,13 +48,19 @@ export const useAdminAuth = (API_URL: string) => {
         return { success: false, plans: [] };
       }
 
+      console.log('🔐 Attempting login with password...');
+      
       const response = await fetch(`${API_URL}?action=plans`, {
         headers: {
           'X-Admin-Password': passToUse
         }
       });
       
+      console.log('🔐 Login response:', response.status);
+      
       if (response.status === 401) {
+        console.log('❌ Login failed - recording failed attempt');
+        
         // Записываем неудачную попытку (ПОСЛЕ проверки пароля)
         await fetch(AUTH_CHECK_URL, {
           method: 'POST',
@@ -61,6 +72,8 @@ export const useAdminAuth = (API_URL: string) => {
           })
         });
 
+        console.log('🔐 Rechecking IP block status after failed attempt...');
+        
         // Сразу проверяем, не заблокирован ли IP после этой попытки
         const recheckResponse = await fetch(AUTH_CHECK_URL, {
           method: 'POST',
@@ -68,8 +81,11 @@ export const useAdminAuth = (API_URL: string) => {
           body: JSON.stringify({ action: 'check' })
         });
 
+        console.log('🔐 Recheck response:', recheckResponse.status);
+
         if (recheckResponse.status === 429) {
           const recheckData = await recheckResponse.json();
+          console.log('🚫 IP now blocked after this attempt!', recheckData);
           toast({
             title: '🚫 Слишком много неудачных попыток!',
             description: recheckData.message,
@@ -77,6 +93,7 @@ export const useAdminAuth = (API_URL: string) => {
             duration: 10000
           });
         } else {
+          console.log('⚠️ Wrong password, but not blocked yet');
           toast({
             title: '❌ Неверный пароль',
             variant: 'destructive'
@@ -91,6 +108,8 @@ export const useAdminAuth = (API_URL: string) => {
       
       if (response.ok) {
         const data = await response.json();
+        
+        console.log('✅ Login successful - recording success');
         
         // Записываем успешную попытку
         await fetch(AUTH_CHECK_URL, {
