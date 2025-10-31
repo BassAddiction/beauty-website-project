@@ -153,7 +153,13 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
             },
             'confirmation': {
                 'type': 'redirect',
-                'return_url': f'https://{domain}/payment-success'
+                'return_url': f'https://{domain}/payment-success',
+                'confirmation_data': {
+                    'color_scheme': 'dark',
+                    'primary_color': '#ff0000',
+                    'header_color': '#000000',
+                    'button_color': '#ff0000'
+                }
             },
             'payment_method_data': {
                 'type': yookassa_payment_type
