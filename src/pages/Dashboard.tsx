@@ -10,6 +10,7 @@ import { QuickClients } from '@/components/dashboard/QuickClients';
 import { VpnClients } from '@/components/dashboard/VpnClients';
 import { PricingCard } from '@/components/dashboard/PricingCard';
 import { PaymentHistory } from '@/components/dashboard/PaymentHistory';
+import PaymentMethodDialog from '@/components/PaymentMethodDialog';
 
 interface UserData {
   username: string;
@@ -38,6 +39,8 @@ const Dashboard = () => {
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [showHistory, setShowHistory] = useState(false);
+  const [showPaymentMethodDialog, setShowPaymentMethodDialog] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<{ name: string; price: number; days: number } | null>(null);
 
   useEffect(() => {
     const username = localStorage.getItem('vpn_username');
@@ -117,9 +120,15 @@ const Dashboard = () => {
     }
   };
 
-  const handlePayment = async (plan: { name: string; price: number; days: number }) => {
-    if (!userData) return;
+  const handlePayment = (plan: { name: string; price: number; days: number }) => {
+    setSelectedPlan(plan);
+    setShowPaymentMethodDialog(true);
+  };
+
+  const handleSelectPaymentMethod = async (method: 'sbp' | 'sberpay' | 'tpay') => {
+    if (!userData || !selectedPlan) return;
     
+    setShowPaymentMethodDialog(false);
     setPaymentLoading(true);
     
     try {
@@ -132,9 +141,10 @@ const Dashboard = () => {
           action: 'create_payment',
           username: userData.username,
           email: userData.email || 'noemail@speedvpn.io',
-          amount: plan.price,
-          plan_name: plan.name,
-          plan_days: plan.days
+          amount: selectedPlan.price,
+          plan_name: selectedPlan.name,
+          plan_days: selectedPlan.days,
+          payment_method: method
         })
       });
 
@@ -151,6 +161,7 @@ const Dashboard = () => {
       }
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Ошибка при создании платежа');
+      setShowPaymentMethodDialog(true);
     } finally {
       setPaymentLoading(false);
     }
@@ -219,6 +230,12 @@ const Dashboard = () => {
           payments={payments}
           showHistory={showHistory}
           onToggleHistory={() => setShowHistory(!showHistory)}
+        />
+
+        <PaymentMethodDialog
+          open={showPaymentMethodDialog}
+          onClose={() => setShowPaymentMethodDialog(false)}
+          onSelectMethod={handleSelectPaymentMethod}
         />
       </div>
     </div>
