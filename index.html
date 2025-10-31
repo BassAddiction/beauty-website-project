@@ -146,9 +146,41 @@
 
     <meta name="pp-name" value="beauty-website-project">
       <script src="https://cdn.poehali.dev/intertnal/js/inspector-min.js"></script>
+
+    <!-- CUSTOM TRACKING CODES (MANAGED FROM ADMIN PANEL) -->
+    <div id="custom-head-tracking"></div>
+    <script>
+      (async function loadTrackingCodes() {
+        try {
+          const response = await fetch('https://functions.poehali.dev/7a6acadf-d332-41e0-a309-e41e647fedae?admin_password=none');
+          const data = await response.json();
+          if (data.success && data.head_code) {
+            document.getElementById('custom-head-tracking').innerHTML = data.head_code;
+          }
+        } catch (e) {
+          console.log('Tracking codes not loaded');
+        }
+      })();
+    </script>
   </head>
 
 <body>
+<!-- CUSTOM TRACKING CODES FOR BODY (MANAGED FROM ADMIN PANEL) -->
+<div id="custom-body-tracking"></div>
+<script>
+  (async function loadBodyTrackingCodes() {
+    try {
+      const response = await fetch('https://functions.poehali.dev/7a6acadf-d332-41e0-a309-e41e647fedae?admin_password=none');
+      const data = await response.json();
+      if (data.success && data.body_code) {
+        document.getElementById('custom-body-tracking').innerHTML = data.body_code;
+      }
+    } catch (e) {
+      console.log('Body tracking codes not loaded');
+    }
+  })();
+</script>
+
 <div id="root"></div>
 <script type="module" src="/src/main.tsx"></script>
 

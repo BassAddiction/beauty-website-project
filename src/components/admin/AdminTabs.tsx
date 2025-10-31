@@ -2,8 +2,8 @@ import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 
 interface AdminTabsProps {
-  activeTab: 'plans' | 'clients' | 'users' | 'locations' | 'settings' | 'receipts' | 'news';
-  setActiveTab: (tab: 'plans' | 'clients' | 'users' | 'locations' | 'settings' | 'receipts' | 'news') => void;
+  activeTab: 'plans' | 'clients' | 'users' | 'locations' | 'settings' | 'receipts' | 'news' | 'tracking';
+  setActiveTab: (tab: 'plans' | 'clients' | 'users' | 'locations' | 'settings' | 'receipts' | 'news' | 'tracking') => void;
   plansCount: number;
   clientsCount: number;
   locationsCount: number;
@@ -66,6 +66,13 @@ export const AdminTabs = ({ activeTab, setActiveTab, plansCount, clientsCount, l
       >
         <Icon name="Receipt" className="w-4 h-4 mr-2" />
         Чеки
+      </Button>
+      <Button
+        variant={activeTab === 'tracking' ? 'default' : 'outline'}
+        onClick={() => setActiveTab('tracking')}
+      >
+        <Icon name="Code" className="w-4 h-4 mr-2" />
+        Счётчики
       </Button>
       <Button
         variant={activeTab === 'settings' ? 'default' : 'outline'}

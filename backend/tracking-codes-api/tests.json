@@ -1,0 +1,14 @@
+{
+  "tests": [
+    {
+      "name": "GET tracking codes (public access)",
+      "method": "GET",
+      "path": "/?admin_password=none",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

@@ -12,6 +12,7 @@ import BuilderButtonSettings from "@/components/admin/BuilderButtonSettings";
 import { ReceiptsTab } from "@/components/admin/ReceiptsTab";
 import { NewsTab } from "@/components/admin/NewsTab";
 import { NewsEditModal } from "@/components/admin/NewsEditModal";
+import { TrackingCodesTab } from "@/components/admin/TrackingCodesTab";
 import { useAdminAuth } from "@/components/admin/useAdminAuth";
 import { usePlansManagement } from "@/components/admin/usePlansManagement";
 import { useLocationsManagement } from "@/components/admin/useLocationsManagement";
@@ -19,7 +20,7 @@ import { useClientsManagement } from "@/components/admin/useClientsManagement";
 import { useNewsManagement } from "@/components/admin/useNewsManagement";
 
 const Admin = () => {
-  const [activeTab, setActiveTab] = useState<'plans' | 'clients' | 'users' | 'locations' | 'settings' | 'receipts' | 'news'>('plans');
+  const [activeTab, setActiveTab] = useState<'plans' | 'clients' | 'users' | 'locations' | 'settings' | 'receipts' | 'news' | 'tracking'>('plans');
 
   const API_URL = 'https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0';
   const LOCATIONS_API = 'https://functions.poehali.dev/3271c5a0-f0f4-42e8-b230-c35b772c0024';
@@ -151,6 +152,10 @@ const Admin = () => {
 
         {activeTab === 'receipts' && (
           <ReceiptsTab adminPassword={auth.password} />
+        )}
+
+        {activeTab === 'tracking' && (
+          <TrackingCodesTab adminPassword={auth.password} />
         )}
       </div>
 
