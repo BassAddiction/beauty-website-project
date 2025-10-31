@@ -195,7 +195,8 @@ const PricingSection = () => {
             amount: price,
             plan_name: selectedPlan!.name,
             plan_days: days,
-            payment_method: method
+            payment_method: method,
+            domain: window.location.hostname
           })
         }
       );

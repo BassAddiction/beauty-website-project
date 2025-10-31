@@ -109,7 +109,8 @@ const Register = () => {
             plan_name: selectedPlan!.name,
             plan_days: selectedPlan!.days,
             plan_id: selectedPlan!.id,
-            payment_method: method
+            payment_method: method,
+            domain: window.location.hostname
           })
         }
       );

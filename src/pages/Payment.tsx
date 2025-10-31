@@ -70,6 +70,7 @@ const Payment = () => {
         plan_days: customPlan.days.toString(),
         username: username.trim(),
         email: email.trim(),
+        domain: window.location.hostname,
         custom_plan: JSON.stringify({
           traffic_gb: customPlan.traffic_gb,
           locations: customPlan.locations.map(loc => ({
