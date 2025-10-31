@@ -66,6 +66,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         action = body_data.get('action', '')  # 'check' или 'record'
         username = body_data.get('username', '')
         success = body_data.get('success', False)
+        login_type = body_data.get('login_type', 'user')  # 'admin' или 'user'
         
         db_url = os.environ.get('DATABASE_URL', '')
         if not db_url:
@@ -82,8 +83,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         cleanup_old_attempts(conn)
         
         if action == 'check':
-            # Проверка, заблокирован ли IP
-            blocked = is_ip_blocked(conn, ip_address)
+            # Проверка, заблокирован ли IP для конкретного типа логина
+            blocked = is_ip_blocked(conn, ip_address, login_type)
             conn.close()
             
             if blocked:
@@ -105,8 +106,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             }
         
         elif action == 'record':
-            # Запись попытки авторизации
-            record_attempt(conn, ip_address, username, success)
+            # Запись попытки авторизации с типом логина
+            record_attempt(conn, ip_address, username, success, login_type)
             conn.close()
             
             return {
@@ -135,42 +136,45 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         }
 
 
-def is_ip_blocked(conn, ip_address: str) -> bool:
-    '''Проверяет, заблокирован ли IP-адрес'''
+def is_ip_blocked(conn, ip_address: str, login_type: str = 'user') -> bool:
+    '''Проверяет, заблокирован ли IP-адрес для конкретного типа логина'''
     cursor = conn.cursor()
     
     # Время начала блокировки (15 минут назад)
     block_start = datetime.utcnow() - timedelta(minutes=BLOCK_DURATION_MINUTES)
     
-    # Считаем неудачные попытки за последние 15 минут
+    # Считаем неудачные попытки за последние 15 минут для конкретного типа логина
     cursor.execute('''
         SELECT COUNT(*) 
         FROM t_p66544974_beauty_website_proje.login_attempts
         WHERE ip_address = %s 
+          AND login_type = %s
           AND attempt_time >= %s
           AND success = FALSE
-    ''', (ip_address, block_start))
+    ''', (ip_address, login_type, block_start))
     
     failed_count = cursor.fetchone()[0]
     cursor.close()
     
+    print(f'🔍 IP block check: {ip_address} ({login_type}) - {failed_count}/{MAX_ATTEMPTS} failed attempts')
+    
     return failed_count >= MAX_ATTEMPTS
 
 
-def record_attempt(conn, ip_address: str, username: str, success: bool):
-    '''Записывает попытку авторизации'''
+def record_attempt(conn, ip_address: str, username: str, success: bool, login_type: str = 'user'):
+    '''Записывает попытку авторизации с типом логина'''
     cursor = conn.cursor()
     
     cursor.execute('''
         INSERT INTO t_p66544974_beauty_website_proje.login_attempts 
-        (ip_address, username, success, attempt_time)
-        VALUES (%s, %s, %s, CURRENT_TIMESTAMP)
-    ''', (ip_address, username or None, success))
+        (ip_address, username, success, login_type, attempt_time)
+        VALUES (%s, %s, %s, %s, CURRENT_TIMESTAMP)
+    ''', (ip_address, username or None, success, login_type))
     
     conn.commit()
     cursor.close()
     
-    print(f'📝 Recorded login attempt: IP={ip_address}, user={username}, success={success}')
+    print(f'📝 Recorded login attempt: IP={ip_address}, user={username}, type={login_type}, success={success}')
 
 
 def cleanup_old_attempts(conn):

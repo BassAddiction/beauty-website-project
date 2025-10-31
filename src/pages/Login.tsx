@@ -28,11 +28,11 @@ const Login = () => {
     try {
       console.log('🔐 [User Login] Checking IP block status...');
       
-      // Проверяем, не заблокирован ли IP
+      // Проверяем, не заблокирован ли IP для пользовательских логинов
       const checkResponse = await fetch(AUTH_CHECK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'check' })
+        body: JSON.stringify({ action: 'check', login_type: 'user' })
       });
 
       console.log('🔐 [User Login] IP check response:', checkResponse.status);
@@ -72,7 +72,8 @@ const Login = () => {
           body: JSON.stringify({ 
             action: 'record', 
             username: username.trim(),
-            success: false 
+            success: false,
+            login_type: 'user'
           })
         });
 
@@ -82,7 +83,7 @@ const Login = () => {
         const recheckResponse = await fetch(AUTH_CHECK_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'check' })
+          body: JSON.stringify({ action: 'check', login_type: 'user' })
         });
 
         console.log('🔐 [User Login] Recheck response:', recheckResponse.status);
@@ -110,7 +111,8 @@ const Login = () => {
           body: JSON.stringify({ 
             action: 'record', 
             username: username.trim(),
-            success: true 
+            success: true,
+            login_type: 'user'
           })
         });
         

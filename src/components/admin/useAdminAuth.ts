@@ -28,7 +28,7 @@ export const useAdminAuth = (API_URL: string) => {
       const checkResponse = await fetch(AUTH_CHECK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'check' })
+        body: JSON.stringify({ action: 'check', login_type: 'admin' })
       });
 
       console.log('🔐 IP check response:', checkResponse.status);
@@ -68,7 +68,8 @@ export const useAdminAuth = (API_URL: string) => {
           body: JSON.stringify({ 
             action: 'record', 
             username: 'admin',
-            success: false 
+            success: false,
+            login_type: 'admin'
           })
         });
 
@@ -78,7 +79,7 @@ export const useAdminAuth = (API_URL: string) => {
         const recheckResponse = await fetch(AUTH_CHECK_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'check' })
+          body: JSON.stringify({ action: 'check', login_type: 'admin' })
         });
 
         console.log('🔐 Recheck response:', recheckResponse.status);
@@ -118,7 +119,8 @@ export const useAdminAuth = (API_URL: string) => {
           body: JSON.stringify({ 
             action: 'record', 
             username: 'admin',
-            success: true 
+            success: true,
+            login_type: 'admin'
           })
         });
 

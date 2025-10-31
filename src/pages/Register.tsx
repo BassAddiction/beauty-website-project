@@ -85,12 +85,12 @@ const Register = () => {
       return;
     }
 
-    // Проверяем, не заблокирован ли IP
+    // Проверяем, не заблокирован ли IP для пользовательской регистрации
     try {
       const checkResponse = await fetch(AUTH_CHECK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'check' })
+        body: JSON.stringify({ action: 'check', login_type: 'user' })
       });
 
       if (checkResponse.status === 429) {
