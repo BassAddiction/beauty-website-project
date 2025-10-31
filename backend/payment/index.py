@@ -101,6 +101,8 @@ def handle_create_payment_post(body_data: Dict[str, Any], cors_headers: Dict[str
     payment_method = body_data.get('payment_method', 'sbp')
     domain = body_data.get('domain', 'speedvpn.io')
     
+    print(f'🌐 Domain received from frontend: {domain}')
+    
     if not all([username, email, amount, plan_name, plan_days]):
         return {
             'statusCode': 400,
