@@ -22,7 +22,7 @@ export const useAdminAuth = (API_URL: string) => {
     setLoading(true);
     
     try {
-      // Проверяем, не заблокирован ли IP
+      // Проверяем, не заблокирован ли IP (проверка ПЕРЕД попыткой входа)
       const checkResponse = await fetch(AUTH_CHECK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -34,9 +34,12 @@ export const useAdminAuth = (API_URL: string) => {
         toast({
           title: '🚫 Доступ временно заблокирован',
           description: checkData.message,
-          variant: 'destructive'
+          variant: 'destructive',
+          duration: 10000
         });
         setLoading(false);
+        setIsAuthorized(false);
+        localStorage.removeItem('admin_password');
         return { success: false, plans: [] };
       }
 
@@ -47,7 +50,7 @@ export const useAdminAuth = (API_URL: string) => {
       });
       
       if (response.status === 401) {
-        // Записываем неудачную попытку
+        // Записываем неудачную попытку (ПОСЛЕ проверки пароля)
         await fetch(AUTH_CHECK_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -58,12 +61,31 @@ export const useAdminAuth = (API_URL: string) => {
           })
         });
 
-        toast({
-          title: '❌ Неверный пароль',
-          variant: 'destructive'
+        // Сразу проверяем, не заблокирован ли IP после этой попытки
+        const recheckResponse = await fetch(AUTH_CHECK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'check' })
         });
+
+        if (recheckResponse.status === 429) {
+          const recheckData = await recheckResponse.json();
+          toast({
+            title: '🚫 Слишком много неудачных попыток!',
+            description: recheckData.message,
+            variant: 'destructive',
+            duration: 10000
+          });
+        } else {
+          toast({
+            title: '❌ Неверный пароль',
+            variant: 'destructive'
+          });
+        }
+        
         setIsAuthorized(false);
         localStorage.removeItem('admin_password');
+        setLoading(false);
         return { success: false, plans: [] };
       }
       

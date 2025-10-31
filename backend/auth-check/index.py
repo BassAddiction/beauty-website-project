@@ -44,14 +44,22 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         }
     
     try:
-        # Получаем IP из headers
-        headers = event.get('headers', {})
-        ip_address = (
-            headers.get('x-forwarded-for', '').split(',')[0].strip() or
-            headers.get('x-real-ip', '') or
-            headers.get('x-client-ip', '') or
-            'unknown'
-        )
+        # Получаем IP из requestContext (Cloud Functions format)
+        request_context = event.get('requestContext', {})
+        identity = request_context.get('identity', {})
+        ip_address = identity.get('sourceIp', 'unknown')
+        
+        # Fallback на headers если нет в requestContext
+        if ip_address == 'unknown':
+            headers = event.get('headers', {})
+            ip_address = (
+                headers.get('x-forwarded-for', '').split(',')[0].strip() or
+                headers.get('x-real-ip', '') or
+                headers.get('x-client-ip', '') or
+                'unknown'
+            )
+        
+        print(f'🔍 Detected IP: {ip_address}')
         
         # Парсим body
         body_data = json.loads(event.get('body', '{}'))
