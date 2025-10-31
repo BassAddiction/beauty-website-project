@@ -132,20 +132,12 @@ const PricingSection = () => {
 
   const handleOpenPaymentDialog = (plan: Plan) => {
     setSelectedPlan(plan);
-    setShowPaymentMethodDialog(true);
-  };
-
-  const handleSelectPaymentMethod = (method: 'sbp' | 'sberpay' | 'tpay') => {
-    setSelectedPaymentMethod(method);
-    setShowPaymentMethodDialog(false);
+    setEmail('');
+    setAgreedToTerms(false);
     setShowPaymentDialog(true);
   };
 
-  const handlePayment = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!selectedPlan) return;
-
+  const handleProceedToPaymentMethod = () => {
     if (!email.trim()) {
       toast({
         title: '❌ Заполните email',
@@ -173,16 +165,24 @@ const PricingSection = () => {
       return;
     }
 
+    setShowPaymentDialog(false);
+    setShowPaymentMethodDialog(true);
+  };
+
+  const handleSelectPaymentMethod = async (method: 'sbp' | 'sberpay' | 'tpay') => {
+    setSelectedPaymentMethod(method);
+    setShowPaymentMethodDialog(false);
     setPaying(true);
+
     try {
       const emailPrefix = email.split('@')[0].replace(/[^a-zA-Z0-9_-]/g, '');
       const generatedUsername = emailPrefix + '_' + Date.now();
       
-      const price = parseInt(selectedPlan.price);
-      const days = selectedPlan.name === '1 Месяц' ? 30 : 
-                   selectedPlan.name === '3 Месяца' ? 90 :
-                   selectedPlan.name === '6 Месяцев' ? 180 :
-                   selectedPlan.name === '12 Месяцев' ? 365 : 30;
+      const price = parseInt(selectedPlan!.price);
+      const days = selectedPlan!.name === '1 Месяц' ? 30 : 
+                   selectedPlan!.name === '3 Месяца' ? 90 :
+                   selectedPlan!.name === '6 Месяцев' ? 180 :
+                   selectedPlan!.name === '12 Месяцев' ? 365 : 30;
 
       const paymentResponse = await fetch(
         'https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c',
@@ -193,9 +193,9 @@ const PricingSection = () => {
             username: generatedUsername,
             email: email.trim(),
             amount: price,
-            plan_name: selectedPlan.name,
+            plan_name: selectedPlan!.name,
             plan_days: days,
-            payment_method: selectedPaymentMethod
+            payment_method: method
           })
         }
       );
@@ -227,9 +227,15 @@ const PricingSection = () => {
         description: e instanceof Error ? e.message : 'Проверьте интернет-соединение и попробуйте снова',
         variant: 'destructive'
       });
+      setShowPaymentDialog(true);
     } finally {
       setPaying(false);
     }
+  };
+
+  const handlePayment = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleProceedToPaymentMethod();
   };
 
 
@@ -410,26 +416,16 @@ const PricingSection = () => {
                   variant="outline" 
                   className="flex-1"
                   onClick={() => setShowPaymentDialog(false)}
-                  disabled={paying}
                 >
                   Назад
                 </Button>
                 <Button 
                   type="submit" 
                   className="flex-1 button-glow"
-                  disabled={paying || !agreedToTerms}
+                  disabled={!agreedToTerms}
                 >
-                  {paying ? (
-                    <>
-                      <Icon name="Loader2" className="w-4 h-4 mr-2 animate-spin" />
-                      Обработка...
-                    </>
-                  ) : (
-                    <>
-                      <Icon name="ShoppingCart" className="w-4 h-4 mr-2" />
-                      Купить
-                    </>
-                  )}
+                  <Icon name="CreditCard" className="w-4 h-4 mr-2" />
+                  Перейти к оплате
                 </Button>
               </div>
 
