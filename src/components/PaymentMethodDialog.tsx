@@ -14,19 +14,19 @@ const PaymentMethodDialog = ({ open, onClose, onSelectMethod }: PaymentMethodDia
       id: 'sbp' as const,
       name: 'СБП',
       description: 'Система быстрых платежей',
-      icon: 'Zap'
+      icon: 'Zap' as const
     },
     {
       id: 'sberpay' as const,
       name: 'SberPay',
       description: 'Оплата через Сбербанк',
-      icon: 'CreditCard'
+      icon: 'CreditCard' as const
     },
     {
       id: 'tpay' as const,
       name: 'T-Pay',
       description: 'Оплата через Т-Банк',
-      icon: 'Smartphone'
+      icon: 'Smartphone' as const
     }
   ];
 
