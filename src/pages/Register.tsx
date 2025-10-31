@@ -62,20 +62,14 @@ const Register = () => {
 
   const handleSelectPlan = (plan: Plan) => {
     setSelectedPlan(plan);
-    setShowPaymentMethodDialog(true);
-  };
-
-  const handleSelectPaymentMethod = (method: 'sbp' | 'sberpay' | 'tpay') => {
-    setSelectedPaymentMethod(method);
-    setShowPaymentMethodDialog(false);
+    setEmail('');
+    setAgreedToTerms(false);
     setStep(2);
   };
 
-  const handleRegisterAndPay = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!email.trim() || !selectedPlan) {
-      setError('Заполните все поля');
+  const handleProceedToPaymentMethod = () => {
+    if (!email.trim()) {
+      setError('Введите Email');
       return;
     }
 
@@ -89,15 +83,19 @@ const Register = () => {
       return;
     }
 
-    setLoading(true);
     setError('');
+    setShowPaymentMethodDialog(true);
+  };
+
+  const handleSelectPaymentMethod = async (method: 'sbp' | 'sberpay' | 'tpay') => {
+    setSelectedPaymentMethod(method);
+    setShowPaymentMethodDialog(false);
+    setLoading(true);
 
     try {
-      // Генерируем username только из букв, цифр, подчёркиваний и дефисов
       const emailPrefix = email.split('@')[0].replace(/[^a-zA-Z0-9_-]/g, '');
       const username = emailPrefix + '_' + Date.now();
       
-      // Создаём платёж - webhook после оплаты создаст пользователя со squad
       const paymentResponse = await fetch(
         'https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c',
         {
@@ -107,11 +105,11 @@ const Register = () => {
             action: 'create_payment',
             username: username,
             email: email,
-            amount: selectedPlan.price,
-            plan_name: selectedPlan.name,
-            plan_days: selectedPlan.days,
-            plan_id: selectedPlan.id,
-            payment_method: selectedPaymentMethod
+            amount: selectedPlan!.price,
+            plan_name: selectedPlan!.name,
+            plan_days: selectedPlan!.days,
+            plan_id: selectedPlan!.id,
+            payment_method: method
           })
         }
       );
@@ -128,8 +126,6 @@ const Register = () => {
       localStorage.setItem('vpn_payment_id', paymentData.payment_id || '');
       
       if (paymentData.confirmation_url) {
-        // Показываем пользователю что платёж создан
-        alert(`Платёж создан! ID: ${paymentData.payment_id}\nСейчас откроется страница оплаты.`);
         window.location.href = paymentData.confirmation_url;
       } else {
         throw new Error('Не получена ссылка на оплату');
@@ -139,6 +135,11 @@ const Register = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRegisterAndPay = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleProceedToPaymentMethod();
   };
 
   return (
@@ -311,23 +312,13 @@ const Register = () => {
                     type="button"
                     variant="outline"
                     onClick={() => setStep(1)}
-                    disabled={loading}
                     className="flex-1"
                   >
                     Назад
                   </Button>
-                  <Button type="submit" disabled={loading || !agreedToTerms} className="flex-1 button-glow">
-                    {loading ? (
-                      <>
-                        <Icon name="Loader2" className="w-4 h-4 mr-2 animate-spin" />
-                        Создание...
-                      </>
-                    ) : (
-                      <>
-                        <Icon name="ShoppingCart" className="w-4 h-4 mr-2" />
-                        Купить
-                      </>
-                    )}
+                  <Button type="submit" disabled={!agreedToTerms} className="flex-1 button-glow">
+                    <Icon name="CreditCard" className="w-4 h-4 mr-2" />
+                    Перейти к оплате
                   </Button>
                 </div>
               </form>
