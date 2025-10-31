@@ -85,7 +85,8 @@ def handle_create_payment_get(event: Dict[str, Any], cors_headers: Dict[str, str
     
     plan_id = int(params.get('plan_id', 0)) if params.get('plan_id') else None
     payment_method = params.get('payment_method', 'sbp')
-    return create_yookassa_payment(username, email, float(amount), plan_name, int(plan_days), plan_id, custom_plan, payment_method, cors_headers)
+    domain = params.get('domain', 'speedvpn.io')
+    return create_yookassa_payment(username, email, float(amount), plan_name, int(plan_days), plan_id, custom_plan, payment_method, domain, cors_headers)
 
 
 def handle_create_payment_post(body_data: Dict[str, Any], cors_headers: Dict[str, str]) -> Dict[str, Any]:
@@ -98,6 +99,7 @@ def handle_create_payment_post(body_data: Dict[str, Any], cors_headers: Dict[str
     plan_id = body_data.get('plan_id')
     custom_plan = body_data.get('custom_plan')
     payment_method = body_data.get('payment_method', 'sbp')
+    domain = body_data.get('domain', 'speedvpn.io')
     
     if not all([username, email, amount, plan_name, plan_days]):
         return {
@@ -110,10 +112,10 @@ def handle_create_payment_post(body_data: Dict[str, Any], cors_headers: Dict[str
             'isBase64Encoded': False
         }
     
-    return create_yookassa_payment(username, email, float(amount), plan_name, int(plan_days), plan_id, custom_plan, payment_method, cors_headers)
+    return create_yookassa_payment(username, email, float(amount), plan_name, int(plan_days), plan_id, custom_plan, payment_method, domain, cors_headers)
 
 
-def create_yookassa_payment(username: str, email: str, amount: float, plan_name: str, plan_days: int, plan_id: Optional[int], custom_plan: Any, payment_method: str, cors_headers: Dict[str, str]) -> Dict[str, Any]:
+def create_yookassa_payment(username: str, email: str, amount: float, plan_name: str, plan_days: int, plan_id: Optional[int], custom_plan: Any, payment_method: str, domain: str, cors_headers: Dict[str, str]) -> Dict[str, Any]:
     '''Создаёт платёж в YooKassa'''
     try:
         shop_id = os.environ.get('YOOKASSA_SHOP_ID', '')
@@ -149,7 +151,7 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
             },
             'confirmation': {
                 'type': 'redirect',
-                'return_url': 'https://speedvpn.io/payment-success'
+                'return_url': f'https://{domain}/payment-success'
             },
             'payment_method_data': {
                 'type': yookassa_payment_type
