@@ -14,13 +14,15 @@ interface BuilderButtonSettingsProps {
 interface BuilderSettings {
   show_on_register: boolean;
   show_on_pricing: boolean;
+  show_referral_block: boolean;
 }
 
 const BuilderButtonSettings = ({ adminPassword }: BuilderButtonSettingsProps) => {
   const { toast } = useToast();
   const [settings, setSettings] = useState<BuilderSettings>({
     show_on_register: true,
-    show_on_pricing: true
+    show_on_pricing: true,
+    show_referral_block: false
   });
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -153,6 +155,27 @@ const BuilderButtonSettings = ({ adminPassword }: BuilderButtonSettingsProps) =>
                   checked={settings.show_on_pricing}
                   onCheckedChange={(checked) => 
                     setSettings({ ...settings, show_on_pricing: checked })
+                  }
+                />
+              </div>
+
+              <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors border-orange-500/20 bg-orange-500/5">
+                <div className="space-y-1">
+                  <Label htmlFor="show-referral" className="text-base font-medium cursor-pointer flex items-center gap-2">
+                    Реферальный блок
+                    <Badge variant="outline" className="text-xs bg-orange-500/10 text-orange-500 border-orange-500/20">
+                      В разработке
+                    </Badge>
+                  </Label>
+                  <p className="text-sm text-muted-foreground">
+                    Показывать блок приглашения друзей в личном кабинете
+                  </p>
+                </div>
+                <Switch
+                  id="show-referral"
+                  checked={settings.show_referral_block}
+                  onCheckedChange={(checked) => 
+                    setSettings({ ...settings, show_referral_block: checked })
                   }
                 />
               </div>

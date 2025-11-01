@@ -42,6 +42,7 @@ const Dashboard = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [showPaymentMethodDialog, setShowPaymentMethodDialog] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<{ id: number; name: string; price: number; days: number } | null>(null);
+  const [showReferralBlock, setShowReferralBlock] = useState(false);
 
   useEffect(() => {
     const username = localStorage.getItem('vpn_username');
@@ -51,7 +52,18 @@ const Dashboard = () => {
     }
 
     fetchUserData(username);
+    fetchBuilderSettings();
   }, [navigate]);
+
+  const fetchBuilderSettings = async () => {
+    try {
+      const response = await fetch('https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0?action=get_builder_settings');
+      const data = await response.json();
+      setShowReferralBlock(data.settings?.show_referral_block || false);
+    } catch (error) {
+      console.error('Failed to load builder settings:', error);
+    }
+  };
 
   const fetchUserData = async (username: string) => {
     try {
@@ -229,7 +241,7 @@ const Dashboard = () => {
           onPayment={handlePayment}
         />
 
-        <ReferralCard username={userData.username} />
+        {showReferralBlock && <ReferralCard username={userData.username} />}
 
         <PaymentHistory
           payments={payments}

@@ -307,7 +307,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             if row:
                 settings = row[0]
             else:
-                settings = {'show_on_register': True, 'show_on_pricing': True}
+                settings = {'show_on_register': True, 'show_on_pricing': True, 'show_referral_block': False}
             
             return {
                 'statusCode': 200,
