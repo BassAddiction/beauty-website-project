@@ -29,7 +29,7 @@ const HeroSection = () => {
             className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto transition-transform duration-100"
             style={{ transform: `translateY(${offsetY * 0.15}px)` }}
           >
-            Доступ к YouTube, заблокированным соцсетям, ChatGPT и другим сайтам. Vless Reality протокол. От 200₽/месяц.
+            Доступ к YouTube, заблокированным соцсетям, ChatGPT и другим сайтам. Vless Reality протокол. От 79₽/месяц.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button size="lg" className="rounded-full text-lg px-8 h-14 button-glow" asChild>
