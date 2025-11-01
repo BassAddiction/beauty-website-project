@@ -19,6 +19,32 @@ const PaymentSuccess = () => {
     
     if (!savedUsername) {
       navigate('/?payment=success');
+      return;
+    }
+    
+    // Activate referral if exists
+    const pendingReferral = localStorage.getItem('pending_referral');
+    if (pendingReferral) {
+      try {
+        const { username: refUsername, referral_code } = JSON.parse(pendingReferral);
+        
+        fetch('https://functions.poehali.dev/358b9593-075d-4262-9190-984599107ece', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: refUsername,
+            referral_code
+          })
+        }).then(() => {
+          localStorage.removeItem('pending_referral');
+          localStorage.removeItem('referral_code');
+          console.log('✅ Referral activated');
+        }).catch(err => {
+          console.error('Failed to activate referral:', err);
+        });
+      } catch (err) {
+        console.error('Error processing referral:', err);
+      }
     }
   }, [navigate]);
 

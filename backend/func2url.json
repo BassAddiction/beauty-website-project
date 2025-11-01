@@ -1,4 +1,5 @@
 {
+  "activate-referral": "https://functions.poehali.dev/358b9593-075d-4262-9190-984599107ece",
   "referral": "https://functions.poehali.dev/c2ba3181-8d0f-4bb5-b0fb-06f7770e8037",
   "tracking-codes-api": "https://functions.poehali.dev/7a6acadf-d332-41e0-a309-e41e647fedae",
   "auth-check": "https://functions.poehali.dev/833bc0dd-ad44-4b38-b1ac-2ff2f5b265e5",

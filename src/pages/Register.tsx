@@ -30,8 +30,19 @@ const Register = () => {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [showPaymentMethodDialog, setShowPaymentMethodDialog] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'sbp' | 'sberpay' | 'tpay' | null>(null);
+  const [referralCode, setReferralCode] = useState<string>('');
   
   const AUTH_CHECK_URL = 'https://functions.poehali.dev/833bc0dd-ad44-4b38-b1ac-2ff2f5b265e5';
+
+  useEffect(() => {
+    // Save referral code from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const ref = urlParams.get('ref');
+    if (ref) {
+      setReferralCode(ref);
+      localStorage.setItem('referral_code', ref);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -115,6 +126,8 @@ const Register = () => {
       const emailPrefix = email.split('@')[0].replace(/[^a-zA-Z0-9_-]/g, '');
       const username = emailPrefix + '_' + Date.now();
       
+      const savedRefCode = localStorage.getItem('referral_code') || referralCode;
+      
       const paymentResponse = await fetch(
         'https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c',
         {
@@ -129,7 +142,8 @@ const Register = () => {
             plan_days: selectedPlan!.days,
             plan_id: selectedPlan!.id,
             payment_method: method,
-            domain: window.location.hostname
+            domain: window.location.hostname,
+            referral_code: savedRefCode
           })
         }
       );
@@ -144,6 +158,14 @@ const Register = () => {
       localStorage.setItem('vpn_username', username);
       localStorage.setItem('vpn_email', email);
       localStorage.setItem('vpn_payment_id', paymentData.payment_id || '');
+      
+      // Save referral code for activation after payment
+      if (savedRefCode) {
+        localStorage.setItem('pending_referral', JSON.stringify({
+          username,
+          referral_code: savedRefCode
+        }));
+      }
       
       if (paymentData.confirmation_url) {
         window.location.href = paymentData.confirmation_url;
