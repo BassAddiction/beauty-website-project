@@ -10,6 +10,7 @@ import { QuickClients } from '@/components/dashboard/QuickClients';
 import { VpnClients } from '@/components/dashboard/VpnClients';
 import { PricingCard } from '@/components/dashboard/PricingCard';
 import { PaymentHistory } from '@/components/dashboard/PaymentHistory';
+import { ReferralCard } from '@/components/dashboard/ReferralCard';
 import PaymentMethodDialog from '@/components/PaymentMethodDialog';
 
 interface UserData {
@@ -226,6 +227,8 @@ const Dashboard = () => {
           paymentLoading={paymentLoading}
           onPayment={handlePayment}
         />
+
+        <ReferralCard username={userData.username} />
 
         <PaymentHistory
           payments={payments}

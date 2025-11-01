@@ -1,0 +1,24 @@
+{
+  "tests": [
+    {
+      "name": "Get referral code and stats",
+      "method": "GET",
+      "path": "/?username=testuser",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "referral_code": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Missing username parameter",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 400,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
