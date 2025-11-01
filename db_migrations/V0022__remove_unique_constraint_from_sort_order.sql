@@ -1,0 +1,4 @@
+DROP INDEX IF EXISTS t_p66544974_beauty_website_proje.idx_subscription_plans_sort_order_unique;
+
+CREATE INDEX IF NOT EXISTS idx_subscription_plans_sort_order 
+ON t_p66544974_beauty_website_proje.subscription_plans(sort_order);

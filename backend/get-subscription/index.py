@@ -161,17 +161,6 @@ def handle_admin(event: Dict[str, Any], context: Any, cors_headers: Dict[str, st
             plan_id = body.get('plan_id')
             
             if plan_id and plan_id > 0:
-                # UPDATE - используем DEFERRABLE для избежания конфликта уникального индекса
-                new_sort_order = body.get('sort_order')
-                
-                # Временно присваиваем большое отрицательное значение чтобы избежать конфликта
-                cursor.execute("""
-                    UPDATE t_p66544974_beauty_website_proje.subscription_plans
-                    SET sort_order = -1000 - plan_id
-                    WHERE plan_id = %s
-                """, (plan_id,))
-                
-                # Теперь обновляем все поля включая финальный sort_order
                 cursor.execute("""
                     UPDATE t_p66544974_beauty_website_proje.subscription_plans
                     SET name = %s, price = %s, days = %s, traffic_gb = %s,
@@ -184,7 +173,7 @@ def handle_admin(event: Dict[str, Any], context: Any, cors_headers: Dict[str, st
                     body.get('traffic_gb'),
                     body.get('is_active'),
                     body.get('is_custom'),
-                    new_sort_order,
+                    body.get('sort_order'),
                     body.get('features', []),
                     body.get('show_on', ['register', 'pricing']),
                     body.get('squad_uuids', []),
