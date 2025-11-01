@@ -1,0 +1,30 @@
+{
+  "tests": [
+    {
+      "name": "Manual extend - no referrals found",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "referrer_username": "testuser_no_refs"
+      },
+      "expectedStatus": 404,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Missing referrer username",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "some_field": "value"
+      },
+      "expectedStatus": 400,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
