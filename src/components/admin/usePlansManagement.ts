@@ -90,7 +90,7 @@ export const usePlansManagement = (API_URL: string, password: string, reloadPlan
       const newCurrentOrder = targetPlan.sort_order;
       const newTargetOrder = currentPlan.sort_order;
       
-      await fetch(API_URL, {
+      const res1 = await fetch(API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -102,7 +102,12 @@ export const usePlansManagement = (API_URL: string, password: string, reloadPlan
         })
       });
       
-      await fetch(API_URL, {
+      if (!res1.ok) {
+        const errorText = await res1.text();
+        throw new Error(`Ошибка при обновлении первого тарифа: ${errorText}`);
+      }
+      
+      const res2 = await fetch(API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -113,6 +118,11 @@ export const usePlansManagement = (API_URL: string, password: string, reloadPlan
           sort_order: newTargetOrder
         })
       });
+      
+      if (!res2.ok) {
+        const errorText = await res2.text();
+        throw new Error(`Ошибка при обновлении второго тарифа: ${errorText}`);
+      }
       
       toast({
         title: '✅ Порядок изменён',
