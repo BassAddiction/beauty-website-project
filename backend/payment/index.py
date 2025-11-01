@@ -371,12 +371,19 @@ def save_payment_to_db(payment_id: str, username: str, email: str, amount: float
         conn = psycopg2.connect(db_url)
         cursor = conn.cursor()
         
-        cursor.execute("""
+        safe_payment_id = payment_id.replace("'", "''")
+        safe_username = username.replace("'", "''")
+        safe_email = email.replace("'", "''")
+        safe_plan = plan_name.replace("'", "''")
+        safe_ref = referral_code.replace("'", "''") if referral_code else ''
+        ref_value = f"'{safe_ref}'" if referral_code else 'NULL'
+        
+        cursor.execute(f"""
             INSERT INTO payments (payment_id, username, email, amount, plan_name, plan_days, status, referral_code, created_at, updated_at)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
+            VALUES ('{safe_payment_id}', '{safe_username}', '{safe_email}', {amount}, '{safe_plan}', {plan_days}, '{status}', {ref_value}, NOW(), NOW())
             ON CONFLICT (payment_id) DO UPDATE 
             SET status = EXCLUDED.status, updated_at = NOW()
-        """, (payment_id, username, email, amount, plan_name, plan_days, status, referral_code if referral_code else None))
+        """)
         
         conn.commit()
         cursor.close()
@@ -408,10 +415,14 @@ def save_receipt_to_db(payment_id: str, email: str, amount: float, plan_name: st
             'vat_code': vat_code
         }])
         
-        cursor.execute("""
+        safe_payment_id = payment_id.replace("'", "''")
+        safe_email = email.replace("'", "''")
+        safe_items = items_json.replace("'", "''")
+        
+        cursor.execute(f"""
             INSERT INTO receipts (payment_id, tax_system_code, vat_code, amount, email, items, status, created_at)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, NOW())
-        """, (payment_id, tax_system, vat_code, amount, email, items_json, 'pending'))
+            VALUES ('{safe_payment_id}', {tax_system}, {vat_code}, {amount}, '{safe_email}', '{safe_items}', 'pending', NOW())
+        """)
         
         conn.commit()
         cursor.close()
@@ -433,11 +444,14 @@ def update_payment_status(payment_id: str, status: str):
         conn = psycopg2.connect(db_url)
         cursor = conn.cursor()
         
-        cursor.execute("""
+        safe_status = status.replace("'", "''")
+        safe_payment_id = payment_id.replace("'", "''")
+        
+        cursor.execute(f"""
             UPDATE payments 
-            SET status = %s, updated_at = NOW()
-            WHERE payment_id = %s
-        """, (status, payment_id))
+            SET status = '{safe_status}', updated_at = NOW()
+            WHERE payment_id = '{safe_payment_id}'
+        """)
         
         conn.commit()
         cursor.close()
@@ -554,19 +568,20 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int, plan_id:
                 
                 # Если есть plan_id - используем его (точное совпадение)
                 if plan_id:
-                    cursor.execute("""
+                    cursor.execute(f"""
                         SELECT squad_uuids, traffic_gb FROM t_p66544974_beauty_website_proje.subscription_plans 
-                        WHERE plan_id = %s AND is_active = true
+                        WHERE plan_id = {plan_id} AND is_active = true
                         LIMIT 1
-                    """, (plan_id,))
+                    """)
                     print(f'🎯 Looking up plan by plan_id: {plan_id}')
                 else:
                     # Fallback: ищем по name и days (может быть неточным!)
-                    cursor.execute("""
+                    safe_plan_name = plan_name.replace("'", "''")
+                    cursor.execute(f"""
                         SELECT squad_uuids, traffic_gb FROM t_p66544974_beauty_website_proje.subscription_plans 
-                        WHERE name = %s AND days = %s AND is_active = true
+                        WHERE name = '{safe_plan_name}' AND days = {plan_days} AND is_active = true
                         LIMIT 1
-                    """, (plan_name, plan_days))
+                    """)
                     print(f'⚠️ Looking up plan by name/days (fallback): {plan_name}, {plan_days}')
                 
                 row = cursor.fetchone()
@@ -650,7 +665,8 @@ def activate_referral(username: str, payment_id: str):
         cur = conn.cursor()
         
         # Получаем реферальный код из платежа
-        cur.execute("SELECT referral_code FROM payments WHERE payment_id = %s", (payment_id,))
+        safe_payment_id = payment_id.replace("'", "''")
+        cur.execute(f"SELECT referral_code FROM payments WHERE payment_id = '{safe_payment_id}'")
         result = cur.fetchone()
         
         if not result or not result[0]:

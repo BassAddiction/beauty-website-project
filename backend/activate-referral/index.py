@@ -54,9 +54,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             print(f'🎁 Processing referral: {username} with code {referral_code}')
             
             # Find referrer by code
+            safe_code = referral_code.replace("'", "''")
             cur.execute(
-                "SELECT referrer_username FROM referrals WHERE referral_code = %s LIMIT 1",
-                (referral_code,)
+                f"SELECT referrer_username FROM referrals WHERE referral_code = '{safe_code}' LIMIT 1"
             )
             result = cur.fetchone()
             
@@ -64,18 +64,18 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 referrer = result[0]
                 
                 # Check if already referred
+                safe_username = username.replace("'", "''")
                 cur.execute(
-                    "SELECT id FROM referrals WHERE referred_username = %s",
-                    (username,)
+                    f"SELECT id FROM referrals WHERE referred_username = '{safe_username}'"
                 )
                 if not cur.fetchone():
                     # Add referral record
+                    safe_referrer = referrer.replace("'", "''")
                     cur.execute(
-                        """
+                        f"""
                         INSERT INTO referrals (referrer_username, referral_code, referred_username, bonus_days, status, activated_at)
-                        VALUES (%s, %s, %s, 7, 'activated', NOW())
-                        """,
-                        (referrer, referral_code, username)
+                        VALUES ('{safe_referrer}', '{safe_code}', '{safe_username}', 7, 'activated', NOW())
+                        """
                     )
                     
                     # Extend referrer subscription by 7 days via Remnawave

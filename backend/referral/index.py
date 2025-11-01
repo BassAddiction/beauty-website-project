@@ -57,9 +57,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 }
             
             # Get or create referral code
+            safe_username = username.replace("'", "''")
             cur.execute(
-                "SELECT referral_code FROM referrals WHERE referrer_username = %s LIMIT 1",
-                (username,)
+                f"SELECT referral_code FROM referrals WHERE referrer_username = '{safe_username}' LIMIT 1"
             )
             result = cur.fetchone()
             
@@ -69,22 +69,20 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 # Create new referral code
                 referral_code = generate_referral_code(username)
                 cur.execute(
-                    "INSERT INTO referrals (referrer_username, referral_code) VALUES (%s, %s) ON CONFLICT (referral_code) DO NOTHING",
-                    (username, referral_code)
+                    f"INSERT INTO referrals (referrer_username, referral_code) VALUES ('{safe_username}', '{referral_code}') ON CONFLICT (referral_code) DO NOTHING"
                 )
                 conn.commit()
             
             # Get stats
             cur.execute(
-                """
+                f"""
                 SELECT 
                     COUNT(*) FILTER (WHERE status = 'activated') as activated_count,
                     COUNT(*) FILTER (WHERE status = 'pending') as pending_count,
                     COALESCE(SUM(bonus_days) FILTER (WHERE status = 'activated'), 0) as total_bonus_days
                 FROM referrals 
-                WHERE referrer_username = %s AND referred_username IS NOT NULL
-                """,
-                (username,)
+                WHERE referrer_username = '{safe_username}' AND referred_username IS NOT NULL
+                """
             )
             stats = cur.fetchone()
             
@@ -118,9 +116,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 }
             
             # Find referrer by code
+            safe_code = referral_code.replace("'", "''")
             cur.execute(
-                "SELECT referrer_username FROM referrals WHERE referral_code = %s LIMIT 1",
-                (referral_code,)
+                f"SELECT referrer_username FROM referrals WHERE referral_code = '{safe_code}' LIMIT 1"
             )
             result = cur.fetchone()
             
@@ -136,9 +134,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             referrer = result[0]
             
             # Check if user already used a referral
+            safe_referred = referred_username.replace("'", "''")
             cur.execute(
-                "SELECT id FROM referrals WHERE referred_username = %s",
-                (referred_username,)
+                f"SELECT id FROM referrals WHERE referred_username = '{safe_referred}'"
             )
             if cur.fetchone():
                 cur.close()
@@ -150,12 +148,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 }
             
             # Add referred user
+            safe_referrer = referrer.replace("'", "''")
             cur.execute(
-                """
+                f"""
                 INSERT INTO referrals (referrer_username, referral_code, referred_username, bonus_days, status)
-                VALUES (%s, %s, %s, 7, 'pending')
-                """,
-                (referrer, referral_code, referred_username)
+                VALUES ('{safe_referrer}', '{safe_code}', '{safe_referred}', 7, 'pending')
+                """
             )
             conn.commit()
             
