@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -27,6 +28,59 @@ interface PlansTabProps {
 }
 
 export const PlansTab = ({ plans, loading, onEdit, onDelete, onMove }: PlansTabProps) => {
+  const [draggedPlanId, setDraggedPlanId] = useState<number | null>(null);
+  const [dragOverPlanId, setDragOverPlanId] = useState<number | null>(null);
+
+  const handleDragStart = (planId: number) => {
+    setDraggedPlanId(planId);
+  };
+
+  const handleDragOver = (e: React.DragEvent, planId: number) => {
+    e.preventDefault();
+    setDragOverPlanId(planId);
+  };
+
+  const handleDragLeave = () => {
+    setDragOverPlanId(null);
+  };
+
+  const handleDrop = async (e: React.DragEvent, targetPlanId: number) => {
+    e.preventDefault();
+    
+    if (draggedPlanId === null || draggedPlanId === targetPlanId) {
+      setDraggedPlanId(null);
+      setDragOverPlanId(null);
+      return;
+    }
+
+    const draggedIndex = plans.findIndex(p => p.plan_id === draggedPlanId);
+    const targetIndex = plans.findIndex(p => p.plan_id === targetPlanId);
+
+    if (draggedIndex === -1 || targetIndex === -1) {
+      setDraggedPlanId(null);
+      setDragOverPlanId(null);
+      return;
+    }
+
+    const distance = Math.abs(draggedIndex - targetIndex);
+    
+    for (let i = 0; i < distance; i++) {
+      if (draggedIndex < targetIndex) {
+        await onMove(draggedPlanId, 'down');
+      } else {
+        await onMove(draggedPlanId, 'up');
+      }
+    }
+
+    setDraggedPlanId(null);
+    setDragOverPlanId(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedPlanId(null);
+    setDragOverPlanId(null);
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -82,8 +136,28 @@ export const PlansTab = ({ plans, loading, onEdit, onDelete, onMove }: PlansTabP
               </TableRow>
             ) : (
               plans.filter(plan => plan && typeof plan === 'object' && plan.plan_id != null && plan.plan_id !== undefined).map((plan) => (
-                <TableRow key={plan.plan_id}>
-                <TableCell>{plan.plan_id}</TableCell>
+                <TableRow 
+                  key={plan.plan_id}
+                  draggable
+                  onDragStart={() => handleDragStart(plan.plan_id)}
+                  onDragOver={(e) => handleDragOver(e, plan.plan_id)}
+                  onDragLeave={handleDragLeave}
+                  onDrop={(e) => handleDrop(e, plan.plan_id)}
+                  onDragEnd={handleDragEnd}
+                  className={`cursor-move transition-colors ${
+                    draggedPlanId === plan.plan_id ? 'opacity-50' : ''
+                  } ${
+                    dragOverPlanId === plan.plan_id && draggedPlanId !== plan.plan_id 
+                      ? 'border-t-2 border-primary' 
+                      : ''
+                  }`}
+                >
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <Icon name="GripVertical" className="w-4 h-4 text-muted-foreground" />
+                    {plan.plan_id}
+                  </div>
+                </TableCell>
                 <TableCell>{plan.name}</TableCell>
                 <TableCell>{plan.price}₽</TableCell>
                 <TableCell>{plan.days}</TableCell>
