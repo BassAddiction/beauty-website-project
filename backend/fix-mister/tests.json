@@ -1,0 +1,8 @@
+{
+  "tests": [{
+    "name": "Extend mister subscription",
+    "method": "GET",
+    "path": "/",
+    "expectedStatus": 200
+  }]
+}

@@ -122,28 +122,72 @@ def extend_subscription(username: str, days: int):
     '''Extend user subscription via Remnawave function'''
     try:
         import requests
+        from datetime import datetime
         
+        remnawave_api_url = os.environ.get('REMNAWAVE_API_URL', '').rstrip('/')
+        remnawave_token = os.environ.get('REMNAWAVE_API_TOKEN', '')
+        
+        if not remnawave_api_url or not remnawave_token:
+            print(f'⚠️ Remnawave API credentials not configured')
+            return
+        
+        headers = {
+            'Authorization': f'Bearer {remnawave_token}',
+            'Content-Type': 'application/json'
+        }
+        
+        # Get current user info
+        users_response = requests.get(
+            f'{remnawave_api_url}/api/users',
+            headers=headers,
+            timeout=10
+        )
+        
+        if users_response.status_code != 200:
+            print(f'⚠️ Failed to get users from Remnawave: {users_response.status_code}')
+            return
+        
+        users_data = users_response.json()
+        users_list = users_data.get('response', {}).get('users', [])
+        user_data = next((u for u in users_list if u.get('username') == username), None)
+        
+        if not user_data:
+            print(f'⚠️ User {username} not found in Remnawave')
+            return
+        
+        user_uuid = user_data.get('uuid')
+        current_expire = user_data.get('expireAt', '')
+        
+        # Calculate new expiration (current + bonus days)
+        if current_expire:
+            expire_dt = datetime.fromisoformat(current_expire.replace('Z', '+00:00'))
+            current_timestamp = int(expire_dt.timestamp())
+        else:
+            current_timestamp = int(datetime.now().timestamp())
+        
+        new_timestamp = current_timestamp + (days * 86400)
+        
+        print(f'📅 Extending {username}: current={current_expire}, adding {days} days, new_timestamp={new_timestamp}')
+        
+        # Use update_user action with PATCH (keeps user data intact)
         remnawave_function_url = 'https://functions.poehali.dev/4e61ec57-0f83-4c68-83fb-8b3049f711ab'
         
         response = requests.post(
             remnawave_function_url,
             headers={'Content-Type': 'application/json'},
             json={
-                'action': 'extend_user',
+                'action': 'update_user',
                 'username': username,
-                'days': days
+                'uuid': user_uuid,
+                'expire': new_timestamp
             },
-            timeout=15
+            timeout=30
         )
         
         if response.status_code == 200:
-            result = response.json()
-            if result.get('success'):
-                print(f'✅ Extended {username} subscription by {days} days via Remnawave function')
-            else:
-                print(f'⚠️ Remnawave function returned error: {result.get("error")}')
+            print(f'✅ Extended {username} subscription by {days} days via PATCH')
         else:
-            print(f'⚠️ Failed to call Remnawave function: {response.status_code} - {response.text}')
+            print(f'⚠️ Failed to extend subscription: {response.status_code} - {response.text}')
             
     except Exception as e:
         print(f'❌ Error extending subscription: {str(e)}')
