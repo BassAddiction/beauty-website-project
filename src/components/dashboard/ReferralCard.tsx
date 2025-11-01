@@ -41,7 +41,7 @@ export const ReferralCard = ({ username }: ReferralCardProps) => {
 
   const getReferralLink = () => {
     if (!referralData) return '';
-    return `${window.location.origin}/login?ref=${referralData.referral_code}`;
+    return `https://speedvpn.io/?ref=${referralData.referral_code}`;
   };
 
   const copyToClipboard = async () => {
