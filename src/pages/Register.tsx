@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import Icon from "@/components/ui/icon";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import PaymentMethodDialog from '@/components/PaymentMethodDialog';
 
 interface Plan {
@@ -19,6 +19,7 @@ interface Plan {
 
 const Register = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState('');
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
@@ -35,16 +36,18 @@ const Register = () => {
   const AUTH_CHECK_URL = 'https://functions.poehali.dev/833bc0dd-ad44-4b38-b1ac-2ff2f5b265e5';
 
   useEffect(() => {
-    // Save referral code from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const ref = urlParams.get('ref');
-    console.log('🎁 Referral code from URL:', ref);
-    if (ref) {
-      setReferralCode(ref);
-      localStorage.setItem('referral_code', ref);
-      console.log('✅ Referral code saved:', ref);
+    // Save referral code from URL - check both direct param and localStorage
+    const refFromUrl = searchParams.get('ref');
+    const refFromStorage = localStorage.getItem('referral_code');
+    
+    const finalRef = refFromUrl || refFromStorage || '';
+    
+    if (finalRef) {
+      setReferralCode(finalRef);
+      localStorage.setItem('referral_code', finalRef);
+      alert(`✅ Реферальный код применён: ${finalRef}`);
     }
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchData = async () => {
