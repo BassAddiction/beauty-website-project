@@ -1,0 +1,8 @@
+{
+  "tests": [{
+    "name": "Extend 12mes subscription",
+    "method": "GET",
+    "path": "/",
+    "expectedStatus": 200
+  }]
+}

@@ -169,23 +169,24 @@ def extend_subscription(username: str, days: int):
         
         print(f'📅 Extending {username}: current={current_expire}, adding {days} days, new_timestamp={new_timestamp}')
         
-        # Use update_user action with PATCH (keeps user data intact)
+        # Use extend_subscription (DELETE + CREATE) as workaround for Remnawave PATCH bug
         remnawave_function_url = 'https://functions.poehali.dev/4e61ec57-0f83-4c68-83fb-8b3049f711ab'
         
         response = requests.post(
             remnawave_function_url,
             headers={'Content-Type': 'application/json'},
             json={
-                'action': 'update_user',
+                'action': 'extend_subscription',
                 'username': username,
                 'uuid': user_uuid,
-                'expire': new_timestamp
+                'expire': new_timestamp,
+                'internalSquads': user_data.get('internalSquads', [])
             },
             timeout=30
         )
         
         if response.status_code == 200:
-            print(f'✅ Extended {username} subscription by {days} days via PATCH')
+            print(f'✅ Extended {username} subscription by {days} days (recreated user)')
         else:
             print(f'⚠️ Failed to extend subscription: {response.status_code} - {response.text}')
             
