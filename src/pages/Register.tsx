@@ -38,9 +38,11 @@ const Register = () => {
     // Save referral code from URL
     const urlParams = new URLSearchParams(window.location.search);
     const ref = urlParams.get('ref');
+    console.log('🎁 Referral code from URL:', ref);
     if (ref) {
       setReferralCode(ref);
       localStorage.setItem('referral_code', ref);
+      console.log('✅ Referral code saved:', ref);
     }
   }, []);
 
@@ -127,6 +129,7 @@ const Register = () => {
       const username = emailPrefix + '_' + Date.now();
       
       const savedRefCode = localStorage.getItem('referral_code') || referralCode;
+      console.log('🎁 Sending referral code to payment:', savedRefCode);
       
       const paymentResponse = await fetch(
         'https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c',
