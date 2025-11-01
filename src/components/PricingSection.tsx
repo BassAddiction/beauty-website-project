@@ -51,7 +51,7 @@ const PricingSection = () => {
             name: plan.name,
             price: plan.price.toString(),
             period: '₽',
-            popular: plan.days === 180,
+            popular: plan.days === 90,
             custom: plan.custom,
             features: plan.features || []
           }));
