@@ -47,11 +47,11 @@ const PricingSection = () => {
         
         const formattedPlans = plansData.plans
           .filter((plan: any) => plan.show_on && plan.show_on.includes('pricing'))
-          .map((plan: any, index: number) => ({
+          .map((plan: any) => ({
             name: plan.name,
             price: plan.price.toString(),
             period: '₽',
-            popular: index === 0,
+            popular: plan.days === 180,
             custom: plan.custom,
             features: plan.features || []
           }));
