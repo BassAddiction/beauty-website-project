@@ -11,10 +11,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import PaymentMethodDialog from "@/components/PaymentMethodDialog";
 
 interface Plan {
-  plan_id?: number;
+  id?: number;
   name: string;
   price: string;
   period: string;
+  days?: number;
   popular?: boolean;
   custom?: boolean;
   features: string[];
@@ -48,9 +49,11 @@ const PricingSection = () => {
         const formattedPlans = plansData.plans
           .filter((plan: any) => plan.show_on && plan.show_on.includes('pricing'))
           .map((plan: any) => ({
+            id: plan.id,
             name: plan.name,
             price: plan.price.toString(),
             period: '₽',
+            days: plan.days,
             popular: plan.days === 90,
             custom: plan.custom,
             features: plan.features || []
@@ -179,10 +182,11 @@ const PricingSection = () => {
       const generatedUsername = emailPrefix + '_' + Date.now();
       
       const price = parseInt(selectedPlan!.price);
-      const days = selectedPlan!.name === '1 Месяц' ? 30 : 
+      const days = selectedPlan!.days || 
+                   (selectedPlan!.name === '1 Месяц' ? 30 : 
                    selectedPlan!.name === '3 Месяца' ? 90 :
                    selectedPlan!.name === '6 Месяцев' ? 180 :
-                   selectedPlan!.name === '12 Месяцев' ? 365 : 30;
+                   selectedPlan!.name === '12 Месяцев' ? 365 : 30);
 
       const paymentResponse = await fetch(
         'https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c',
@@ -195,6 +199,7 @@ const PricingSection = () => {
             amount: price,
             plan_name: selectedPlan!.name,
             plan_days: days,
+            plan_id: selectedPlan!.id,
             payment_method: method,
             domain: window.location.hostname
           })
