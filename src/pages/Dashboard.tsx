@@ -41,7 +41,7 @@ const Dashboard = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [showPaymentMethodDialog, setShowPaymentMethodDialog] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<{ name: string; price: number; days: number } | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<{ id: number; name: string; price: number; days: number } | null>(null);
 
   useEffect(() => {
     const username = localStorage.getItem('vpn_username');
@@ -121,7 +121,7 @@ const Dashboard = () => {
     }
   };
 
-  const handlePayment = (plan: { name: string; price: number; days: number }) => {
+  const handlePayment = (plan: { id: number; name: string; price: number; days: number }) => {
     setSelectedPlan(plan);
     setShowPaymentMethodDialog(true);
   };
@@ -145,6 +145,7 @@ const Dashboard = () => {
           amount: selectedPlan.price,
           plan_name: selectedPlan.name,
           plan_days: selectedPlan.days,
+          plan_id: selectedPlan.id,
           payment_method: method,
           domain: window.location.hostname
         })

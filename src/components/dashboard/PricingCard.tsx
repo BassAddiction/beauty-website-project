@@ -5,10 +5,11 @@ import { useState, useEffect } from 'react';
 
 interface PricingCardProps {
   paymentLoading: boolean;
-  onPayment: (plan: { name: string; price: number; days: number }) => void;
+  onPayment: (plan: { id: number; name: string; price: number; days: number }) => void;
 }
 
 interface Plan {
+  id: number;
   name: string;
   price: number;
   days: number;
@@ -31,6 +32,7 @@ export const PricingCard = ({ paymentLoading, onPayment }: PricingCardProps) => 
         let formattedPlans = data.plans
           .filter((plan: any) => plan.show_on && plan.show_on.includes('dashboard'))
           .map((plan: any) => ({
+            id: plan.id,
             name: plan.name,
             price: plan.price,
             days: plan.days,
@@ -43,6 +45,7 @@ export const PricingCard = ({ paymentLoading, onPayment }: PricingCardProps) => 
           formattedPlans = data.plans
             .filter((plan: any) => !plan.custom)
             .map((plan: any) => ({
+              id: plan.id,
               name: plan.name,
               price: plan.price,
               days: plan.days,
@@ -55,10 +58,10 @@ export const PricingCard = ({ paymentLoading, onPayment }: PricingCardProps) => 
       } catch (error) {
         console.error('Failed to load plans:', error);
         setPlans([
-          { name: '1 месяц', price: 200, days: 30, features: [] },
-          { name: '3 месяца', price: 500, days: 90, features: [] },
-          { name: '6 месяцев', price: 900, days: 180, features: [] },
-          { name: '1 год', price: 1200, days: 365, features: [] }
+          { id: 0, name: '1 месяц', price: 200, days: 30, features: [] },
+          { id: 0, name: '3 месяца', price: 500, days: 90, features: [] },
+          { id: 0, name: '6 месяцев', price: 900, days: 180, features: [] },
+          { id: 0, name: '1 год', price: 1200, days: 365, features: [] }
         ]);
       } finally {
         setLoading(false);

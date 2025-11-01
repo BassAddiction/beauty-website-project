@@ -181,13 +181,6 @@ const PricingSection = () => {
       const emailPrefix = email.split('@')[0].replace(/[^a-zA-Z0-9_-]/g, '');
       const generatedUsername = emailPrefix + '_' + Date.now();
       
-      const price = parseInt(selectedPlan!.price);
-      const days = selectedPlan!.days || 
-                   (selectedPlan!.name === '1 Месяц' ? 30 : 
-                   selectedPlan!.name === '3 Месяца' ? 90 :
-                   selectedPlan!.name === '6 Месяцев' ? 180 :
-                   selectedPlan!.name === '12 Месяцев' ? 365 : 30);
-
       const paymentResponse = await fetch(
         'https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c',
         {
@@ -196,9 +189,9 @@ const PricingSection = () => {
           body: JSON.stringify({
             username: generatedUsername,
             email: email.trim(),
-            amount: price,
+            amount: parseInt(selectedPlan!.price),
             plan_name: selectedPlan!.name,
-            plan_days: days,
+            plan_days: selectedPlan!.days,
             plan_id: selectedPlan!.id,
             payment_method: method,
             domain: window.location.hostname
