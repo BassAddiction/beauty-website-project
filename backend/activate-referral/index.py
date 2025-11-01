@@ -69,14 +69,29 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     f"SELECT id FROM referrals WHERE referred_username = '{safe_username}'"
                 )
                 if not cur.fetchone():
-                    # Add referral record
+                    # Try to update existing referral record (where referred_username is NULL)
                     safe_referrer = referrer.replace("'", "''")
                     cur.execute(
                         f"""
-                        INSERT INTO referrals (referrer_username, referral_code, referred_username, bonus_days, status, activated_at)
-                        VALUES ('{safe_referrer}', '{safe_code}', '{safe_username}', 7, 'activated', NOW())
+                        UPDATE referrals 
+                        SET referred_username = '{safe_username}', 
+                            bonus_days = 7, 
+                            status = 'activated', 
+                            activated_at = NOW()
+                        WHERE referrer_username = '{safe_referrer}' 
+                          AND referral_code = '{safe_code}' 
+                          AND referred_username IS NULL
                         """
                     )
+                    
+                    # If no rows updated, insert new record
+                    if cur.rowcount == 0:
+                        cur.execute(
+                            f"""
+                            INSERT INTO referrals (referrer_username, referral_code, referred_username, bonus_days, status, activated_at)
+                            VALUES ('{safe_referrer}', '{safe_code}', '{safe_username}', 7, 'activated', NOW())
+                            """
+                        )
                     
                     # Extend referrer subscription by 7 days via Remnawave
                     extend_subscription(referrer, 7)
