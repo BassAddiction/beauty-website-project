@@ -86,7 +86,8 @@ def handle_create_payment_get(event: Dict[str, Any], cors_headers: Dict[str, str
     plan_id = int(params.get('plan_id', 0)) if params.get('plan_id') else None
     payment_method = params.get('payment_method', 'sbp')
     domain = params.get('domain', 'speedvpn.io')
-    return create_yookassa_payment(username, email, float(amount), plan_name, int(plan_days), plan_id, custom_plan, payment_method, domain, cors_headers)
+    referral_code = params.get('referral_code', '')
+    return create_yookassa_payment(username, email, float(amount), plan_name, int(plan_days), plan_id, custom_plan, payment_method, domain, referral_code, cors_headers)
 
 
 def handle_create_payment_post(body_data: Dict[str, Any], cors_headers: Dict[str, str]) -> Dict[str, Any]:
@@ -100,8 +101,11 @@ def handle_create_payment_post(body_data: Dict[str, Any], cors_headers: Dict[str
     custom_plan = body_data.get('custom_plan')
     payment_method = body_data.get('payment_method', 'sbp')
     domain = body_data.get('domain', 'speedvpn.io')
+    referral_code = body_data.get('referral_code', '')
     
     print(f'🌐 Domain received from frontend: {domain}')
+    if referral_code:
+        print(f'🎁 Referral code received: {referral_code}')
     
     if not all([username, email, amount, plan_name, plan_days]):
         return {
@@ -114,10 +118,10 @@ def handle_create_payment_post(body_data: Dict[str, Any], cors_headers: Dict[str
             'isBase64Encoded': False
         }
     
-    return create_yookassa_payment(username, email, float(amount), plan_name, int(plan_days), plan_id, custom_plan, payment_method, domain, cors_headers)
+    return create_yookassa_payment(username, email, float(amount), plan_name, int(plan_days), plan_id, custom_plan, payment_method, domain, referral_code, cors_headers)
 
 
-def create_yookassa_payment(username: str, email: str, amount: float, plan_name: str, plan_days: int, plan_id: Optional[int], custom_plan: Any, payment_method: str, domain: str, cors_headers: Dict[str, str]) -> Dict[str, Any]:
+def create_yookassa_payment(username: str, email: str, amount: float, plan_name: str, plan_days: int, plan_id: Optional[int], custom_plan: Any, payment_method: str, domain: str, referral_code: str, cors_headers: Dict[str, str]) -> Dict[str, Any]:
     '''Создаёт платёж в YooKassa'''
     try:
         shop_id = os.environ.get('YOOKASSA_SHOP_ID', '')
@@ -223,7 +227,7 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
         print(f'📋 Receipt: tax_system=УСН_доходы-расходы(3), vat_code=БезНДС(4), status={receipt_info}')
         
         # Сохраняем платёж в БД со статусом pending
-        save_payment_to_db(payment_id, username, email, amount, plan_name, plan_days, 'pending')
+        save_payment_to_db(payment_id, username, email, amount, plan_name, plan_days, 'pending', referral_code)
         
         # Сохраняем данные чека в БД
         save_receipt_to_db(payment_id, email, amount, plan_name, 3, 4)
@@ -309,6 +313,9 @@ def handle_yookassa_webhook(webhook_data: Dict[str, Any], cors_headers: Dict[str
                 subscription_url = remnawave_result.get('subscription_url', '')
                 print(f'✅ User created in Remnawave: {subscription_url}')
                 
+                # Активируем реферала если есть
+                activate_referral(username, payment_id)
+                
                 # Отправляем email с инструкциями
                 send_welcome_email(email, subscription_url)
                 
@@ -353,7 +360,7 @@ def handle_yookassa_webhook(webhook_data: Dict[str, Any], cors_headers: Dict[str
         }
 
 
-def save_payment_to_db(payment_id: str, username: str, email: str, amount: float, plan_name: str, plan_days: int, status: str):
+def save_payment_to_db(payment_id: str, username: str, email: str, amount: float, plan_name: str, plan_days: int, status: str, referral_code: str = ''):
     '''Сохраняет платёж в БД'''
     try:
         db_url = os.environ.get('DATABASE_URL', '')
@@ -365,17 +372,19 @@ def save_payment_to_db(payment_id: str, username: str, email: str, amount: float
         cursor = conn.cursor()
         
         cursor.execute("""
-            INSERT INTO payments (payment_id, username, email, amount, plan_name, plan_days, status, created_at, updated_at)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
+            INSERT INTO payments (payment_id, username, email, amount, plan_name, plan_days, status, referral_code, created_at, updated_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
             ON CONFLICT (payment_id) DO UPDATE 
             SET status = EXCLUDED.status, updated_at = NOW()
-        """, (payment_id, username, email, amount, plan_name, plan_days, status))
+        """, (payment_id, username, email, amount, plan_name, plan_days, status, referral_code if referral_code else None))
         
         conn.commit()
         cursor.close()
         conn.close()
         
         print(f'💾 Payment saved to DB: {payment_id} - {status}')
+        if referral_code:
+            print(f'🎁 Referral code saved: {referral_code}')
         
     except Exception as e:
         print(f'⚠️ Failed to save payment to DB: {str(e)}')
@@ -628,6 +637,52 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int, plan_id:
     except Exception as e:
         print(f'❌ Error creating user in Remnawave: {str(e)}')
         return {'success': False, 'error': str(e)}
+
+
+def activate_referral(username: str, payment_id: str):
+    '''Активирует реферальный бонус после успешной оплаты'''
+    try:
+        db_url = os.environ.get('DATABASE_URL', '')
+        if not db_url:
+            return
+        
+        conn = psycopg2.connect(db_url)
+        cur = conn.cursor()
+        
+        # Получаем реферальный код из платежа
+        cur.execute("SELECT referral_code FROM payments WHERE payment_id = %s", (payment_id,))
+        result = cur.fetchone()
+        
+        if not result or not result[0]:
+            cur.close()
+            conn.close()
+            return
+        
+        referral_code = result[0]
+        print(f'🎁 Found referral code: {referral_code} for user {username}')
+        
+        # Вызываем функцию активации реферала
+        activate_url = 'https://functions.poehali.dev/358b9593-075d-4262-9190-984599107ece'
+        response = requests.post(
+            activate_url,
+            headers={'Content-Type': 'application/json'},
+            json={
+                'username': username,
+                'referral_code': referral_code
+            },
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            print(f'✅ Referral activated for {username}')
+        else:
+            print(f'⚠️ Failed to activate referral: {response.text}')
+        
+        cur.close()
+        conn.close()
+        
+    except Exception as e:
+        print(f'⚠️ Error activating referral: {str(e)}')
 
 
 def send_welcome_email(email: str, subscription_url: str):
