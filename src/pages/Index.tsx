@@ -17,6 +17,14 @@ const Index = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    // Save referral code from URL
+    const ref = searchParams.get('ref');
+    console.log('🎁 Referral code from URL on Index:', ref);
+    if (ref) {
+      localStorage.setItem('referral_code', ref);
+      console.log('✅ Referral code saved on Index:', ref);
+    }
+    
     if (searchParams.get('payment') === 'success') {
       const username = localStorage.getItem('vpn_username');
       const email = localStorage.getItem('vpn_email');
