@@ -188,7 +188,13 @@ def handle_admin(event: Dict[str, Any], context: Any, cors_headers: Dict[str, st
                     'isBase64Encoded': False
                 }
             else:
-                # INSERT
+                # INSERT - автоматически присваиваем максимальный sort_order + 1
+                cursor.execute("""
+                    SELECT COALESCE(MAX(sort_order), -1) + 1 
+                    FROM t_p66544974_beauty_website_proje.subscription_plans
+                """)
+                next_sort_order = cursor.fetchone()[0]
+                
                 cursor.execute("""
                     INSERT INTO t_p66544974_beauty_website_proje.subscription_plans (name, price, days, traffic_gb, is_active, is_custom, sort_order, features, show_on, squad_uuids)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -200,7 +206,7 @@ def handle_admin(event: Dict[str, Any], context: Any, cors_headers: Dict[str, st
                     body.get('traffic_gb', 30),
                     body.get('is_active', True),
                     body.get('is_custom', False),
-                    body.get('sort_order', 0),
+                    body.get('sort_order', next_sort_order),
                     body.get('features', []),
                     body.get('show_on', ['register', 'pricing']),
                     body.get('squad_uuids', [])
