@@ -119,47 +119,31 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         }
 
 def extend_subscription(username: str, days: int):
-    '''Extend user subscription via Remnawave API'''
+    '''Extend user subscription via Remnawave function'''
     try:
         import requests
         
-        remnawave_url = os.environ.get('REMNAWAVE_URL', '')
-        remnawave_username = os.environ.get('REMNAWAVE_USERNAME', '')
-        remnawave_password = os.environ.get('REMNAWAVE_PASSWORD', '')
+        remnawave_function_url = 'https://functions.poehali.dev/4e61ec57-0f83-4c68-83fb-8b3049f711ab'
         
-        if not all([remnawave_url, remnawave_username, remnawave_password]):
-            print('⚠️ Remnawave credentials not configured')
-            return
-        
-        # Get user info
-        response = requests.get(
-            f'{remnawave_url}/api/user/{username}',
-            auth=(remnawave_username, remnawave_password),
-            timeout=10
+        response = requests.post(
+            remnawave_function_url,
+            headers={'Content-Type': 'application/json'},
+            json={
+                'action': 'extend_user',
+                'username': username,
+                'days': days
+            },
+            timeout=15
         )
         
-        if response.status_code != 200:
-            print(f'⚠️ User {username} not found in Remnawave')
-            return
-        
-        user_data = response.json()
-        current_expire = user_data.get('expire', 0)
-        
-        # Extend by days
-        new_expire = current_expire + (days * 24 * 60 * 60)
-        
-        # Update subscription
-        update_response = requests.put(
-            f'{remnawave_url}/api/user/{username}',
-            auth=(remnawave_username, remnawave_password),
-            json={'expire': new_expire},
-            timeout=10
-        )
-        
-        if update_response.status_code == 200:
-            print(f'✅ Extended {username} subscription by {days} days')
+        if response.status_code == 200:
+            result = response.json()
+            if result.get('success'):
+                print(f'✅ Extended {username} subscription by {days} days via Remnawave function')
+            else:
+                print(f'⚠️ Remnawave function returned error: {result.get("error")}')
         else:
-            print(f'⚠️ Failed to extend subscription: {update_response.text}')
+            print(f'⚠️ Failed to call Remnawave function: {response.status_code} - {response.text}')
             
     except Exception as e:
         print(f'❌ Error extending subscription: {str(e)}')

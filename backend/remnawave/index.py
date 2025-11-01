@@ -442,6 +442,88 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'body': json.dumps({'error': str(e)}),
                     'isBase64Encoded': False
                 }
+        
+        if action == 'extend_user':
+            from datetime import datetime
+            
+            username = body_data.get('username')
+            days = body_data.get('days', 0)
+            
+            if not username or not days:
+                return {
+                    'statusCode': 400,
+                    'headers': cors_headers,
+                    'body': json.dumps({'error': 'username and days required'}),
+                    'isBase64Encoded': False
+                }
+            
+            try:
+                print(f'📅 Extending {username} by {days} days')
+                
+                get_response = requests.get(f'{api_url}/api/user/{username}', headers=headers, timeout=10)
+                
+                if get_response.status_code != 200:
+                    return {
+                        'statusCode': 404,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': f'User {username} not found'}),
+                        'isBase64Encoded': False
+                    }
+                
+                user_data = get_response.json()
+                response_data = user_data.get('response', user_data)
+                user_uuid = response_data.get('uuid')
+                current_expire_str = response_data.get('expireAt', '')
+                
+                current_expire_ts = 0
+                if current_expire_str:
+                    try:
+                        current_expire_dt = datetime.fromisoformat(current_expire_str.replace('Z', '+00:00'))
+                        current_expire_ts = int(current_expire_dt.timestamp())
+                    except:
+                        pass
+                
+                now_ts = int(datetime.now().timestamp())
+                base_ts = max(current_expire_ts, now_ts)
+                new_expire_ts = base_ts + (days * 86400)
+                new_expire_at = datetime.fromtimestamp(new_expire_ts).isoformat() + 'Z'
+                
+                print(f'🔹 Current expire: {current_expire_ts}, New expire: {new_expire_ts}')
+                
+                patch_payload = {'expireAt': new_expire_at}
+                
+                patch_response = requests.patch(
+                    f'{api_url}/api/users/{user_uuid}',
+                    headers=headers,
+                    json=patch_payload,
+                    timeout=10
+                )
+                
+                if patch_response.status_code == 200:
+                    print(f'✅ Extended {username} by {days} days')
+                    return {
+                        'statusCode': 200,
+                        'headers': cors_headers,
+                        'body': json.dumps({'success': True, 'new_expire': new_expire_at}),
+                        'isBase64Encoded': False
+                    }
+                else:
+                    print(f'❌ Failed to extend: {patch_response.text}')
+                    return {
+                        'statusCode': patch_response.status_code,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Failed to extend user', 'details': patch_response.text}),
+                        'isBase64Encoded': False
+                    }
+                    
+            except Exception as e:
+                print(f'❌ Error extending user: {str(e)}')
+                return {
+                    'statusCode': 500,
+                    'headers': cors_headers,
+                    'body': json.dumps({'error': str(e)}),
+                    'isBase64Encoded': False
+                }
     
     return {
         'statusCode': 405,

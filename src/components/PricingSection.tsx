@@ -180,6 +180,9 @@ const PricingSection = () => {
     try {
       const emailPrefix = email.split('@')[0].replace(/[^a-zA-Z0-9_-]/g, '');
       const generatedUsername = emailPrefix + '_' + Date.now();
+      const referralCode = localStorage.getItem('referral_code');
+      
+      console.log('💳 Starting payment with referral:', referralCode);
       
       const paymentResponse = await fetch(
         'https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c',
@@ -194,7 +197,8 @@ const PricingSection = () => {
             plan_days: selectedPlan!.days,
             plan_id: selectedPlan!.id,
             payment_method: method,
-            domain: window.location.hostname
+            domain: window.location.hostname,
+            referral_code: referralCode
           })
         }
       );
