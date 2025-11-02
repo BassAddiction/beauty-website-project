@@ -7,7 +7,7 @@ Crawl-delay: 0
 User-agent: Yandex
 Allow: /
 Crawl-delay: 0
-Host: https://onproduct.pro
+Host: https://speedvpn.io
 
 User-agent: Bingbot
 Allow: /
@@ -26,4 +26,4 @@ Disallow: /dashboard
 Crawl-delay: 1
 
 # Sitemap
-Sitemap: https://onproduct.pro/sitemap.xml
+Sitemap: https://speedvpn.io/sitemap.xml

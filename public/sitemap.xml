@@ -4,7 +4,7 @@
   
   <!-- Главная страница -->
   <url>
-    <loc>https://onproduct.pro/</loc>
+    <loc>https://speedvpn.io/</loc>
     <lastmod>2025-10-31</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -16,28 +16,28 @@
   
   <!-- Секции главной страницы -->
   <url>
-    <loc>https://onproduct.pro/#features</loc>
+    <loc>https://speedvpn.io/#features</loc>
     <lastmod>2025-10-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://onproduct.pro/#pricing</loc>
+    <loc>https://speedvpn.io/#pricing</loc>
     <lastmod>2025-10-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   
   <url>
-    <loc>https://onproduct.pro/#training</loc>
+    <loc>https://speedvpn.io/#training</loc>
     <lastmod>2025-10-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
-    <loc>https://onproduct.pro/#faq</loc>
+    <loc>https://speedvpn.io/#faq</loc>
     <lastmod>2025-10-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -45,14 +45,14 @@
   
   <!-- Страницы регистрации и входа -->
   <url>
-    <loc>https://onproduct.pro/register</loc>
+    <loc>https://speedvpn.io/register</loc>
     <lastmod>2025-10-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   
   <url>
-    <loc>https://onproduct.pro/login</loc>
+    <loc>https://speedvpn.io/login</loc>
     <lastmod>2025-10-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -60,7 +60,7 @@
   
   <!-- Личный кабинет -->
   <url>
-    <loc>https://onproduct.pro/dashboard</loc>
+    <loc>https://speedvpn.io/dashboard</loc>
     <lastmod>2025-10-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -68,7 +68,7 @@
   
   <!-- Восстановление доступа -->
   <url>
-    <loc>https://onproduct.pro/get-access</loc>
+    <loc>https://speedvpn.io/get-access</loc>
     <lastmod>2025-10-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -76,7 +76,7 @@
   
   <!-- Новости -->
   <url>
-    <loc>https://onproduct.pro/news</loc>
+    <loc>https://speedvpn.io/news</loc>
     <lastmod>2025-10-31</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
