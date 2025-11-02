@@ -1,0 +1,16 @@
+{
+  "tests": [
+    {
+      "name": "Redirect to homepage",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 301
+    },
+    {
+      "name": "Redirect with path",
+      "method": "GET",
+      "path": "/?path=/pricing",
+      "expectedStatus": 301
+    }
+  ]
+}
