@@ -1,116 +1,326 @@
-# 🚀 Инструкция по развёртыванию Speed VPN на своём сервере
+# 🚀 Руководство по развертыванию Speed VPN на собственном сервере
 
-## 📦 Что у тебя есть сейчас
-
-Твой проект состоит из:
-- **Frontend** (React + Vite) — интерфейс сайта
-- **Backend Functions** (Python) — 5 облачных функций в `/backend/`
-- **Database** (PostgreSQL) — база данных на poehali.dev
-- **Secrets** — API ключи (YooKassa, SMTP, Remnawave)
-
-## ⚠️ ВАЖНО: Проблемы при переносе
-
-1. **Backend функции** — работают только на poehali.dev (Cloud Functions)
-2. **База данных** — доступна только с poehali.dev
-3. **Secrets** — хранятся на poehali.dev
-
-**Варианты решения:**
-- **Вариант А**: Разместить только frontend на своём сервере, а backend оставить на poehali.dev
-- **Вариант Б**: Полностью перенести всё (сложнее, нужен свой сервер для Python и PostgreSQL)
+Это руководство поможет вам развернуть проект Speed VPN на вашем собственном сервере, настроить базу данных и подключить все необходимые сервисы.
 
 ---
 
-## 🎯 ВАРИАНТ А: Frontend на своём сервере + Backend на poehali.dev
+## 📋 Оглавление
 
-### Шаг 1: Подготовка кода
-
-**1.1. Клонируй репозиторий:**
-```bash
-git clone https://github.com/ТВОЙ_АККАУНТ/ТВОЙ_РЕПОЗИТОРИЙ.git
-cd ТВОЙ_РЕПОЗИТОРИЙ
-```
-
-**1.2. Установи зависимости:**
-```bash
-npm install
-```
-
-**1.3. Измени домен в коде**
-
-Файл `index.html` (строка 25):
-```html
-<!-- БЫЛО: -->
-<link rel="canonical" href="https://beauty-website-project.poehali.app/">
-
-<!-- СТАЛО: -->
-<link rel="canonical" href="https://ТВОй_ДОМЕН.ru/">
-```
-
-Файл `backend/payment/index.py` (строка 128):
-```python
-# БЫЛО:
-'return_url': 'https://speedvpn.poehali.dev/payment-success'
-
-# СТАЛО:
-'return_url': 'https://ТВОй_ДОМЕН.ru/payment-success'
-```
-
-**1.4. Собери проект:**
-```bash
-npm run build
-```
-
-Готовая сборка будет в папке `/dist/`
+1. [Требования](#требования)
+2. [Подготовка сервера](#подготовка-сервера)
+3. [Установка зависимостей](#установка-зависимостей)
+4. [Настройка базы данных](#настройка-базы-данных)
+5. [Настройка переменных окружения](#настройка-переменных-окружения)
+6. [Развертывание Frontend](#развертывание-frontend)
+7. [Развертывание Backend функций](#развертывание-backend-функций)
+8. [Настройка вебхуков](#настройка-вебхуков)
+9. [Настройка SSL сертификатов](#настройка-ssl-сертификатов)
+10. [Мониторинг и логи](#мониторинг-и-логи)
+11. [Резервное копирование](#резервное-копирование)
+12. [Troubleshooting](#troubleshooting)
 
 ---
 
-### Шаг 2: Загрузка на сервер
+## Требования
 
-**2.1. Подключись к серверу:**
+### Минимальные требования к серверу:
+- **OS:** Ubuntu 20.04 LTS или выше / Debian 11+
+- **CPU:** 2 cores
+- **RAM:** 4 GB
+- **Disk:** 20 GB SSD
+- **Network:** 100 Mbps
+
+### Рекомендуемые требования:
+- **OS:** Ubuntu 22.04 LTS
+- **CPU:** 4 cores
+- **RAM:** 8 GB
+- **Disk:** 50 GB SSD
+- **Network:** 1 Gbps
+
+### Необходимые сервисы:
+- PostgreSQL 14+
+- Node.js 18+ / Bun 1.0+
+- Python 3.11+
+- Nginx
+- Certbot (для SSL)
+- Docker (опционально)
+
+---
+
+## Подготовка сервера
+
+### 1. Обновление системы
+
 ```bash
-ssh user@ТВОй_СЕРВЕР.ru
+sudo apt update && sudo apt upgrade -y
 ```
 
-**2.2. Создай папку для сайта:**
+### 2. Установка необходимых пакетов
+
 ```bash
-mkdir -p /var/www/speedvpn
+sudo apt install -y curl wget git build-essential nginx certbot python3-certbot-nginx
 ```
 
-**2.3. Загрузи файлы из папки `dist/`:**
+### 3. Настройка firewall
+
 ```bash
-# На своём компьютере:
-scp -r dist/* user@ТВОй_СЕРВЕР.ru:/var/www/speedvpn/
+sudo ufw allow 22/tcp      # SSH
+sudo ufw allow 80/tcp      # HTTP
+sudo ufw allow 443/tcp     # HTTPS
+sudo ufw allow 5432/tcp    # PostgreSQL (если БД на том же сервере)
+sudo ufw enable
 ```
 
 ---
 
-### Шаг 3: Настройка веб-сервера (Nginx)
+## Установка зависимостей
 
-**3.1. Создай конфиг Nginx:**
+### Node.js (через nvm)
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+source ~/.bashrc
+nvm install 18
+nvm use 18
+```
+
+### Bun (альтернатива npm, быстрее)
+
+```bash
+curl -fsSL https://bun.sh/install | bash
+source ~/.bashrc
+```
+
+### Python 3.11
+
+```bash
+sudo apt install -y python3.11 python3.11-venv python3.11-dev
+```
+
+### PostgreSQL 14
+
+```bash
+sudo apt install -y postgresql-14 postgresql-contrib-14
+sudo systemctl enable postgresql
+sudo systemctl start postgresql
+```
+
+---
+
+## Настройка базы данных
+
+### 1. Создание пользователя и базы данных
+
+```bash
+sudo -u postgres psql
+```
+
+В PostgreSQL консоли:
+
+```sql
+-- Создание пользователя
+CREATE USER speedvpn_user WITH PASSWORD 'your_secure_password_here';
+
+-- Создание базы данных
+CREATE DATABASE speedvpn_db OWNER speedvpn_user;
+
+-- Выдача прав
+GRANT ALL PRIVILEGES ON DATABASE speedvpn_db TO speedvpn_user;
+
+-- Выход
+\q
+```
+
+### 2. Настройка удаленного доступа (если БД на отдельном сервере)
+
+Редактируем `postgresql.conf`:
+
+```bash
+sudo nano /etc/postgresql/14/main/postgresql.conf
+```
+
+Находим строку `listen_addresses` и меняем на:
+
+```
+listen_addresses = '*'
+```
+
+Редактируем `pg_hba.conf`:
+
+```bash
+sudo nano /etc/postgresql/14/main/pg_hba.conf
+```
+
+Добавляем в конец:
+
+```
+# Разрешить подключение с определенного IP
+host    speedvpn_db     speedvpn_user   YOUR_SERVER_IP/32    md5
+
+# Или разрешить с любого IP (не рекомендуется для продакшена)
+host    all             all             0.0.0.0/0            md5
+```
+
+Перезапускаем PostgreSQL:
+
+```bash
+sudo systemctl restart postgresql
+```
+
+### 3. Создание строки подключения DATABASE_URL
+
+```
+postgresql://speedvpn_user:your_secure_password_here@localhost:5432/speedvpn_db
+
+# Или для удаленной БД:
+postgresql://speedvpn_user:your_secure_password_here@db_server_ip:5432/speedvpn_db
+```
+
+### 4. Применение миграций
+
+Склонируйте проект:
+
+```bash
+cd /var/www
+git clone https://github.com/your-username/speedvpn.git
+cd speedvpn
+```
+
+Создайте файл `.env`:
+
+```bash
+nano .env
+```
+
+Добавьте:
+
+```env
+DATABASE_URL=postgresql://speedvpn_user:your_secure_password_here@localhost:5432/speedvpn_db
+```
+
+Примените миграции вручную:
+
+```bash
+# Подключитесь к БД
+psql postgresql://speedvpn_user:your_secure_password_here@localhost:5432/speedvpn_db
+
+# Выполните все миграции из папки db_migrations/ по порядку
+\i db_migrations/V0001__initial_schema.sql
+\i db_migrations/V0002__add_users_table.sql
+# ... и так далее для всех файлов
+```
+
+Или используйте скрипт автоматической миграции:
+
+```bash
+for file in db_migrations/*.sql; do
+  echo "Applying migration: $file"
+  psql postgresql://speedvpn_user:your_secure_password_here@localhost:5432/speedvpn_db -f "$file"
+done
+```
+
+---
+
+## Настройка переменных окружения
+
+### 1. Создание файла `.env`
+
+```bash
+cd /var/www/speedvpn
+nano .env
+```
+
+### 2. Заполните все необходимые переменные:
+
+```env
+# База данных
+DATABASE_URL=postgresql://speedvpn_user:your_password@localhost:5432/speedvpn_db
+
+# Админ-панель
+ADMIN_PASSWORD=your_super_secure_admin_password
+
+# ЮKassa (платежная система)
+YOOKASSA_SHOP_ID=your_shop_id
+YOOKASSA_SECRET_KEY=live_your_secret_key
+
+# Remnawave (VPN панель)
+REMNAWAVE_API_URL=https://your-vpn-panel.com
+REMNAWAVE_API_TOKEN=your_remnawave_api_token
+REMNAWAVE_FUNCTION_URL=https://your-domain.com/api/remnawave
+USER_SQUAD_UUIDS=uuid1,uuid2,uuid3
+USER_TRAFFIC_LIMIT_GB=30
+USER_TRAFFIC_STRATEGY=MONTH
+
+# Email сервисы
+RESEND_API_KEY=re_your_resend_key
+UNISENDER_API_KEY=your_unisender_key
+
+# URLs
+FRONTEND_URL=https://speedvpn.io
+BACKEND_URL=https://api.speedvpn.io
+```
+
+### 3. Защита файла `.env`
+
+```bash
+chmod 600 .env
+```
+
+---
+
+## Развертывание Frontend
+
+### 1. Установка зависимостей
+
+```bash
+cd /var/www/speedvpn
+bun install
+# или npm install
+```
+
+### 2. Сборка проекта
+
+```bash
+bun run build
+# или npm run build
+```
+
+Результат сборки будет в папке `dist/`.
+
+### 3. Настройка Nginx
+
+Создайте конфигурацию:
+
 ```bash
 sudo nano /etc/nginx/sites-available/speedvpn
 ```
 
-**3.2. Вставь конфигурацию:**
+Содержимое:
+
 ```nginx
 server {
     listen 80;
-    server_name ТВОй_ДОМЕН.ru www.ТВОй_ДОМЕН.ru;
-    
-    root /var/www/speedvpn;
+    server_name speedvpn.io www.speedvpn.io;
+
+    root /var/www/speedvpn/dist;
     index index.html;
-    
-    # Поддержка React Router (все запросы → index.html)
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-    
+
+    # Gzip сжатие
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+    gzip_comp_level 6;
+
     # Кеширование статики
-    location ~* \.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf)$ {
+    location ~* \.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$ {
         expires 1y;
         add_header Cache-Control "public, immutable";
     }
-    
+
+    # SPA роутинг
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
     # Безопасность
     add_header X-Frame-Options "SAMEORIGIN" always;
     add_header X-Content-Type-Options "nosniff" always;
@@ -118,211 +328,612 @@ server {
 }
 ```
 
-**3.3. Активируй конфиг:**
+Активируем конфигурацию:
+
 ```bash
 sudo ln -s /etc/nginx/sites-available/speedvpn /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx
 ```
 
----
+### 4. Установка SSL сертификата
 
-### Шаг 4: SSL сертификат (HTTPS)
-
-**4.1. Установи Certbot:**
 ```bash
-sudo apt update
-sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d speedvpn.io -d www.speedvpn.io
 ```
 
-**4.2. Получи SSL сертификат:**
-```bash
-sudo certbot --nginx -d ТВОй_ДОМЕН.ru -d www.ТВОй_ДОМЕН.ru
-```
+Автоматическое обновление сертификатов:
 
-**4.3. Автопродление:**
 ```bash
-sudo certbot renew --dry-run
+sudo systemctl enable certbot.timer
+sudo systemctl start certbot.timer
 ```
 
 ---
 
-### Шаг 5: Настройка YooKassa webhook
+## Развертывание Backend функций
 
-**5.1. Зайди в личный кабинет YooKassa:**
-https://yookassa.ru/my/merchant/integration/http-notifications
+### Вариант 1: Использование Serverless платформы (рекомендуется)
 
-**5.2. Укажи URL вебхука:**
-```
-https://functions.poehali.dev/d8d680b3-23f3-481e-b8cf-ccb969e2f158
-```
-(Это твоя функция `remnawave` — она уже работает!)
+Проект использует serverless архитектуру. Backend функции в папке `backend/` предназначены для запуска на:
 
-**5.3. Выбери события:**
-- ✅ payment.succeeded (успешный платёж)
-- ✅ payment.canceled (отмена платежа)
+- **Yandex Cloud Functions** (текущее решение)
+- **AWS Lambda**
+- **Google Cloud Functions**
+- **Azure Functions**
+- **Vercel Functions**
+- **Netlify Functions**
 
----
+#### Пример развертывания на AWS Lambda:
 
-## ✅ Готово!
-
-Теперь:
-- **Frontend** работает на `https://ТВОй_ДОМЕН.ru`
-- **Backend функции** остались на poehali.dev
-- **YooKassa** отправляет уведомления на poehali.dev webhook
-- **База данных** на poehali.dev
-
----
-
-## 🔧 ВАРИАНТ Б: Полный перенос (все компоненты на свой сервер)
-
-Если нужно перенести ВСЁ (включая backend и базу), потребуется:
-
-### 1. Настроить PostgreSQL на своём сервере
 ```bash
-sudo apt install postgresql postgresql-contrib
-sudo -u postgres createdb speedvpn
+# Установите AWS CLI
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+
+# Настройте credentials
+aws configure
+
+# Для каждой функции создайте Lambda:
+cd backend/payment
+zip -r payment.zip .
+aws lambda create-function \
+  --function-name speedvpn-payment \
+  --runtime python3.11 \
+  --role arn:aws:iam::YOUR_ACCOUNT:role/lambda-role \
+  --handler index.handler \
+  --zip-file fileb://payment.zip
+
+# Создайте API Gateway для HTTP доступа
 ```
 
-### 2. Перенести данные базы
+### Вариант 2: Запуск на своем сервере (Express.js wrapper)
 
-Экспортировать данные из poehali.dev (нужен доступ к БД) и импортировать в свою:
+Создайте файл `backend/server.js`:
+
+```javascript
+const express = require('express');
+const app = express();
+const cors = require('cors');
+
+app.use(cors());
+app.use(express.json());
+
+// Загрузка всех функций
+const payment = require('./payment/index.py');
+const plans = require('./plans/index.ts');
+// ... остальные функции
+
+// Роутинг
+app.post('/api/payment', async (req, res) => {
+  const event = {
+    httpMethod: 'POST',
+    headers: req.headers,
+    body: JSON.stringify(req.body),
+  };
+  const result = await payment.handler(event, {});
+  res.status(result.statusCode).send(result.body);
+});
+
+// ... остальные роуты
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Backend running on port ${PORT}`);
+});
+```
+
+Создайте systemd service:
+
 ```bash
-psql -U postgres speedvpn < database_dump.sql
-```
-
-### 3. Переписать backend функции на обычный Python API
-
-Вместо Cloud Functions создать Flask/FastAPI сервер:
-
-**Установка:**
-```bash
-pip install flask psycopg2-binary requests
-```
-
-**Пример `app.py`:**
-```python
-from flask import Flask, request, jsonify
-import os
-
-app = Flask(__name__)
-
-@app.route('/api/payment', methods=['POST', 'OPTIONS'])
-def payment():
-    if request.method == 'OPTIONS':
-        return '', 200, {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type'
-        }
-    
-    # Здесь код из backend/payment/index.py
-    # ...
-    
-    return jsonify({'status': 'ok'})
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
-```
-
-**Запуск через systemd:**
-```bash
-sudo nano /etc/systemd/system/speedvpn-api.service
+sudo nano /etc/systemd/system/speedvpn-backend.service
 ```
 
 ```ini
 [Unit]
-Description=Speed VPN API
+Description=Speed VPN Backend
 After=network.target
 
 [Service]
+Type=simple
 User=www-data
-WorkingDirectory=/var/www/speedvpn-api
-Environment="DATABASE_URL=postgresql://user:pass@localhost/speedvpn"
-Environment="YOOKASSA_SHOP_ID=твой_id"
-Environment="YOOKASSA_SECRET_KEY=твой_ключ"
-ExecStart=/usr/bin/python3 app.py
-Restart=always
+WorkingDirectory=/var/www/speedvpn/backend
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+Environment="NODE_ENV=production"
+EnvironmentFile=/var/www/speedvpn/.env
 
 [Install]
 WantedBy=multi-user.target
 ```
 
+Запуск:
+
 ```bash
-sudo systemctl enable speedvpn-api
-sudo systemctl start speedvpn-api
+sudo systemctl enable speedvpn-backend
+sudo systemctl start speedvpn-backend
+sudo systemctl status speedvpn-backend
 ```
 
-**Настройка Nginx для API:**
+### 3. Настройка Nginx для Backend API
+
+```bash
+sudo nano /etc/nginx/sites-available/speedvpn
+```
+
+Добавьте в конфигурацию:
+
 ```nginx
-# Добавить в конфиг сервера:
+# Backend API
 location /api/ {
-    proxy_pass http://127.0.0.1:5000/api/;
+    proxy_pass http://localhost:3000/api/;
     proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_cache_bypass $http_upgrade;
 }
 ```
 
-### 4. Изменить все URL в коде
+Перезагрузите Nginx:
 
-Заменить все `https://functions.poehali.dev/...` на `https://ТВОй_ДОМЕН.ru/api/...`
-
-**Файлы для изменения:**
-- `src/components/PricingSection.tsx`
-- `src/pages/Dashboard.tsx`
-- `src/pages/Register.tsx`
-- `src/pages/GetAccess.tsx`
-- `src/pages/AdminUpdate.tsx`
-- `src/pages/TestWebhook.tsx`
-
-**Найти и заменить:**
 ```bash
-# В корне проекта:
-find src -type f -name "*.tsx" -exec sed -i 's|https://functions.poehali.dev/[a-z0-9-]*|https://ТВОй_ДОМЕН.ru/api|g' {} +
+sudo nginx -t
+sudo systemctl reload nginx
 ```
 
 ---
 
-## 📊 Сравнение вариантов
+## Настройка вебхуков
 
-| Параметр | Вариант А | Вариант Б |
-|----------|-----------|-----------|
-| Сложность | ⭐ Простая | ⭐⭐⭐⭐⭐ Очень сложная |
-| Время | 1-2 часа | 1-2 дня |
-| Стоимость | Бесплатно (poehali.dev backend) | Нужен VPS ($5-20/мес) |
-| Контроль | Частичный | Полный |
-| Поддержка | Backend на poehali.dev | Сам настраиваешь всё |
+### 1. ЮKassa (платежи)
+
+#### Создание webhook endpoint
+
+Backend функция `payment` уже обрабатывает вебхуки. URL для webhook:
+
+```
+https://speedvpn.io/api/payment
+```
+
+#### Настройка в личном кабинете ЮKassa:
+
+1. Зайдите в [Личный кабинет ЮKassa](https://yookassa.ru/my/)
+2. Перейдите в **Настройки → HTTP-уведомления**
+3. Добавьте URL: `https://speedvpn.io/api/payment`
+4. Выберите события:
+   - ✅ `payment.succeeded` (успешная оплата)
+   - ✅ `payment.canceled` (отмена платежа)
+   - ✅ `refund.succeeded` (возврат средств)
+
+#### Проверка webhook
+
+Создайте тестовый endpoint для проверки:
+
+```bash
+cd /var/www/speedvpn
+nano test-webhook.js
+```
+
+```javascript
+const express = require('express');
+const app = express();
+app.use(express.json());
+
+app.post('/api/payment', (req, res) => {
+  console.log('Received webhook:', JSON.stringify(req.body, null, 2));
+  console.log('Headers:', req.headers);
+  res.json({ success: true });
+});
+
+app.listen(3000, () => console.log('Webhook test server on port 3000'));
+```
+
+Запустите:
+
+```bash
+node test-webhook.js
+```
+
+Отправьте тестовый платеж из ЮKassa и проверьте логи.
+
+### 2. Remnawave (VPN панель)
+
+Если Remnawave поддерживает вебхуки, создайте endpoint:
+
+```
+https://speedvpn.io/api/remnawave-webhook
+```
+
+Добавьте обработчик в backend:
+
+```python
+# backend/remnawave-webhook/index.py
+def handler(event, context):
+    body = json.loads(event.get('body', '{}'))
+    
+    # Обработка событий от Remnawave
+    event_type = body.get('event')
+    
+    if event_type == 'user.expired':
+        user_id = body.get('user_id')
+        # Отключить подписку в БД
+        update_user_subscription(user_id, status='expired')
+    
+    return {
+        'statusCode': 200,
+        'body': json.dumps({'status': 'ok'})
+    }
+```
+
+### 3. Unisender (email)
+
+Настройка вебхуков для отслеживания доставки email:
+
+1. Зайдите в [Unisender личный кабинет](https://cp.unisender.com/)
+2. **Настройки → Вебхуки**
+3. Добавьте URL: `https://speedvpn.io/api/email-webhook`
+4. События:
+   - ✅ Доставлено
+   - ✅ Открыто
+   - ✅ Нажата ссылка
+   - ✅ Отписка
+
+### 4. Безопасность вебхуков
+
+#### Проверка подписи ЮKassa:
+
+```python
+import hmac
+import hashlib
+
+def verify_yookassa_signature(body, signature, secret_key):
+    expected = hmac.new(
+        secret_key.encode(),
+        body.encode(),
+        hashlib.sha256
+    ).hexdigest()
+    return hmac.compare_digest(expected, signature)
+
+# В handler:
+signature = headers.get('x-yookassa-signature')
+if not verify_yookassa_signature(body, signature, YOOKASSA_SECRET_KEY):
+    return {'statusCode': 401, 'body': 'Invalid signature'}
+```
+
+#### IP whitelist
+
+Ограничьте доступ к вебхукам только с IP ЮKassa:
+
+```nginx
+# В конфигурации Nginx
+location /api/payment {
+    allow 185.71.76.0/27;
+    allow 185.71.77.0/27;
+    allow 77.75.153.0/25;
+    deny all;
+    
+    proxy_pass http://localhost:3000/api/payment;
+}
+```
 
 ---
 
-## 🎯 Рекомендация
+## Настройка SSL сертификатов
 
-**Начни с Варианта А** — он быстрый и простой. Backend функции и база данных останутся на poehali.dev, а сайт будет работать на твоём домене.
+### 1. Автоматические сертификаты через Certbot
 
-Если позже понадобится полный контроль — можно перейти на Вариант Б.
+```bash
+sudo certbot --nginx -d speedvpn.io -d www.speedvpn.io -d api.speedvpn.io
+```
+
+### 2. Wildcard сертификаты (для поддоменов)
+
+```bash
+sudo certbot certonly \
+  --manual \
+  --preferred-challenges=dns \
+  -d speedvpn.io \
+  -d "*.speedvpn.io"
+```
+
+Добавьте TXT запись в DNS как указано в инструкции.
+
+### 3. Проверка автообновления
+
+```bash
+sudo certbot renew --dry-run
+```
+
+### 4. Настройка крон-задачи для обновления
+
+```bash
+sudo crontab -e
+```
+
+Добавьте:
+
+```
+0 3 * * * certbot renew --quiet --post-hook "systemctl reload nginx"
+```
 
 ---
 
-## 🆘 Частые проблемы
+## Мониторинг и логи
 
-### Проблема 1: CORS ошибки
-**Решение:** Backend функции на poehali.dev уже настроены на `Access-Control-Allow-Origin: *`
+### 1. Логи Nginx
 
-### Проблема 2: YooKassa не присылает уведомления
-**Решение:** Проверь, что URL вебхука точно `https://functions.poehali.dev/d8d680b3-23f3-481e-b8cf-ccb969e2f158`
+```bash
+# Логи доступа
+sudo tail -f /var/log/nginx/access.log
 
-### Проблема 3: 404 при переходе на /dashboard
-**Решение:** Убедись что в Nginx есть `try_files $uri $uri/ /index.html;`
+# Логи ошибок
+sudo tail -f /var/log/nginx/error.log
+```
 
-### Проблема 4: Платежи не работают
-**Решение:** Измени `return_url` в `backend/payment/index.py` на свой домен и обнови функцию на poehali.dev
+### 2. Логи Backend
+
+```bash
+sudo journalctl -u speedvpn-backend -f
+```
+
+### 3. Логи PostgreSQL
+
+```bash
+sudo tail -f /var/log/postgresql/postgresql-14-main.log
+```
+
+### 4. Мониторинг ресурсов
+
+Установите htop:
+
+```bash
+sudo apt install htop
+htop
+```
+
+### 5. Настройка Prometheus + Grafana (опционально)
+
+```bash
+# Установка Prometheus
+wget https://github.com/prometheus/prometheus/releases/download/v2.40.0/prometheus-2.40.0.linux-amd64.tar.gz
+tar xvfz prometheus-*.tar.gz
+cd prometheus-*
+./prometheus --config.file=prometheus.yml
+
+# Установка Node Exporter
+wget https://github.com/prometheus/node_exporter/releases/download/v1.5.0/node_exporter-1.5.0.linux-amd64.tar.gz
+tar xvfz node_exporter-*.tar.gz
+cd node_exporter-*
+./node_exporter
+
+# Установка Grafana
+sudo apt-get install -y software-properties-common
+sudo add-apt-repository "deb https://packages.grafana.com/oss/deb stable main"
+wget -q -O - https://packages.grafana.com/gpg.key | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install grafana
+sudo systemctl start grafana-server
+```
+
+Grafana доступна на `http://your-server:3000` (логин: admin, пароль: admin)
 
 ---
 
-## 📞 Нужна помощь?
+## Резервное копирование
 
-Если что-то не получается:
-1. Проверь логи Nginx: `sudo tail -f /var/log/nginx/error.log`
-2. Проверь статус сервиса: `sudo systemctl status nginx`
-3. Напиши мне — помогу разобраться!
+### 1. Backup базы данных (ежедневный)
+
+Создайте скрипт `/root/backup-db.sh`:
+
+```bash
+#!/bin/bash
+DATE=$(date +%Y%m%d_%H%M%S)
+BACKUP_DIR="/var/backups/speedvpn"
+mkdir -p $BACKUP_DIR
+
+# Backup PostgreSQL
+pg_dump postgresql://speedvpn_user:password@localhost:5432/speedvpn_db | gzip > "$BACKUP_DIR/speedvpn_db_$DATE.sql.gz"
+
+# Удаление старых backup (старше 7 дней)
+find $BACKUP_DIR -name "speedvpn_db_*.sql.gz" -mtime +7 -delete
+
+echo "Backup completed: speedvpn_db_$DATE.sql.gz"
+```
+
+Сделайте скрипт исполняемым:
+
+```bash
+chmod +x /root/backup-db.sh
+```
+
+Добавьте в cron:
+
+```bash
+sudo crontab -e
+```
+
+```
+0 2 * * * /root/backup-db.sh >> /var/log/speedvpn-backup.log 2>&1
+```
+
+### 2. Восстановление из backup
+
+```bash
+gunzip -c /var/backups/speedvpn/speedvpn_db_20231103.sql.gz | psql postgresql://speedvpn_user:password@localhost:5432/speedvpn_db
+```
+
+### 3. Backup файлов проекта
+
+```bash
+tar -czf /var/backups/speedvpn/speedvpn_files_$(date +%Y%m%d).tar.gz \
+  /var/www/speedvpn \
+  /etc/nginx/sites-available/speedvpn \
+  /etc/systemd/system/speedvpn-backend.service
+```
+
+---
+
+## Troubleshooting
+
+### Проблема 1: Не запускается Frontend
+
+**Ошибка:** `Cannot GET /`
+
+**Решение:**
+```bash
+# Проверьте содержимое dist/
+ls -la /var/www/speedvpn/dist
+
+# Пересоберите проект
+cd /var/www/speedvpn
+bun run build
+
+# Проверьте права доступа
+sudo chown -R www-data:www-data /var/www/speedvpn/dist
+```
+
+### Проблема 2: Backend возвращает 500
+
+**Ошибка:** Internal Server Error
+
+**Решение:**
+```bash
+# Проверьте логи
+sudo journalctl -u speedvpn-backend -n 50
+
+# Проверьте переменные окружения
+systemctl show speedvpn-backend | grep Environment
+
+# Перезапустите сервис
+sudo systemctl restart speedvpn-backend
+```
+
+### Проблема 3: Не работают платежи
+
+**Ошибка:** Webhook не получен
+
+**Решение:**
+```bash
+# Проверьте доступность endpoint
+curl -X POST https://speedvpn.io/api/payment \
+  -H "Content-Type: application/json" \
+  -d '{"test": true}'
+
+# Проверьте логи Nginx
+sudo tail -f /var/log/nginx/error.log
+
+# Проверьте настройки ЮKassa в личном кабинете
+```
+
+### Проблема 4: Не подключается к БД
+
+**Ошибка:** `connection refused` или `authentication failed`
+
+**Решение:**
+```bash
+# Проверьте статус PostgreSQL
+sudo systemctl status postgresql
+
+# Проверьте pg_hba.conf
+sudo nano /etc/postgresql/14/main/pg_hba.conf
+
+# Проверьте пользователя
+sudo -u postgres psql
+\du
+
+# Тест подключения
+psql postgresql://speedvpn_user:password@localhost:5432/speedvpn_db
+```
+
+### Проблема 5: SSL сертификат не обновляется
+
+**Решение:**
+```bash
+# Проверьте таймер certbot
+sudo systemctl status certbot.timer
+
+# Ручное обновление
+sudo certbot renew --dry-run
+
+# Проверьте логи
+sudo cat /var/log/letsencrypt/letsencrypt.log
+```
+
+---
+
+## Дополнительные настройки
+
+### 1. CDN (Cloudflare)
+
+1. Зарегистрируйтесь на [Cloudflare](https://www.cloudflare.com/)
+2. Добавьте домен speedvpn.io
+3. Смените NS записи у регистратора домена
+4. Включите **Proxy** для записей A/AAAA
+5. Настройте SSL: **Full (strict)**
+6. Включите кеширование статики
+
+### 2. Балансировка нагрузки (если несколько серверов)
+
+Настройте Nginx как load balancer:
+
+```nginx
+upstream backend_servers {
+    server 10.0.1.10:3000;
+    server 10.0.1.11:3000;
+    server 10.0.1.12:3000;
+}
+
+server {
+    location /api/ {
+        proxy_pass http://backend_servers;
+    }
+}
+```
+
+### 3. Rate limiting (защита от DDoS)
+
+```nginx
+limit_req_zone $binary_remote_addr zone=api_limit:10m rate=10r/s;
+
+location /api/ {
+    limit_req zone=api_limit burst=20 nodelay;
+    proxy_pass http://localhost:3000;
+}
+```
+
+---
+
+## Управление настройками через админку
+
+После развертывания вы можете управлять всеми настройками проекта через админ-панель:
+
+1. Зайдите на `https://speedvpn.io/admin`
+2. Введите пароль администратора (из `ADMIN_PASSWORD`)
+3. Перейдите на вкладку **"Проект"**
+4. Нажмите **"Редактировать"**
+5. Измените нужные настройки (DATABASE_URL, API ключи и т.д.)
+6. Нажмите **"Сохранить"**
+
+Все изменения сохраняются в базе данных и применяются автоматически!
+
+---
+
+## Контакты и поддержка
+
+- **Документация проекта:** [https://speedvpn.io/docs](https://speedvpn.io/docs)
+- **GitHub Issues:** [https://github.com/your-repo/issues](https://github.com/your-repo/issues)
+- **Telegram сообщество:** [https://t.me/+QgiLIa1gFRY4Y2Iy](https://t.me/+QgiLIa1gFRY4Y2Iy)
+
+---
+
+## Лицензия
+
+MIT License - см. файл LICENSE в корне проекта.
+
+---
+
+**Удачи с развертыванием! 🚀**
