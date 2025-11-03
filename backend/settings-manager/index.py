@@ -1,7 +1,8 @@
 import json
 import os
 import psycopg2
-from typing import Dict, Any
+import base64
+from typing import Dict, Any, Optional
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     '''
@@ -43,28 +44,28 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     if method == 'GET':
         settings = {
             'database': {
-                'url': os.environ.get('DATABASE_URL', ''),
+                'url': get_secret_value('DATABASE_URL'),
                 'status': 'unknown'
             },
             'yookassa': {
-                'shop_id': os.environ.get('YOOKASSA_SHOP_ID', ''),
-                'secret_key_masked': mask_secret(os.environ.get('YOOKASSA_SECRET_KEY', '')),
-                'has_secret': bool(os.environ.get('YOOKASSA_SECRET_KEY', ''))
+                'shop_id': get_secret_value('YOOKASSA_SHOP_ID'),
+                'secret_key_masked': mask_secret(get_secret_value('YOOKASSA_SECRET_KEY')),
+                'has_secret': bool(get_secret_value('YOOKASSA_SECRET_KEY'))
             },
             'remnawave': {
-                'api_url': os.environ.get('REMNAWAVE_API_URL', ''),
-                'api_token_masked': mask_secret(os.environ.get('REMNAWAVE_API_TOKEN', '')),
-                'has_token': bool(os.environ.get('REMNAWAVE_API_TOKEN', '')),
-                'function_url': os.environ.get('REMNAWAVE_FUNCTION_URL', ''),
-                'squad_uuids': os.environ.get('USER_SQUAD_UUIDS', ''),
-                'traffic_limit_gb': os.environ.get('USER_TRAFFIC_LIMIT_GB', ''),
-                'traffic_strategy': os.environ.get('USER_TRAFFIC_STRATEGY', '')
+                'api_url': get_secret_value('REMNAWAVE_API_URL'),
+                'api_token_masked': mask_secret(get_secret_value('REMNAWAVE_API_TOKEN')),
+                'has_token': bool(get_secret_value('REMNAWAVE_API_TOKEN')),
+                'function_url': get_secret_value('REMNAWAVE_FUNCTION_URL'),
+                'squad_uuids': get_secret_value('USER_SQUAD_UUIDS'),
+                'traffic_limit_gb': get_secret_value('USER_TRAFFIC_LIMIT_GB'),
+                'traffic_strategy': get_secret_value('USER_TRAFFIC_STRATEGY')
             },
             'email': {
-                'resend_api_key_masked': mask_secret(os.environ.get('RESEND_API_KEY', '')),
-                'has_resend': bool(os.environ.get('RESEND_API_KEY', '')),
-                'unisender_api_key_masked': mask_secret(os.environ.get('UNISENDER_API_KEY', '')),
-                'has_unisender': bool(os.environ.get('UNISENDER_API_KEY', ''))
+                'resend_api_key_masked': mask_secret(get_secret_value('RESEND_API_KEY')),
+                'has_resend': bool(get_secret_value('RESEND_API_KEY')),
+                'unisender_api_key_masked': mask_secret(get_secret_value('UNISENDER_API_KEY')),
+                'has_unisender': bool(get_secret_value('UNISENDER_API_KEY'))
             }
         }
         
@@ -101,8 +102,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             }
         
         if action == 'test_remnawave':
-            api_url = body_data.get('api_url') or os.environ.get('REMNAWAVE_API_URL', '')
-            api_token = body_data.get('api_token') or os.environ.get('REMNAWAVE_API_TOKEN', '')
+            api_url = body_data.get('api_url') or get_secret_value('REMNAWAVE_API_URL')
+            api_token = body_data.get('api_token') or get_secret_value('REMNAWAVE_API_TOKEN')
             result = test_remnawave_connection(api_url, api_token)
             return {
                 'statusCode': 200,
@@ -118,12 +119,99 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'body': json.dumps({'error': 'Неизвестное действие'})
         }
     
+    if method == 'PUT':
+        body_data = json.loads(event.get('body', '{}'))
+        updates = body_data.get('secrets', {})
+        
+        if not updates:
+            return {
+                'statusCode': 400,
+                'headers': cors_headers,
+                'isBase64Encoded': False,
+                'body': json.dumps({'error': 'Нет данных для обновления'})
+            }
+        
+        result = update_secrets(updates)
+        return {
+            'statusCode': 200,
+            'headers': cors_headers,
+            'isBase64Encoded': False,
+            'body': json.dumps(result)
+        }
+    
     return {
         'statusCode': 405,
         'headers': cors_headers,
         'isBase64Encoded': False,
         'body': json.dumps({'error': 'Метод не поддерживается'})
     }
+
+
+def get_secret_value(key: str) -> str:
+    db_url = os.environ.get('DATABASE_URL', '')
+    if not db_url:
+        return os.environ.get(key, '')
+    
+    try:
+        conn = psycopg2.connect(db_url)
+        cursor = conn.cursor()
+        cursor.execute(
+            'SELECT secret_value FROM project_secrets WHERE secret_key = %s',
+            (key,)
+        )
+        result = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        
+        if result:
+            encoded_value = result[0]
+            return base64.b64decode(encoded_value).decode('utf-8')
+    except Exception as e:
+        print(f'❌ Ошибка чтения секрета {key} из БД: {e}')
+    
+    return os.environ.get(key, '')
+
+
+def update_secrets(updates: Dict[str, str]) -> Dict[str, Any]:
+    db_url = os.environ.get('DATABASE_URL', '')
+    if not db_url:
+        return {'success': False, 'message': 'DATABASE_URL не настроен'}
+    
+    try:
+        conn = psycopg2.connect(db_url)
+        cursor = conn.cursor()
+        updated_keys = []
+        
+        for key, value in updates.items():
+            if not value:
+                continue
+            
+            encoded_value = base64.b64encode(value.encode('utf-8')).decode('utf-8')
+            
+            cursor.execute(
+                '''INSERT INTO project_secrets (secret_key, secret_value, updated_at)
+                   VALUES (%s, %s, CURRENT_TIMESTAMP)
+                   ON CONFLICT (secret_key) 
+                   DO UPDATE SET secret_value = EXCLUDED.secret_value, 
+                                 updated_at = CURRENT_TIMESTAMP''',
+                (key, encoded_value)
+            )
+            updated_keys.append(key)
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        return {
+            'success': True,
+            'message': f'Обновлено секретов: {len(updated_keys)}',
+            'updated_keys': updated_keys
+        }
+    except Exception as e:
+        return {
+            'success': False,
+            'message': f'Ошибка обновления: {str(e)}'
+        }
 
 
 def mask_secret(secret: str) -> str:
