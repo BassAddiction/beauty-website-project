@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
+import { CDN_ASSETS } from '@/config/api';
 
 interface DashboardHeaderProps {
   username: string;
@@ -12,7 +13,7 @@ export const DashboardHeader = ({ username, onLogout }: DashboardHeaderProps) =>
       <div className="flex justify-center">
         <a href="/" className="transition-transform hover:scale-105">
           <img 
-            src="https://cdn.poehali.dev/files/299c507f-f10f-4048-a927-9fa71def332e.jpg" 
+            src={CDN_ASSETS.LOGO} 
             alt="Speed VPN" 
             className="w-16 h-16 rounded-full object-cover border-2 border-primary"
           />

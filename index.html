@@ -7,13 +7,13 @@
     <meta name="description" content="Speed VPN — надёжный VPN-сервис с протоколом Vless Reality. 30 ГБ трафика в сутки, неограниченное количество устройств, доступ к YouTube, заблокированным соцсетям, ChatGPT. Купить VPN от 200₽. Работает на iOS, Android, Windows, Mac."/>
     <meta name="keywords" content="vpn, впн, купить vpn, vpn россия, vpn сервис, быстрый vpn, безопасный vpn, vless reality, vpn для youtube, vpn для соцсетей, vpn для chatgpt, vpn недорого, vpn тарифы, vpn подписка, анонимный vpn, vpn без логов, vpn ios, vpn android, vpn windows, защита данных, обход блокировок, анонимность в интернете, приватность онлайн"/>
     <meta name="author" content="Speed VPN"/>
-    <link rel="icon" type="image/jpeg" href="https://cdn.poehali.dev/files/299c507f-f10f-4048-a927-9fa71def332e.jpg">
+    <link rel="icon" type="image/jpeg" href="/logo.jpg">
     
     <meta property="og:type" content="website">
     <meta property="og:title" content="Speed VPN — Быстрый VPN от 200₽ | Vless Reality">
     <meta property="og:description" content="Защитите свою конфиденциальность с Speed VPN. 30 ГБ трафика в сутки, без ограничений устройств, доступ к YouTube, заблокированным сайтам, ChatGPT. Работает на всех платформах.">
     <meta property="og:url" content="https://speedvpn.io/">
-    <meta property="og:image" content="https://cdn.poehali.dev/files/299c507f-f10f-4048-a927-9fa71def332e.jpg">
+    <meta property="og:image" content="/logo.jpg">
     <meta property="og:image:width" content="1024">
     <meta property="og:image:height" content="1024">
     <meta property="og:image:alt" content="Speed VPN — быстрый и безопасный VPN-сервис">
@@ -21,7 +21,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Speed VPN — Быстрый VPN от 200₽">
     <meta name="twitter:description" content="30 ГБ трафика в сутки, без ограничений устройств. Доступ к YouTube, заблокированным соцсетям, ChatGPT. Vless Reality протокол.">
-    <meta name="twitter:image" content="https://cdn.poehali.dev/files/299c507f-f10f-4048-a927-9fa71def332e.jpg">
+    <meta name="twitter:image" content="/logo.jpg">
     
     <link rel="canonical" href="https://speedvpn.io/">
     
@@ -50,7 +50,7 @@
       "applicationCategory": "SecurityApplication",
       "operatingSystem": "iOS, Android, Windows, macOS, Linux",
       "url": "https://speedvpn.io/",
-      "image": "https://cdn.poehali.dev/files/299c507f-f10f-4048-a927-9fa71def332e.jpg",
+      "image": "/logo.jpg",
       "description": "Быстрый и безопасный VPN-сервис с протоколом Vless Reality. 30 ГБ трафика в сутки, неограниченное количество устройств. Доступ к YouTube, заблокированным сайтам, ChatGPT.",
       "offers": {
         "@type": "AggregateOffer",
@@ -78,7 +78,7 @@
         "Без логов",
         "Круглосуточная поддержка"
       ],
-      "screenshot": "https://cdn.poehali.dev/files/299c507f-f10f-4048-a927-9fa71def332e.jpg"
+      "screenshot": "/logo.jpg"
     }
     </script>
     
@@ -88,7 +88,7 @@
       "@type": "Organization",
       "name": "Speed VPN",
       "url": "https://speedvpn.io/",
-      "logo": "https://cdn.poehali.dev/files/299c507f-f10f-4048-a927-9fa71def332e.jpg",
+      "logo": "/logo.jpg",
       "description": "Провайдер VPN-услуг с протоколом Vless Reality",
       "sameAs": [
         "https://t.me/speed_vpn_support"
@@ -139,20 +139,14 @@
 
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS COMMENT! -->
 
-    <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS COMMENT! -->
-    <script src="https://cdn.poehali.dev/intertnal/js/pp-min-2.js"></script>
-    <script src="https://cdn.poehali.dev/intertnal/js/route-min.js"></script>
-    <script src="https://cdn.poehali.dev/intertnal/js/telemetry-min.js"></script>
-    <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS COMMENT! -->
-
-    <meta name="pp-name" value="beauty-website-project">
-      <script src="https://cdn.poehali.dev/intertnal/js/inspector-min.js"></script>
+    <!-- poehali.dev platform scripts removed for autonomous operation -->
 
     <!-- CUSTOM TRACKING CODES (MANAGED FROM ADMIN PANEL) -->
     <script>
       (async function loadTrackingCodes() {
         try {
-          const response = await fetch('https://functions.poehali.dev/7a6acadf-d332-41e0-a309-e41e647fedae?admin_password=none');
+          const apiUrl = import.meta.env.VITE_API_BASE_URL || 'https://functions.poehali.dev';
+          const response = await fetch(`${apiUrl}/7a6acadf-d332-41e0-a309-e41e647fedae?admin_password=none`);
           const data = await response.json();
           if (data.success && data.head_code) {
             const parser = new DOMParser();
@@ -187,6 +181,11 @@
         }
       })();
     </script>
+      <meta name="pp-name" value="beauty-website-project">
+      <script src="https://cdn.poehali.dev/intertnal/js/pp-min-2.js"></script>
+      <script src="https://cdn.poehali.dev/intertnal/js/route-min.js"></script>
+      <script src="https://cdn.poehali.dev/intertnal/js/inspector-min.js"></script>
+      <script src="https://cdn.poehali.dev/intertnal/js/telemetry-min.js"></script>
   </head>
 
 <body>
@@ -194,7 +193,8 @@
 <script>
   (async function loadBodyTrackingCodes() {
     try {
-      const response = await fetch('https://functions.poehali.dev/7a6acadf-d332-41e0-a309-e41e647fedae?admin_password=none');
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'https://functions.poehali.dev';
+      const response = await fetch(`${apiUrl}/7a6acadf-d332-41e0-a309-e41e647fedae?admin_password=none`);
       const data = await response.json();
       if (data.success && data.body_code) {
         const parser = new DOMParser();

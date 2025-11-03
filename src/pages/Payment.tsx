@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
 import { useToast } from "@/hooks/use-toast";
+import API_ENDPOINTS from '@/config/api';
 
 interface CustomPlan {
   name: string;
@@ -80,7 +81,7 @@ const Payment = () => {
         })
       });
 
-      const url = `https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c?${params}`;
+      const url = `${API_ENDPOINTS.PAYMENT}?${params}`;
 
       const res = await fetch(url, {
         method: 'GET',

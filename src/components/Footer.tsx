@@ -1,4 +1,5 @@
 import Icon from "@/components/ui/icon";
+import { CDN_ASSETS } from '@/config/api';
 
 const Footer = () => {
   return (
@@ -7,7 +8,7 @@ const Footer = () => {
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <img src="https://cdn.poehali.dev/files/3a0045b1-8f62-461c-946f-ea67286d8040.png" alt="Speed VPN" className="w-8 h-8 rounded-lg" />
+              <img src={CDN_ASSETS.CLIENT_ICONS.WINDOWS} alt="Speed VPN" className="w-8 h-8 rounded-lg" />
               <span className="text-xl font-bold">SPEED VPN</span>
             </div>
             <p className="text-sm text-muted-foreground">

@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Icon from '@/components/ui/icon';
 import { Separator } from '@/components/ui/separator';
+import API_ENDPOINTS from '@/config/api';
 
 interface ProjectSettingsTabProps {
   adminPassword: string;
@@ -46,8 +47,6 @@ export function ProjectSettingsTab({ adminPassword }: ProjectSettingsTabProps) {
   const [testResults, setTestResults] = useState<Record<string, any>>({});
   const [editMode, setEditMode] = useState(false);
 
-  const SETTINGS_API = 'https://functions.poehali.dev/5375b8f5-5979-4f46-b106-9c9ca07e2da6';
-
   useEffect(() => {
     loadSettings();
   }, []);
@@ -55,7 +54,7 @@ export function ProjectSettingsTab({ adminPassword }: ProjectSettingsTabProps) {
   const loadSettings = async () => {
     setLoading(true);
     try {
-      const response = await fetch(SETTINGS_API, {
+      const response = await fetch(API_ENDPOINTS.SETTINGS_MANAGER, {
         headers: {
           'X-Admin-Password': adminPassword
         }
@@ -75,7 +74,7 @@ export function ProjectSettingsTab({ adminPassword }: ProjectSettingsTabProps) {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const response = await fetch(SETTINGS_API, {
+      const response = await fetch(API_ENDPOINTS.SETTINGS_MANAGER, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -117,7 +116,7 @@ export function ProjectSettingsTab({ adminPassword }: ProjectSettingsTabProps) {
     setTestResults({ ...testResults, [service]: null });
     
     try {
-      const response = await fetch(SETTINGS_API, {
+      const response = await fetch(API_ENDPOINTS.SETTINGS_MANAGER, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

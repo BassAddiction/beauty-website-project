@@ -5,8 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Icon from "@/components/ui/icon";
 import { useNavigate } from 'react-router-dom';
+import API_ENDPOINTS, { CDN_ASSETS } from '@/config/api';
 
-const AUTH_CHECK_URL = 'https://functions.poehali.dev/833bc0dd-ad44-4b38-b1ac-2ff2f5b265e5';
+const AUTH_CHECK_URL = API_ENDPOINTS.AUTH_CHECK;
 
 const Login = () => {
   const navigate = useNavigate();
@@ -49,7 +50,7 @@ const Login = () => {
       
       // Проверяем существование пользователя через API
       const response = await fetch(
-        `https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0?username=${encodeURIComponent(username.trim())}`,
+        `${API_ENDPOINTS.GET_SUBSCRIPTION}?username=${encodeURIComponent(username.trim())}`,
         {
           method: 'GET',
           headers: {
@@ -138,7 +139,7 @@ const Login = () => {
           <div className="flex justify-center mb-4">
             <a href="/" className="transition-transform hover:scale-105">
               <img 
-                src="https://cdn.poehali.dev/files/299c507f-f10f-4048-a927-9fa71def332e.jpg" 
+                src={CDN_ASSETS.LOGO} 
                 alt="Speed VPN" 
                 className="w-20 h-20 rounded-full object-cover border-2 border-primary"
               />

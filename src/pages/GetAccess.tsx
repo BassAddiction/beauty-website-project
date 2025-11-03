@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Icon from "@/components/ui/icon";
+import API_ENDPOINTS, { CDN_ASSETS } from '@/config/api';
 
 interface Payment {
   payment_id: string;
@@ -44,7 +45,7 @@ const GetAccess = () => {
 
     try {
       const response = await fetch(
-        `https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0?username=${encodeURIComponent(username)}`,
+        `${API_ENDPOINTS.GET_SUBSCRIPTION}?username=${encodeURIComponent(username)}`,
         {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' }
@@ -78,7 +79,7 @@ const GetAccess = () => {
           <div className="flex justify-center mb-4">
             <a href="/" className="transition-transform hover:scale-105">
               <img 
-                src="https://cdn.poehali.dev/files/299c507f-f10f-4048-a927-9fa71def332e.jpg" 
+                src={CDN_ASSETS.LOGO} 
                 alt="Speed VPN" 
                 className="w-16 h-16 rounded-full object-cover border-2 border-primary"
               />

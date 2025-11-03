@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
+import { CDN_ASSETS } from '@/config/api';
 
 const Terms = () => {
   return (
@@ -8,7 +9,7 @@ const Terms = () => {
       <header className="border-b border-border">
         <div className="container mx-auto max-w-6xl px-4 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <img src="https://cdn.poehali.dev/files/3a0045b1-8f62-461c-946f-ea67286d8040.png" alt="Speed VPN" className="w-8 h-8 rounded-lg" />
+            <img src={CDN_ASSETS.CLIENT_ICONS.WINDOWS} alt="Speed VPN" className="w-8 h-8 rounded-lg" />
             <span className="text-xl font-bold">SPEED VPN</span>
           </Link>
           <Link to="/">

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import Icon from "@/components/ui/icon";
+import API_ENDPOINTS from '@/config/api';
 
 interface TrackingCodesTabProps {
   adminPassword: string;
@@ -14,8 +15,6 @@ export const TrackingCodesTab = ({ adminPassword }: TrackingCodesTabProps) => {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
 
-  const API_URL = 'https://functions.poehali.dev/7a6acadf-d332-41e0-a309-e41e647fedae';
-
   useEffect(() => {
     loadCodes();
   }, []);
@@ -23,7 +22,7 @@ export const TrackingCodesTab = ({ adminPassword }: TrackingCodesTabProps) => {
   const loadCodes = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}?admin_password=${encodeURIComponent(adminPassword)}`);
+      const response = await fetch(`${API_ENDPOINTS.TRACKING_CODES}?admin_password=${encodeURIComponent(adminPassword)}`);
       const data = await response.json();
       
       if (data.success) {
@@ -41,7 +40,7 @@ export const TrackingCodesTab = ({ adminPassword }: TrackingCodesTabProps) => {
     setSaving(true);
     setMessage('');
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetch(API_ENDPOINTS.TRACKING_CODES, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

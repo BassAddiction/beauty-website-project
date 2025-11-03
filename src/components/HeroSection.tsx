@@ -3,6 +3,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/ca
 import Icon from "@/components/ui/icon";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useParallax } from "@/hooks/useParallax";
+import { CDN_ASSETS } from '@/config/api';
 
 const HeroSection = () => {
   const offsetY = useParallax();
@@ -13,7 +14,7 @@ const HeroSection = () => {
         <div className="text-center mb-12 animate-fade-in">
           <div className="md:hidden mb-6 flex justify-center">
             <img 
-              src="https://cdn.poehali.dev/files/299c507f-f10f-4048-a927-9fa71def332e.jpg" 
+              src={CDN_ASSETS.LOGO} 
               alt="Speed VPN" 
               className="w-24 h-24 rounded-full object-cover border-2 border-primary logo-animated"
             />

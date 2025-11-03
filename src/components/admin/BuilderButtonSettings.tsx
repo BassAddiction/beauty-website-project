@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
 import { useToast } from "@/hooks/use-toast";
+import API_ENDPOINTS from '@/config/api';
 
 interface BuilderButtonSettingsProps {
   adminPassword: string;
@@ -27,12 +28,10 @@ const BuilderButtonSettings = ({ adminPassword }: BuilderButtonSettingsProps) =>
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const API_URL = 'https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0';
-
   const loadSettings = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}?action=get_builder_settings`, {
+      const response = await fetch(`${API_ENDPOINTS.GET_SUBSCRIPTION}?action=get_builder_settings`, {
         headers: {
           'X-Admin-Password': adminPassword
         }
@@ -59,7 +58,7 @@ const BuilderButtonSettings = ({ adminPassword }: BuilderButtonSettingsProps) =>
   const handleSave = async () => {
     setSaving(true);
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetch(API_ENDPOINTS.GET_SUBSCRIPTION, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

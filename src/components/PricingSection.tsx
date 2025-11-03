@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import PaymentMethodDialog from "@/components/PaymentMethodDialog";
+import API_ENDPOINTS from '@/config/api';
 
 interface Plan {
   id?: number;
@@ -40,8 +41,8 @@ const PricingSection = () => {
     const loadData = async () => {
       try {
         const [plansResponse, settingsResponse] = await Promise.all([
-          fetch('https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0?action=get_plans'),
-          fetch('https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0?action=get_builder_settings')
+          fetch(`${API_ENDPOINTS.GET_SUBSCRIPTION}?action=get_plans`),
+          fetch(`${API_ENDPOINTS.GET_SUBSCRIPTION}?action=get_builder_settings`)
         ]);
         
         const plansData = await plansResponse.json();
@@ -116,7 +117,7 @@ const PricingSection = () => {
         }
       };
       
-      const res = await fetch('https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c', {
+      const res = await fetch(API_ENDPOINTS.PAYMENT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(webhook)
@@ -185,7 +186,7 @@ const PricingSection = () => {
       console.log('💳 Starting payment with referral:', referralCode);
       
       const paymentResponse = await fetch(
-        'https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c',
+        API_ENDPOINTS.PAYMENT,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

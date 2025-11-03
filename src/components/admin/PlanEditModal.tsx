@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import Icon from "@/components/ui/icon";
 import { Plan } from "./PlansTab";
 import { useState, useEffect } from 'react';
+import API_ENDPOINTS from '@/config/api';
 
 interface Location {
   location_id: number;
@@ -23,13 +24,12 @@ interface PlanEditModalProps {
 
 export const PlanEditModal = ({ plan, onChange, onSave, onClose }: PlanEditModalProps) => {
   const [locations, setLocations] = useState<Location[]>([]);
-  const LOCATIONS_API = 'https://functions.poehali.dev/3271c5a0-f0f4-42e8-b230-c35b772c0024';
   const adminPassword = localStorage.getItem('admin_password') || '';
 
   useEffect(() => {
     const loadLocations = async () => {
       try {
-        const response = await fetch(`${LOCATIONS_API}?admin=true`, {
+        const response = await fetch(`${API_ENDPOINTS.LOCATIONS}?admin=true`, {
           headers: { 'X-Admin-Password': adminPassword }
         });
         console.log('Locations response status:', response.status);

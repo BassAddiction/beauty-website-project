@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
+import API_ENDPOINTS from '@/config/api';
 
-const AUTH_CHECK_URL = 'https://functions.poehali.dev/833bc0dd-ad44-4b38-b1ac-2ff2f5b265e5';
+const AUTH_CHECK_URL = API_ENDPOINTS.AUTH_CHECK;
 
 export const useAdminAuth = (API_URL: string) => {
   const [password, setPassword] = useState('');

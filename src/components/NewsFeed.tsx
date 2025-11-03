@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Card } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
+import API_ENDPOINTS from '@/config/api';
 
 interface News {
   news_id: number;
@@ -17,7 +18,7 @@ export const NewsFeed = () => {
   useEffect(() => {
     const loadNews = async () => {
       try {
-        const response = await fetch('https://functions.poehali.dev/3b70872b-40db-4e8a-81e6-228e407e152b?public=true');
+        const response = await fetch(`${API_ENDPOINTS.NEWS}?public=true`);
         
         if (response.ok) {
           const data = await response.json();

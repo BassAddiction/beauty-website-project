@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 import { useState, useEffect } from 'react';
+import API_ENDPOINTS from '@/config/api';
 
 interface PricingCardProps {
   paymentLoading: boolean;
@@ -24,7 +25,7 @@ export const PricingCard = ({ paymentLoading, onPayment }: PricingCardProps) => 
   useEffect(() => {
     const loadPlans = async () => {
       try {
-        const response = await fetch('https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0?action=get_plans');
+        const response = await fetch(`${API_ENDPOINTS.GET_SUBSCRIPTION}?action=get_plans`);
         const data = await response.json();
         
         console.log('Dashboard plans API response:', data);

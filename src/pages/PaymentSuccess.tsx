@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 import { useToast } from "@/hooks/use-toast";
+import API_ENDPOINTS, { CDN_ASSETS } from '@/config/api';
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ const PaymentSuccess = () => {
       try {
         const { username: refUsername, referral_code } = JSON.parse(pendingReferral);
         
-        fetch('https://functions.poehali.dev/358b9593-075d-4262-9190-984599107ece', {
+        fetch(API_ENDPOINTS.ACTIVATE_REFERRAL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -63,7 +64,7 @@ const PaymentSuccess = () => {
           <div className="flex justify-center mb-4">
             <a href="/" className="transition-transform hover:scale-105">
               <img 
-                src="https://cdn.poehali.dev/files/299c507f-f10f-4048-a927-9fa71def332e.jpg" 
+                src={CDN_ASSETS.LOGO} 
                 alt="Speed VPN" 
                 className="w-16 h-16 rounded-full object-cover border-2 border-primary"
               />

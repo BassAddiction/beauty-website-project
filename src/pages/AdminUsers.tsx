@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import Icon from "@/components/ui/icon";
+import API_ENDPOINTS from '@/config/api';
 
 interface User {
   username: string;
@@ -29,8 +30,6 @@ const AdminUsers = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
-  const ADMIN_USERS_URL = 'https://functions.poehali.dev/e99b698b-6c6b-46cc-9206-1d6dac7e8575';
-
   const handleLogin = async () => {
     if (!password) {
       toast({
@@ -43,7 +42,7 @@ const AdminUsers = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(ADMIN_USERS_URL, {
+      const response = await fetch(API_ENDPOINTS.ADMIN_USERS, {
         method: 'GET',
         headers: {
           'X-Admin-Key': password
@@ -90,7 +89,7 @@ const AdminUsers = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(ADMIN_USERS_URL, {
+      const response = await fetch(API_ENDPOINTS.ADMIN_USERS, {
         method: 'GET',
         headers: {
           'X-Admin-Key': savedKey
@@ -137,7 +136,7 @@ const AdminUsers = () => {
 
     setDeletingUser(username);
     try {
-      const response = await fetch(`${ADMIN_USERS_URL}?username=${encodeURIComponent(username)}`, {
+      const response = await fetch(`${API_ENDPOINTS.ADMIN_USERS}?username=${encodeURIComponent(username)}`, {
         method: 'DELETE',
         headers: {
           'X-Admin-Key': savedKey
@@ -218,7 +217,7 @@ const AdminUsers = () => {
 
     for (const username of selectedUsers) {
       try {
-        const response = await fetch(`${ADMIN_USERS_URL}?username=${encodeURIComponent(username)}`, {
+        const response = await fetch(`${API_ENDPOINTS.ADMIN_USERS}?username=${encodeURIComponent(username)}`, {
           method: 'DELETE',
           headers: {
             'X-Admin-Key': savedKey

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
+import API_ENDPOINTS from '@/config/api';
 
 interface ReferralData {
   referral_code: string;
@@ -28,7 +29,7 @@ export const ReferralCard = ({ username }: ReferralCardProps) => {
   const fetchReferralData = async () => {
     try {
       const response = await fetch(
-        `https://functions.poehali.dev/c2ba3181-8d0f-4bb5-b0fb-06f7770e8037?username=${username}`
+        `${API_ENDPOINTS.REFERRAL}?username=${username}`
       );
       const data = await response.json();
       setReferralData(data);

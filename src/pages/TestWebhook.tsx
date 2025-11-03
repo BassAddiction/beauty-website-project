@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import API_ENDPOINTS from '@/config/api';
 
 const TestWebhook = () => {
   const { toast } = useToast();
@@ -38,7 +39,7 @@ const TestWebhook = () => {
       
       addLog('Отправляю webhook...');
       
-      const res = await fetch('https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c', {
+      const res = await fetch(API_ENDPOINTS.PAYMENT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(webhook)

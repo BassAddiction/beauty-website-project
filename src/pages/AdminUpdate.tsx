@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
+import API_ENDPOINTS from '@/config/api';
 
 interface TestResult {
   test: string;
@@ -23,7 +24,7 @@ const AdminUpdate = () => {
   const handleGetInbounds = async () => {
     try {
       const response = await fetch(
-        'https://functions.poehali.dev/4e61ec57-0f83-4c68-83fb-8b3049f711ab?action=inbounds'
+        `${API_ENDPOINTS.REMNAWAVE}?action=inbounds`
       );
       const data = await response.json();
       setInbounds(data);
@@ -40,7 +41,7 @@ const AdminUpdate = () => {
 
     try {
       const response = await fetch(
-        'https://functions.poehali.dev/058e87bb-5d15-4a90-8f78-2ab58eeaf5c8',
+        API_ENDPOINTS.UPDATE_ALL_USERS,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' }

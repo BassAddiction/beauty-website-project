@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Icon from "@/components/ui/icon";
+import API_ENDPOINTS from '@/config/api';
 
 interface Receipt {
   id: number;
@@ -33,8 +34,6 @@ interface ReceiptsTabProps {
   password: string;
 }
 
-const RECEIPTS_API = 'https://functions.poehali.dev/2eb021b7-8d70-47e2-b4ca-6e113a73d436';
-
 export const ReceiptsTab = ({ password }: ReceiptsTabProps) => {
   const [receipts, setReceipts] = useState<Receipt[]>([]);
   const [loading, setLoading] = useState(false);
@@ -51,7 +50,7 @@ export const ReceiptsTab = ({ password }: ReceiptsTabProps) => {
   const loadReceipts = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${RECEIPTS_API}?limit=100&offset=0`, {
+      const response = await fetch(`${API_ENDPOINTS.GET_RECEIPTS}?limit=100&offset=0`, {
         headers: {
           'X-Admin-Token': password
         }

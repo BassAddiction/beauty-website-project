@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import Icon from "@/components/ui/icon";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from 'react-router-dom';
+import API_ENDPOINTS from '@/config/api';
 
 interface Location {
   location_id: number;
@@ -29,8 +30,6 @@ const SubscriptionBuilder = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const LOCATIONS_API = 'https://functions.poehali.dev/3271c5a0-f0f4-42e8-b230-c35b772c0024';
-
   useEffect(() => {
     loadLocations();
   }, []);
@@ -38,7 +37,7 @@ const SubscriptionBuilder = () => {
   const loadLocations = async () => {
     setLoading(true);
     try {
-      const response = await fetch(LOCATIONS_API);
+      const response = await fetch(API_ENDPOINTS.LOCATIONS);
       if (response.ok) {
         const data = await response.json();
         setLocations(data.locations || []);

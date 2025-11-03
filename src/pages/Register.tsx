@@ -7,6 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import Icon from "@/components/ui/icon";
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import PaymentMethodDialog from '@/components/PaymentMethodDialog';
+import API_ENDPOINTS, { CDN_ASSETS } from '@/config/api';
 
 interface Plan {
   id: number;
@@ -32,8 +33,6 @@ const Register = () => {
   const [showPaymentMethodDialog, setShowPaymentMethodDialog] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'sbp' | 'sberpay' | 'tpay' | null>(null);
   const [referralCode, setReferralCode] = useState<string>('');
-  
-  const AUTH_CHECK_URL = 'https://functions.poehali.dev/833bc0dd-ad44-4b38-b1ac-2ff2f5b265e5';
 
   useEffect(() => {
     // Save referral code from URL - check both direct param and localStorage
@@ -53,8 +52,8 @@ const Register = () => {
     const fetchData = async () => {
       try {
         const [plansResponse, settingsResponse] = await Promise.all([
-          fetch('https://functions.poehali.dev/fbbbfbaf-a8c7-4eec-8f61-5976ed535592'),
-          fetch('https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0?action=get_builder_settings')
+          fetch(API_ENDPOINTS.PLANS),
+          fetch(`${API_ENDPOINTS.GET_SUBSCRIPTION}?action=get_builder_settings`)
         ]);
         
         const plansData = await plansResponse.json();
@@ -103,7 +102,7 @@ const Register = () => {
 
     // Проверяем, не заблокирован ли IP для пользовательской регистрации
     try {
-      const checkResponse = await fetch(AUTH_CHECK_URL, {
+      const checkResponse = await fetch(API_ENDPOINTS.AUTH_CHECK, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'check', login_type: 'user' })
@@ -135,7 +134,7 @@ const Register = () => {
       console.log('🎁 Sending referral code to payment:', savedRefCode);
       
       const paymentResponse = await fetch(
-        'https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c',
+        API_ENDPOINTS.PAYMENT,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -196,7 +195,7 @@ const Register = () => {
         <div className="text-center mb-8">
           <a href="/" className="inline-block transition-transform hover:scale-105 mb-4">
             <img 
-              src="https://cdn.poehali.dev/files/299c507f-f10f-4048-a927-9fa71def332e.jpg" 
+              src={CDN_ASSETS.LOGO} 
               alt="Speed VPN" 
               className="w-20 h-20 rounded-full object-cover border-2 border-primary mx-auto"
             />

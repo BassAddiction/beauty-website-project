@@ -12,6 +12,7 @@ import { PricingCard } from '@/components/dashboard/PricingCard';
 import { PaymentHistory } from '@/components/dashboard/PaymentHistory';
 import { ReferralCard } from '@/components/dashboard/ReferralCard';
 import PaymentMethodDialog from '@/components/PaymentMethodDialog';
+import API_ENDPOINTS from '@/config/api';
 
 interface UserData {
   username: string;
@@ -57,7 +58,7 @@ const Dashboard = () => {
 
   const fetchBuilderSettings = async () => {
     try {
-      const response = await fetch('https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0?action=get_builder_settings');
+      const response = await fetch(`${API_ENDPOINTS.GET_SUBSCRIPTION}?action=get_builder_settings`);
       const data = await response.json();
       setShowReferralBlock(data.settings?.show_referral_block || false);
     } catch (error) {
@@ -70,7 +71,7 @@ const Dashboard = () => {
       setLoading(true);
       
       const response = await fetch(
-        `https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0?username=${username}`
+        `${API_ENDPOINTS.GET_SUBSCRIPTION}?username=${username}`
       );
       
       if (!response.ok) {
@@ -145,7 +146,7 @@ const Dashboard = () => {
     setPaymentLoading(true);
     
     try {
-      const response = await fetch('https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c', {
+      const response = await fetch(API_ENDPOINTS.PAYMENT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

@@ -19,25 +19,21 @@ import { usePlansManagement } from "@/components/admin/usePlansManagement";
 import { useLocationsManagement } from "@/components/admin/useLocationsManagement";
 import { useClientsManagement } from "@/components/admin/useClientsManagement";
 import { useNewsManagement } from "@/components/admin/useNewsManagement";
+import API_ENDPOINTS from '@/config/api';
 
 const Admin = () => {
   const [activeTab, setActiveTab] = useState<'plans' | 'clients' | 'users' | 'locations' | 'settings' | 'receipts' | 'news' | 'tracking' | 'project'>('plans');
 
-  const API_URL = 'https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0';
-  const LOCATIONS_API = 'https://functions.poehali.dev/3271c5a0-f0f4-42e8-b230-c35b772c0024';
-  const SYNC_LOCATIONS_API = 'https://functions.poehali.dev/a93c29cf-6f89-4fe3-a7e6-717e7d5a8112';
-  const NEWS_API = 'https://functions.poehali.dev/3b70872b-40db-4e8a-81e6-228e407e152b';
-
-  const auth = useAdminAuth(API_URL);
-  const plansManagement = usePlansManagement(API_URL, auth.password, async () => {
+  const auth = useAdminAuth(API_ENDPOINTS.GET_SUBSCRIPTION);
+  const plansManagement = usePlansManagement(API_ENDPOINTS.GET_SUBSCRIPTION, auth.password, async () => {
     const result = await auth.handleLogin(auth.password);
     if (result.success) {
       plansManagement.setPlans(result.plans);
     }
   });
-  const locationsManagement = useLocationsManagement(LOCATIONS_API, SYNC_LOCATIONS_API, auth.password);
-  const clientsManagement = useClientsManagement(API_URL, auth.password);
-  const newsManagement = useNewsManagement(NEWS_API, auth.password);
+  const locationsManagement = useLocationsManagement(API_ENDPOINTS.LOCATIONS, API_ENDPOINTS.SYNC_LOCATIONS, auth.password);
+  const clientsManagement = useClientsManagement(API_ENDPOINTS.GET_SUBSCRIPTION, auth.password);
+  const newsManagement = useNewsManagement(API_ENDPOINTS.NEWS, auth.password);
 
   useEffect(() => {
     const loadInitialPlans = async () => {
