@@ -12,7 +12,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     '''
     method: str = event.get('httpMethod', 'GET')
     headers_data = event.get('headers', {})
-    admin_password = headers_data.get('x-admin-password', '')
+    admin_password = headers_data.get('x-admin-password', '') or headers_data.get('X-Admin-Password', '')
     
     cors_headers = {
         'Access-Control-Allow-Origin': '*',
@@ -30,6 +30,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         }
     
     expected_password = os.environ.get('ADMIN_PASSWORD', '')
+    print(f'🔐 Проверка пароля: получен={bool(admin_password)}, ожидается={bool(expected_password)}, headers={list(headers_data.keys())}')
+    
     if admin_password != expected_password:
         return {
             'statusCode': 401,
