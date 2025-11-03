@@ -2,8 +2,8 @@ import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 
 interface AdminTabsProps {
-  activeTab: 'plans' | 'clients' | 'users' | 'locations' | 'settings' | 'receipts' | 'news' | 'tracking';
-  setActiveTab: (tab: 'plans' | 'clients' | 'users' | 'locations' | 'settings' | 'receipts' | 'news' | 'tracking') => void;
+  activeTab: 'plans' | 'clients' | 'users' | 'locations' | 'settings' | 'receipts' | 'news' | 'tracking' | 'project';
+  setActiveTab: (tab: 'plans' | 'clients' | 'users' | 'locations' | 'settings' | 'receipts' | 'news' | 'tracking' | 'project') => void;
   plansCount: number;
   clientsCount: number;
   locationsCount: number;
@@ -80,6 +80,13 @@ export const AdminTabs = ({ activeTab, setActiveTab, plansCount, clientsCount, l
       >
         <Icon name="Settings" className="w-4 h-4 mr-2" />
         Настройки
+      </Button>
+      <Button
+        variant={activeTab === 'project' ? 'default' : 'outline'}
+        onClick={() => setActiveTab('project')}
+      >
+        <Icon name="Cog" className="w-4 h-4 mr-2" />
+        Проект
       </Button>
     </div>
   );
