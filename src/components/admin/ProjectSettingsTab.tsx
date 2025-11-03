@@ -51,6 +51,7 @@ export function ProjectSettingsTab({ adminPassword }: ProjectSettingsTabProps) {
 
   const loadSettings = async () => {
     setLoading(true);
+    console.log('🔧 Загружаю настройки проекта...', { api: SETTINGS_API, password: adminPassword ? 'есть' : 'нет' });
     try {
       const response = await fetch(SETTINGS_API, {
         headers: {
@@ -58,12 +59,18 @@ export function ProjectSettingsTab({ adminPassword }: ProjectSettingsTabProps) {
         }
       });
       
+      console.log('📡 Ответ сервера:', response.status, response.statusText);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('✅ Настройки загружены:', data);
         setSettings(data);
+      } else {
+        const errorText = await response.text();
+        console.error('❌ Ошибка от сервера:', response.status, errorText);
       }
     } catch (error) {
-      console.error('Ошибка загрузки настроек:', error);
+      console.error('❌ Ошибка загрузки настроек:', error);
     } finally {
       setLoading(false);
     }
