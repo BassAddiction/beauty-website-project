@@ -150,11 +150,14 @@ services:
       # Собранный фронтенд (результат npm run build)
       - ./dist:/usr/share/nginx/html:ro
       
-      # Конфигурация nginx (настройте для вашего домена)
+      # Конфигурация nginx
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       
-      # SSL сертификаты (положите сюда .crt и .key файлы)
-      - ./nginx/ssl:/etc/nginx/ssl:ro
+      # SSL сертификаты из Let's Encrypt (Certbot)
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      
+      # Папка для ACME challenge (Certbot)
+      - /var/www/certbot:/var/www/certbot:ro
       
       # Логи nginx сохраняются в volume
       - nginx_logs:/var/log/nginx
