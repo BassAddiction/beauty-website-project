@@ -1,0 +1,15 @@
+# Ensure proper encoding for all text files
+* text=auto
+
+# Force UTF-8 for environment files
+.env.example text eol=lf encoding=UTF-8
+.env text eol=lf encoding=UTF-8
+
+# Force UTF-8 for Docker Compose
+docker-compose.yml text eol=lf encoding=UTF-8
+
+# Force UTF-8 for documentation
+*.md text eol=lf encoding=UTF-8
+
+# Force LF line endings for shell scripts
+*.sh text eol=lf
