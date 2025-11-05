@@ -2,42 +2,42 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://functions.poehali.dev';
 const CDN_BASE = import.meta.env.VITE_CDN_BASE_URL || 'https://cdn.poehali.dev';
 
-// Маппинг функций (соответствует backend/func2url.json)
+// Маппинг функций (соответствует backend API)
 export const API_ENDPOINTS = {
   // Auth & Security
-  AUTH_CHECK: `${API_BASE}/833bc0dd-ad44-4b38-b1ac-2ff2f5b265e5`,
+  AUTH_CHECK: `${API_BASE}/api/auth-check`,
   
   // User Management
-  GET_SUBSCRIPTION: `${API_BASE}/c56efe3d-0219-4eab-a894-5d98f0549ef0`,
-  ADMIN_USERS: `${API_BASE}/e99b698b-6c6b-46cc-9206-1d6dac7e8575`,
-  UPDATE_ALL_USERS: `${API_BASE}/058e87bb-5d15-4a90-8f78-2ab58eeaf5c8`,
+  GET_SUBSCRIPTION: `${API_BASE}/api/get-subscription`,
+  ADMIN_USERS: `${API_BASE}/api/admin-users`,
+  UPDATE_ALL_USERS: `${API_BASE}/api/update-all-users`,
   
   // Payment & Plans
-  PAYMENT: `${API_BASE}/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c`,
-  PLANS: `${API_BASE}/fbbbfbaf-a8c7-4eec-8f61-5976ed535592`,
-  GET_RECEIPTS: `${API_BASE}/2eb021b7-8d70-47e2-b4ca-6e113a73d436`,
+  PAYMENT: `${API_BASE}/api/payment`,
+  PLANS: `${API_BASE}/api/plans`,
+  GET_RECEIPTS: `${API_BASE}/api/get-receipts`,
   
   // VPN Management
-  REMNAWAVE: `${API_BASE}/4e61ec57-0f83-4c68-83fb-8b3049f711ab`,
-  LOCATIONS: `${API_BASE}/3271c5a0-f0f4-42e8-b230-c35b772c0024`,
-  SYNC_LOCATIONS: `${API_BASE}/a93c29cf-6f89-4fe3-a7e6-717e7d5a8112`,
+  REMNAWAVE: `${API_BASE}/api/remnawave`,
+  LOCATIONS: `${API_BASE}/api/locations`,
+  SYNC_LOCATIONS: `${API_BASE}/api/sync-locations`,
   
   // Referral System
-  REFERRAL: `${API_BASE}/c2ba3181-8d0f-4bb5-b0fb-06f7770e8037`,
-  ACTIVATE_REFERRAL: `${API_BASE}/358b9593-075d-4262-9190-984599107ece`,
-  MANUAL_EXTEND_REFERRER: `${API_BASE}/538e5f5a-c872-4fdb-a6fe-69bd507b9b1b`,
+  REFERRAL: `${API_BASE}/api/referral`,
+  ACTIVATE_REFERRAL: `${API_BASE}/api/activate-referral`,
+  MANUAL_EXTEND_REFERRER: `${API_BASE}/api/manual-extend-referrer`,
   
   // Content & Settings
-  NEWS: `${API_BASE}/3b70872b-40db-4e8a-81e6-228e407e152b`,
-  SETTINGS_MANAGER: `${API_BASE}/5375b8f5-5979-4f46-b106-9c9ca07e2da6`,
-  TRACKING_CODES: `${API_BASE}/7a6acadf-d332-41e0-a309-e41e647fedae`,
+  NEWS: `${API_BASE}/api/news`,
+  SETTINGS_MANAGER: `${API_BASE}/api/settings-manager`,
+  TRACKING_CODES: `${API_BASE}/api/tracking-codes-api`,
   
   // Communication
-  SEND_EMAIL: `${API_BASE}/b7df3121-2214-4658-b0d1-8af63a4ce471`,
+  SEND_EMAIL: `${API_BASE}/api/send-email`,
   
   // Utilities
-  FIX_12MES: `${API_BASE}/545e1c84-e3bc-47ab-9c56-55ffa01ffca5`,
-  FIX_MISTER: `${API_BASE}/0e777ae2-2f60-42e6-a96c-aa949fb114f3`,
+  FIX_12MES: `${API_BASE}/api/fix-12mes`,
+  FIX_MISTER: `${API_BASE}/api/fix-mister`,
 } as const;
 
 // CDN Assets
