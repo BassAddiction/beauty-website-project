@@ -145,7 +145,7 @@
     <script>
       (async function loadTrackingCodes() {
         try {
-          const apiUrl = import.meta.env.VITE_API_BASE_URL || 'https://functions.poehali.dev';
+          const apiUrl = 'https://functions.poehali.dev';
           const response = await fetch(`${apiUrl}/7a6acadf-d332-41e0-a309-e41e647fedae?admin_password=none`);
           const data = await response.json();
           if (data.success && data.head_code) {
@@ -193,7 +193,7 @@
 <script>
   (async function loadBodyTrackingCodes() {
     try {
-      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'https://functions.poehali.dev';
+      const apiUrl = 'https://functions.poehali.dev';
       const response = await fetch(`${apiUrl}/7a6acadf-d332-41e0-a309-e41e647fedae?admin_password=none`);
       const data = await response.json();
       if (data.success && data.body_code) {
