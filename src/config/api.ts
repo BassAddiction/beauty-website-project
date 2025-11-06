@@ -1,6 +1,6 @@
 // API Configuration - централизованное управление URL
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://functions.poehali.dev';
-const CDN_BASE = import.meta.env.VITE_CDN_BASE_URL || 'https://cdn.poehali.dev';
+const API_BASE = 'https://functions.poehali.dev';
+const CDN_BASE = 'https://cdn.poehali.dev';
 
 // Маппинг функций (соответствует backend/func2url.json)
 export const API_ENDPOINTS = {
