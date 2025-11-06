@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import Icon from '@/components/ui/icon';
-import { Separator } from '@/components/ui/separator';
 import API_ENDPOINTS from '@/config/api';
+import { DatabaseSettingsCard } from './settings/DatabaseSettingsCard';
+import { YookassaSettingsCard } from './settings/YookassaSettingsCard';
+import { RemnawaveSettingsCard } from './settings/RemnawaveSettingsCard';
+import { EmailSettingsCard } from './settings/EmailSettingsCard';
 
 interface ProjectSettingsTabProps {
   adminPassword: string;
@@ -203,299 +204,63 @@ export function ProjectSettingsTab({ adminPassword }: ProjectSettingsTabProps) {
         </div>
       </div>
 
-      <Card className="bg-zinc-900 border-zinc-800">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <Icon name="Database" size={24} />
-            База данных PostgreSQL
-          </CardTitle>
-          <CardDescription>
-            Подключение к базе данных проекта
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label className="text-gray-300">DATABASE_URL</Label>
-            <div className="flex gap-2 mt-2">
-              <Input
-                type={editMode ? "text" : "password"}
-                value={editMode && editedValues['DATABASE_URL'] !== undefined ? editedValues['DATABASE_URL'] : settings.database.url}
-                onChange={(e) => handleEdit('DATABASE_URL', e.target.value)}
-                readOnly={!editMode}
-                className="bg-zinc-800 border-zinc-700 text-gray-300 font-mono text-sm"
-              />
-              {!editMode && (
-                <Button
-                  onClick={() => testConnection('database')}
-                  disabled={testing === 'database'}
-                  variant="outline"
-                  className="border-cyan-600 text-cyan-400 hover:bg-cyan-600/10"
-                >
-                  {testing === 'database' ? (
-                    <Icon name="Loader2" className="animate-spin" size={20} />
-                  ) : (
-                    <Icon name="TestTube" size={20} />
-                  )}
-                </Button>
-              )}
-            </div>
-          </div>
-          
-          {testResults.database && (
-            <div className={`p-3 rounded-lg border ${
-              testResults.database.success 
-                ? 'bg-green-500/10 border-green-500/50 text-green-400' 
-                : 'bg-red-500/10 border-red-500/50 text-red-400'
-            }`}>
-              <div className="flex items-start gap-2">
-                <Icon 
-                  name={testResults.database.success ? 'CheckCircle' : 'XCircle'} 
-                  size={20} 
-                  className="mt-0.5"
-                />
-                <div>
-                  <p className="font-medium">{testResults.database.message}</p>
-                  {testResults.database.version && (
-                    <p className="text-sm opacity-80 mt-1">{testResults.database.version}</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <DatabaseSettingsCard
+        databaseUrl={settings.database.url}
+        editMode={editMode}
+        editedValue={editedValues['DATABASE_URL']}
+        testing={testing === 'database'}
+        testResult={testResults.database}
+        onEdit={(value) => handleEdit('DATABASE_URL', value)}
+        onTest={() => testConnection('database')}
+      />
 
-      <Card className="bg-zinc-900 border-zinc-800">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <Icon name="CreditCard" size={24} />
-            ЮKassa (Платежи)
-          </CardTitle>
-          <CardDescription>
-            Настройки приёма платежей через ЮKassa
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label className="text-gray-300">Shop ID</Label>
-            <Input
-              type="text"
-              value={editMode && editedValues['YOOKASSA_SHOP_ID'] !== undefined ? editedValues['YOOKASSA_SHOP_ID'] : settings.yookassa.shop_id}
-              onChange={(e) => handleEdit('YOOKASSA_SHOP_ID', e.target.value)}
-              readOnly={!editMode}
-              className="bg-zinc-800 border-zinc-700 text-gray-300 font-mono text-sm mt-2"
-            />
-          </div>
-          
-          <div>
-            <Label className="text-gray-300">Secret Key</Label>
-            <div className="flex gap-2 mt-2">
-              <Input
-                type={editMode ? "text" : "password"}
-                value={editMode && editedValues['YOOKASSA_SECRET_KEY'] !== undefined ? editedValues['YOOKASSA_SECRET_KEY'] : settings.yookassa.secret_key_masked}
-                onChange={(e) => handleEdit('YOOKASSA_SECRET_KEY', e.target.value)}
-                readOnly={!editMode}
-                placeholder={editMode ? "Введите новый ключ или оставьте пустым" : ""}
-                className="bg-zinc-800 border-zinc-700 text-gray-300 font-mono text-sm"
-              />
-              {!editMode && (
-                <Button
-                  onClick={() => testConnection('yookassa')}
-                  disabled={testing === 'yookassa'}
-                  variant="outline"
-                  className="border-cyan-600 text-cyan-400 hover:bg-cyan-600/10"
-                >
-                  {testing === 'yookassa' ? (
-                    <Icon name="Loader2" className="animate-spin" size={20} />
-                  ) : (
-                    <Icon name="TestTube" size={20} />
-                  )}
-                </Button>
-              )}
-            </div>
-          </div>
-          
-          {testResults.yookassa && (
-            <div className={`p-3 rounded-lg border ${
-              testResults.yookassa.success 
-                ? 'bg-green-500/10 border-green-500/50 text-green-400' 
-                : 'bg-red-500/10 border-red-500/50 text-red-400'
-            }`}>
-              <div className="flex items-start gap-2">
-                <Icon 
-                  name={testResults.yookassa.success ? 'CheckCircle' : 'XCircle'} 
-                  size={20} 
-                  className="mt-0.5"
-                />
-                <div>
-                  <p className="font-medium">{testResults.yookassa.message}</p>
-                  {testResults.yookassa.shop_id && (
-                    <p className="text-sm opacity-80 mt-1">Shop ID: {testResults.yookassa.shop_id}</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <YookassaSettingsCard
+        shopId={settings.yookassa.shop_id}
+        secretKeyMasked={settings.yookassa.secret_key_masked}
+        editMode={editMode}
+        editedShopId={editedValues['YOOKASSA_SHOP_ID']}
+        editedSecretKey={editedValues['YOOKASSA_SECRET_KEY']}
+        testing={testing === 'yookassa'}
+        testResult={testResults.yookassa}
+        onEditShopId={(value) => handleEdit('YOOKASSA_SHOP_ID', value)}
+        onEditSecretKey={(value) => handleEdit('YOOKASSA_SECRET_KEY', value)}
+        onTest={() => testConnection('yookassa')}
+      />
 
-      <Card className="bg-zinc-900 border-zinc-800">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <Icon name="Shield" size={24} />
-            Remnawave (VPN Панель)
-          </CardTitle>
-          <CardDescription>
-            Подключение к панели управления VPN
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label className="text-gray-300">API URL</Label>
-            <Input
-              type="text"
-              value={editMode && editedValues['REMNAWAVE_API_URL'] !== undefined ? editedValues['REMNAWAVE_API_URL'] : settings.remnawave.api_url}
-              onChange={(e) => handleEdit('REMNAWAVE_API_URL', e.target.value)}
-              readOnly={!editMode}
-              className="bg-zinc-800 border-zinc-700 text-gray-300 font-mono text-sm mt-2"
-            />
-          </div>
-          
-          <div>
-            <Label className="text-gray-300">API Token</Label>
-            <div className="flex gap-2 mt-2">
-              <Input
-                type={editMode ? "text" : "password"}
-                value={editMode && editedValues['REMNAWAVE_API_TOKEN'] !== undefined ? editedValues['REMNAWAVE_API_TOKEN'] : settings.remnawave.api_token_masked}
-                onChange={(e) => handleEdit('REMNAWAVE_API_TOKEN', e.target.value)}
-                readOnly={!editMode}
-                placeholder={editMode ? "Введите новый токен или оставьте пустым" : ""}
-                className="bg-zinc-800 border-zinc-700 text-gray-300 font-mono text-sm"
-              />
-              {!editMode && (
-                <Button
-                  onClick={() => testConnection('remnawave')}
-                  disabled={testing === 'remnawave'}
-                  variant="outline"
-                  className="border-cyan-600 text-cyan-400 hover:bg-cyan-600/10"
-                >
-                  {testing === 'remnawave' ? (
-                    <Icon name="Loader2" className="animate-spin" size={20} />
-                  ) : (
-                    <Icon name="TestTube" size={20} />
-                  )}
-                </Button>
-              )}
-            </div>
-          </div>
-          
-          <Separator className="bg-zinc-800" />
-          
-          <div>
-            <Label className="text-gray-300">Function URL</Label>
-            <Input
-              type="text"
-              value={editMode && editedValues['REMNAWAVE_FUNCTION_URL'] !== undefined ? editedValues['REMNAWAVE_FUNCTION_URL'] : settings.remnawave.function_url}
-              onChange={(e) => handleEdit('REMNAWAVE_FUNCTION_URL', e.target.value)}
-              readOnly={!editMode}
-              className="bg-zinc-800 border-zinc-700 text-gray-300 font-mono text-sm mt-2"
-            />
-          </div>
-          
-          <div>
-            <Label className="text-gray-300">Squad UUIDs</Label>
-            <Input
-              type="text"
-              value={editMode && editedValues['USER_SQUAD_UUIDS'] !== undefined ? editedValues['USER_SQUAD_UUIDS'] : settings.remnawave.squad_uuids}
-              onChange={(e) => handleEdit('USER_SQUAD_UUIDS', e.target.value)}
-              readOnly={!editMode}
-              className="bg-zinc-800 border-zinc-700 text-gray-300 font-mono text-sm mt-2"
-            />
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label className="text-gray-300">Лимит трафика (GB)</Label>
-              <Input
-                type="text"
-                value={editMode && editedValues['USER_TRAFFIC_LIMIT_GB'] !== undefined ? editedValues['USER_TRAFFIC_LIMIT_GB'] : settings.remnawave.traffic_limit_gb}
-                onChange={(e) => handleEdit('USER_TRAFFIC_LIMIT_GB', e.target.value)}
-                readOnly={!editMode}
-                className="bg-zinc-800 border-zinc-700 text-gray-300 font-mono text-sm mt-2"
-              />
-            </div>
-            <div>
-              <Label className="text-gray-300">Стратегия сброса</Label>
-              <Input
-                type="text"
-                value={editMode && editedValues['USER_TRAFFIC_STRATEGY'] !== undefined ? editedValues['USER_TRAFFIC_STRATEGY'] : settings.remnawave.traffic_strategy}
-                onChange={(e) => handleEdit('USER_TRAFFIC_STRATEGY', e.target.value)}
-                readOnly={!editMode}
-                className="bg-zinc-800 border-zinc-700 text-gray-300 font-mono text-sm mt-2"
-              />
-            </div>
-          </div>
-          
-          {testResults.remnawave && (
-            <div className={`p-3 rounded-lg border ${
-              testResults.remnawave.success 
-                ? 'bg-green-500/10 border-green-500/50 text-green-400' 
-                : 'bg-red-500/10 border-red-500/50 text-red-400'
-            }`}>
-              <div className="flex items-start gap-2">
-                <Icon 
-                  name={testResults.remnawave.success ? 'CheckCircle' : 'XCircle'} 
-                  size={20} 
-                  className="mt-0.5"
-                />
-                <div>
-                  <p className="font-medium">{testResults.remnawave.message}</p>
-                  {testResults.remnawave.api_url && (
-                    <p className="text-sm opacity-80 mt-1">{testResults.remnawave.api_url}</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <RemnawaveSettingsCard
+        apiUrl={settings.remnawave.api_url}
+        apiTokenMasked={settings.remnawave.api_token_masked}
+        functionUrl={settings.remnawave.function_url}
+        squadUuids={settings.remnawave.squad_uuids}
+        trafficLimitGb={settings.remnawave.traffic_limit_gb}
+        trafficStrategy={settings.remnawave.traffic_strategy}
+        editMode={editMode}
+        editedApiUrl={editedValues['REMNAWAVE_API_URL']}
+        editedApiToken={editedValues['REMNAWAVE_API_TOKEN']}
+        editedFunctionUrl={editedValues['REMNAWAVE_FUNCTION_URL']}
+        editedSquadUuids={editedValues['USER_SQUAD_UUIDS']}
+        editedTrafficLimit={editedValues['USER_TRAFFIC_LIMIT_GB']}
+        editedTrafficStrategy={editedValues['USER_TRAFFIC_STRATEGY']}
+        testing={testing === 'remnawave'}
+        testResult={testResults.remnawave}
+        onEditApiUrl={(value) => handleEdit('REMNAWAVE_API_URL', value)}
+        onEditApiToken={(value) => handleEdit('REMNAWAVE_API_TOKEN', value)}
+        onEditFunctionUrl={(value) => handleEdit('REMNAWAVE_FUNCTION_URL', value)}
+        onEditSquadUuids={(value) => handleEdit('USER_SQUAD_UUIDS', value)}
+        onEditTrafficLimit={(value) => handleEdit('USER_TRAFFIC_LIMIT_GB', value)}
+        onEditTrafficStrategy={(value) => handleEdit('USER_TRAFFIC_STRATEGY', value)}
+        onTest={() => testConnection('remnawave')}
+      />
 
-      <Card className="bg-zinc-900 border-zinc-800">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <Icon name="Mail" size={24} />
-            Email сервисы
-          </CardTitle>
-          <CardDescription>
-            Настройки отправки email уведомлений
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label className="text-gray-300">Resend API Key</Label>
-            <Input
-              type={editMode ? "text" : "password"}
-              value={editMode && editedValues['RESEND_API_KEY'] !== undefined ? editedValues['RESEND_API_KEY'] : settings.email.resend_api_key_masked}
-              onChange={(e) => handleEdit('RESEND_API_KEY', e.target.value)}
-              readOnly={!editMode}
-              placeholder={editMode ? "Введите новый ключ или оставьте пустым" : ""}
-              className="bg-zinc-800 border-zinc-700 text-gray-300 font-mono text-sm mt-2"
-            />
-          </div>
-          
-          <div>
-            <Label className="text-gray-300">Unisender API Key</Label>
-            <Input
-              type={editMode ? "text" : "password"}
-              value={editMode && editedValues['UNISENDER_API_KEY'] !== undefined ? editedValues['UNISENDER_API_KEY'] : settings.email.unisender_api_key_masked}
-              onChange={(e) => handleEdit('UNISENDER_API_KEY', e.target.value)}
-              readOnly={!editMode}
-              placeholder={editMode ? "Введите новый ключ или оставьте пустым" : ""}
-              className="bg-zinc-800 border-zinc-700 text-gray-300 font-mono text-sm mt-2"
-            />
-          </div>
-        </CardContent>
-      </Card>
+      <EmailSettingsCard
+        resendApiKeyMasked={settings.email.resend_api_key_masked}
+        unisenderApiKeyMasked={settings.email.unisender_api_key_masked}
+        editMode={editMode}
+        editedResendKey={editedValues['RESEND_API_KEY']}
+        editedUnisenderKey={editedValues['UNISENDER_API_KEY']}
+        onEditResendKey={(value) => handleEdit('RESEND_API_KEY', value)}
+        onEditUnisenderKey={(value) => handleEdit('UNISENDER_API_KEY', value)}
+      />
 
       {editMode && (
         <Card className="bg-gradient-to-br from-amber-900/20 to-orange-900/20 border-amber-700/30">
