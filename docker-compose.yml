@@ -150,14 +150,11 @@ services:
       # Собранный фронтенд (результат npm run build)
       - ./dist:/usr/share/nginx/html:ro
       
-      # Конфигурация nginx
+      # Конфигурация nginx (настройте для вашего домена)
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       
-      # SSL сертификаты из Let's Encrypt (Certbot)
-      - /etc/letsencrypt:/etc/letsencrypt:ro
-      
-      # Папка для ACME challenge (Certbot)
-      - /var/www/certbot:/var/www/certbot:ro
+      # SSL сертификаты (положите сюда .crt и .key файлы)
+      - ./nginx/ssl:/etc/nginx/ssl:ro
       
       # Логи nginx сохраняются в volume
       - nginx_logs:/var/log/nginx
@@ -200,35 +197,6 @@ services:
       # Запускается только с флагом --profile debug
       # Это сделано чтобы не тратить ресурсы в продакшене
       - debug
-
-  # ==========================================
-  # TELEGRAM BOT - Бот для продажи подписок
-  # ==========================================
-  # Telegram бот для продажи VPN подписок
-  # Использует ту же БД что и основной проект
-  
-  telegram-bot:
-    build:
-      context: ./telegram-bot
-      dockerfile: Dockerfile
-    container_name: speedvpn-telegram-bot
-    restart: unless-stopped
-    env_file:
-      - .env
-    environment:
-      # DATABASE_URL для подключения к postgres
-      DATABASE_URL: postgresql://${POSTGRES_USER:-speedvpn_user}:${POSTGRES_PASSWORD:-changeme}@postgres:5432/${POSTGRES_DB:-speedvpn_db}
-      
-      # TELEGRAM_BOT_TOKEN берется из .env файла
-      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
-      
-      # PAYMENT_PROVIDER_TOKEN для приема платежей
-      PAYMENT_PROVIDER_TOKEN: ${PAYMENT_PROVIDER_TOKEN}
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - speedvpn-network
 
 # ============================================
 # VOLUMES - Постоянное хранилище данных
