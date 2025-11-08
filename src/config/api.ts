@@ -34,6 +34,7 @@ export const API_ENDPOINTS = {
   
   // Communication
   SEND_EMAIL: `${API_BASE}/b7df3121-2214-4658-b0d1-8af63a4ce471`,
+  RESTORE_ACCESS: `${API_BASE}/e1fb7940-e783-4ca2-930a-c1f4504b0921`,
   
   // Utilities
   FIX_12MES: `${API_BASE}/545e1c84-e3bc-47ab-9c56-55ffa01ffca5`,
