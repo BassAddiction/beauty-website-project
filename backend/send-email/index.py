@@ -135,16 +135,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                     </a>
                                 </div>
                                 
-                                <div style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); padding: 25px; margin: 25px 0; border-radius: 10px; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.5); text-align: center; border: 2px solid #ef4444;">
-                                    <h3 style="color: #ffffff; font-size: 18px; margin: 0 0 15px 0; font-weight: 700;">
-                                        🔑 Ваша ссылка для подключения
-                                    </h3>
-                                    <p style="color: #fca5a5; font-size: 14px; margin: 0 0 15px 0;">
-                                        Скопируйте эту ссылку и вставьте в приложение:
-                                    </p>
-                                    <div style="background: #1a0000; padding: 15px; border-radius: 8px; border: 1px solid #7f1d1d; word-break: break-all; max-width: 100%; overflow: hidden;">
-                                        <code style="color: #fca5a5; font-size: 13px; font-family: 'Courier New', monospace;">{subscription_url}</code>
-                                    </div>
+                                <div style="text-align: center; margin: 25px 0;">
+                                    <a href="{subscription_url}" style="display: inline-block; background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.5); border: 1px solid #ef4444;">
+                                        ⚡ Быстрое подключение
+                                    </a>
                                 </div>
                                 
                                 <div style="background: linear-gradient(135deg, #1a0000 0%, #2a0000 100%); border: 2px solid #dc2626; padding: 25px; border-radius: 10px;">
@@ -153,7 +147,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                     </h3>
                                     <ol style="color: #fca5a5; font-size: 14px; line-height: 1.8; margin: 0; padding-left: 20px;">
                                         <li style="margin-bottom: 10px;">Войдите в личный кабинет и следуйте инструкции</li>
-                                        <li style="margin-bottom: 10px;">Перейдите по вышеуказанной ссылке и следуйте инструкции</li>
+                                        <li style="margin-bottom: 10px;">Нажмите кнопку "Быстрое подключение" и следуйте инструкции</li>
                                     </ol>
                                 </div>
                             </td>
@@ -198,7 +192,7 @@ Speed VPN - Подписка активирована!
 🔒 Не передавайте username третьим лицам!
 Это ваш персональный идентификатор.
 
-🔑 Ваша ссылка для подключения:
+⚡ Быстрое подключение:
 {subscription_url}
 
 🚀 Перейдите в личный кабинет для настройки:
@@ -206,7 +200,7 @@ https://speedvpn.io
 
 📖 Как подключиться:
 1. Войдите в личный кабинет и следуйте инструкции
-2. Перейдите по вышеуказанной ссылке и следуйте инструкции
+2. Нажмите кнопку "Быстрое подключение" и следуйте инструкции
 
 Нужна помощь? Telegram: @gospeedvpn
     '''
