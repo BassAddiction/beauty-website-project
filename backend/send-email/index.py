@@ -46,14 +46,15 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     body_data = json.loads(event.get('body', '{}'))
     email: str = body_data.get('email', '')
     subscription_url: str = body_data.get('subscription_url', '')
+    username: str = body_data.get('username', '')
     
-    if not email or not subscription_url:
+    if not email or not subscription_url or not username:
         return {
             'statusCode': 400,
             'headers': cors_headers,
             'body': json.dumps({
                 'error': 'Missing required fields',
-                'required': ['email', 'subscription_url']
+                'required': ['email', 'subscription_url', 'username']
             }),
             'isBase64Encoded': False
         }
@@ -92,8 +93,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         </tr>
                         
                         <tr>
-                            <td style="padding: 35px 30px 25px 30px; text-align: center;">
-                                <div style="display: inline-block; background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: white; padding: 14px 28px; border-radius: 8px; font-weight: 600; font-size: 15px; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.5); border: 1px solid #ef4444;">
+                            <td style="padding: 35px 30px 25px 30px;">
+                                <p style="color: #fca5a5; font-size: 18px; line-height: 1.7; margin: 0 0 15px 0; text-align: center;">
+                                    Привет, <strong style="color: #ef4444;">{username}</strong>! 👋
+                                </p>
+                                <div style="display: inline-block; background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: white; padding: 14px 28px; border-radius: 8px; font-weight: 600; font-size: 15px; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.5); border: 1px solid #ef4444; width: 100%; text-align: center;">
                                     ✅ Оплата получена — VPN готов к работе
                                 </div>
                             </td>
@@ -102,56 +106,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         <tr>
                             <td style="padding: 0 30px 35px 30px;">
                                 <p style="color: #fca5a5; font-size: 16px; line-height: 1.7; margin: 0 0 25px 0; text-align: center;">
-                                    Спасибо за покупку! Ваш VPN уже работает.<br>Выберите приложение для вашего устройства:
+                                    Спасибо за покупку! Ваш VPN уже работает.
                                 </p>
                                 
-                                <div style="background: linear-gradient(135deg, #1a0000 0%, #2a0000 100%); border: 2px solid #dc2626; padding: 25px; margin-bottom: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);">
-                                    <h3 style="color: #ef4444; font-size: 20px; margin: 0 0 18px 0; font-weight: 700; text-shadow: 0 0 10px rgba(220, 38, 38, 0.5);">
-                                        📱 Happ для Android
-                                    </h3>
-                                    <p style="color: #fca5a5; font-size: 14px; margin: 0 0 15px 0;">Рекомендуемое приложение для Android</p>
-                                    <a href="https://play.google.com/store/apps/details?id=com.happ.android" style="display: inline-block; background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: 600; font-size: 15px; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.5); border: 1px solid #ef4444;">
-                                        📥 Скачать Happ для Android
-                                    </a>
-                                </div>
-                                
-                                <div style="background: linear-gradient(135deg, #1a0000 0%, #2a0000 100%); border: 2px solid #dc2626; padding: 25px; margin-bottom: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);">
-                                    <h3 style="color: #ef4444; font-size: 20px; margin: 0 0 18px 0; font-weight: 700; text-shadow: 0 0 10px rgba(220, 38, 38, 0.5);">
-                                        🍎 Happ для iOS
-                                    </h3>
-                                    <p style="color: #fca5a5; font-size: 14px; margin: 0 0 15px 0;">Рекомендуемое приложение для iPhone / iPad</p>
-                                    <a href="https://apps.apple.com/app/happ-proxy-utility/id6738328087" style="display: inline-block; background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: 600; font-size: 15px; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.5); border: 1px solid #ef4444;">
-                                        📥 Скачать Happ для iOS
-                                    </a>
-                                </div>
-                                
-                                <div style="background: linear-gradient(135deg, #1a0000 0%, #2a0000 100%); border: 2px solid #7f1d1d; padding: 25px; margin-bottom: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(127, 29, 29, 0.3);">
-                                    <h3 style="color: #dc2626; font-size: 20px; margin: 0 0 18px 0; font-weight: 700;">
-                                        📱 V2rayTun для Android
-                                    </h3>
-                                    <p style="color: #fca5a5; font-size: 14px; margin: 0 0 15px 0;">Альтернативное приложение для Android</p>
-                                    <a href="https://play.google.com/store/apps/details?id=com.v2raytun.android" style="display: inline-block; background: linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%); color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: 600; font-size: 15px; border: 1px solid #991b1b;">
-                                        📥 Скачать V2rayTun для Android
-                                    </a>
-                                </div>
-                                
-                                <div style="background: linear-gradient(135deg, #1a0000 0%, #2a0000 100%); border: 2px solid #7f1d1d; padding: 25px; margin-bottom: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(127, 29, 29, 0.3);">
-                                    <h3 style="color: #dc2626; font-size: 20px; margin: 0 0 18px 0; font-weight: 700;">
-                                        🍎 Streisand для iOS
-                                    </h3>
-                                    <p style="color: #fca5a5; font-size: 14px; margin: 0 0 15px 0;">Альтернативное приложение для iPhone / iPad</p>
-                                    <a href="https://apps.apple.com/app/streisand/id6450534064" style="display: inline-block; background: linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%); color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: 600; font-size: 15px; border: 1px solid #991b1b;">
-                                        📥 Скачать Streisand для iOS
-                                    </a>
-                                </div>
-                                
-                                <div style="background: linear-gradient(135deg, #1a0000 0%, #2a0000 100%); border: 2px solid #7f1d1d; padding: 25px; margin-bottom: 25px; border-radius: 10px; box-shadow: 0 4px 12px rgba(127, 29, 29, 0.3);">
-                                    <h3 style="color: #dc2626; font-size: 20px; margin: 0 0 18px 0; font-weight: 700;">
-                                        💻 V2rayN для Windows
-                                    </h3>
-                                    <p style="color: #fca5a5; font-size: 14px; margin: 0 0 15px 0;">Приложение для компьютеров Windows</p>
-                                    <a href="https://github.com/2dust/v2rayN/releases" style="display: inline-block; background: linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%); color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: 600; font-size: 15px; border: 1px solid #991b1b;">
-                                        📥 Скачать V2rayN для Windows
+                                <div style="text-align: center; margin: 25px 0;">
+                                    <a href="https://speedvpn.io" style="display: inline-block; background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.5); border: 1px solid #ef4444;">
+                                        🚀 Перейти в личный кабинет
                                     </a>
                                 </div>
                                 
@@ -187,7 +147,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                     Нужна помощь? Мы на связи! 💬
                                 </p>
                                 <p style="color: #fca5a5; font-size: 14px; margin: 0;">
-                                    Telegram: <a href="https://t.me/speedvpn_support" style="color: #ef4444; text-decoration: none; font-weight: 600;">@speedvpn_support</a>
+                                    Telegram: <a href="https://t.me/gospeedvpn" style="color: #ef4444; text-decoration: none; font-weight: 600;">@gospeedvpn</a>
                                 </p>
                             </td>
                         </tr>
@@ -202,31 +162,23 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     text_content = f'''
 Speed VPN - Подписка активирована!
 
+Привет, {username}! 👋
+
 Спасибо за покупку! Ваш VPN готов к работе.
-
-Выберите приложение для вашего устройства:
-
-📱 Android:
-- Happ: https://play.google.com/store/apps/details?id=com.happ.android
-- V2rayTun: https://play.google.com/store/apps/details?id=com.v2raytun.android
-
-🍎 iOS:
-- Happ: https://apps.apple.com/app/happ-proxy-utility/id6738328087
-- Streisand: https://apps.apple.com/app/streisand/id6450534064
-
-💻 Windows:
-- V2rayN: https://github.com/2dust/v2rayN/releases
 
 🔑 Ваша ссылка для подключения:
 {subscription_url}
 
-📖 Как подключиться:
-1. Скачайте одно из приложений выше
-2. Откройте приложение и найдите "Добавить подписку"
-3. Вставьте вашу ссылку для подключения
-4. Нажмите "Подключиться" — готово!
+🚀 Перейдите в личный кабинет для настройки:
+https://speedvpn.io
 
-Нужна помощь? Telegram: @speedvpn_support
+📖 В личном кабинете вы найдете:
+- Инструкции по подключению
+- Список рекомендуемых приложений
+- Информацию о вашей подписке
+- Настройки аккаунта
+
+Нужна помощь? Telegram: @gospeedvpn
     '''
     
     msg = MIMEMultipart('alternative')

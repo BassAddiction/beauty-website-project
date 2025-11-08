@@ -317,7 +317,7 @@ def handle_yookassa_webhook(webhook_data: Dict[str, Any], cors_headers: Dict[str
                 activate_referral(username, payment_id)
                 
                 # Отправляем email с инструкциями
-                send_welcome_email(email, subscription_url)
+                send_welcome_email(email, subscription_url, username)
                 
                 return {
                     'statusCode': 200,
@@ -701,7 +701,7 @@ def activate_referral(username: str, payment_id: str):
         print(f'⚠️ Error activating referral: {str(e)}')
 
 
-def send_welcome_email(email: str, subscription_url: str):
+def send_welcome_email(email: str, subscription_url: str, username: str):
     '''Отправляет приветственное email с инструкциями'''
     try:
         send_email_url = 'https://functions.poehali.dev/b7df3121-2214-4658-b0d1-8af63a4ce471'
@@ -711,7 +711,8 @@ def send_welcome_email(email: str, subscription_url: str):
             headers={'Content-Type': 'application/json'},
             json={
                 'email': email,
-                'subscription_url': subscription_url
+                'subscription_url': subscription_url,
+                'username': username
             },
             timeout=10
         )

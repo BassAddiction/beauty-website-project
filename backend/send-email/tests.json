@@ -7,7 +7,7 @@
       "body": {
         "email": "test@example.com",
         "subscription_url": "vmess://test-subscription-url",
-        "username": "testuser"
+        "username": "testuser123"
       },
       "expectedStatus": 200,
       "expectedBody": {
