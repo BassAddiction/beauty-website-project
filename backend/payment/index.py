@@ -704,7 +704,7 @@ def activate_referral(username: str, payment_id: str):
 def send_welcome_email(email: str, subscription_url: str):
     '''Отправляет приветственное email с инструкциями'''
     try:
-        send_email_url = os.environ.get('SEND_EMAIL_URL', 'https://functions.poehali.dev/02f41dd7-0d1d-4506-828c-64a917a7dda7')
+        send_email_url = 'https://functions.poehali.dev/b7df3121-2214-4658-b0d1-8af63a4ce471'
         
         response = requests.post(
             send_email_url,
