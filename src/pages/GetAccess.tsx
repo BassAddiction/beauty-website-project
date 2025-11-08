@@ -41,7 +41,9 @@ const GetAccess = () => {
 
       const data = await response.json();
 
-      if (response.status === 404) {
+      if (response.status === 429) {
+        setError(data.message || 'Слишком много попыток восстановления. Попробуйте через 15 минут.');
+      } else if (response.status === 404) {
         setError('На этот email не найдено оплаченных подписок. Проверьте email или оформите новую подписку.');
       } else if (!response.ok) {
         setError(data.error || 'Ошибка восстановления доступа');

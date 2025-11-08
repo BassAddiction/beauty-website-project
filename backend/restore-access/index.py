@@ -11,6 +11,12 @@ import psycopg2
 from typing import Dict, Any, List
 import requests
 
+def get_client_ip(event: Dict[str, Any]) -> str:
+    '''Извлекает IP клиента из события'''
+    request_context = event.get('requestContext', {})
+    identity = request_context.get('identity', {})
+    return identity.get('sourceIp', 'unknown')
+
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     cors_headers = {
         'Access-Control-Allow-Origin': '*',
@@ -76,6 +82,30 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'isBase64Encoded': False
         }
     
+    client_ip = get_client_ip(event)
+    print(f'🔐 [Restore Access] Request from IP: {client_ip}, Email: {email}')
+    
+    auth_check_url = os.environ.get('AUTH_CHECK_URL', 'https://functions.poehali.dev/833bc0dd-ad44-4b38-b1ac-2ff2f5b265e5')
+    
+    check_response = requests.post(
+        auth_check_url,
+        json={'action': 'check', 'login_type': 'restore'},
+        timeout=5
+    )
+    
+    if check_response.status_code == 429:
+        check_data = check_response.json()
+        print(f'🚫 [Restore Access] IP {client_ip} is blocked!')
+        return {
+            'statusCode': 429,
+            'headers': cors_headers,
+            'body': json.dumps({
+                'error': 'Too many requests',
+                'message': check_data.get('message', 'Слишком много запросов. Попробуйте позже.')
+            }),
+            'isBase64Encoded': False
+        }
+    
     conn = psycopg2.connect(db_url)
     cursor = conn.cursor()
     
@@ -93,6 +123,19 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     conn.close()
     
     if not rows:
+        print(f'❌ [Restore Access] No purchases found for {email} - recording failed attempt')
+        
+        requests.post(
+            auth_check_url,
+            json={
+                'action': 'record',
+                'username': email,
+                'success': False,
+                'login_type': 'restore'
+            },
+            timeout=5
+        )
+        
         return {
             'statusCode': 404,
             'headers': cors_headers,
@@ -105,7 +148,18 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     
     usernames: List[str] = [row[0] for row in rows]
     
-    print(f'📧 Found {len(usernames)} usernames for email {email}')
+    print(f'✅ [Restore Access] Found {len(usernames)} usernames for email {email}')
+    
+    requests.post(
+        auth_check_url,
+        json={
+            'action': 'record',
+            'username': email,
+            'success': True,
+            'login_type': 'restore'
+        },
+        timeout=5
+    )
     
     send_restore_email(email, usernames)
     
