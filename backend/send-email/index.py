@@ -109,6 +109,26 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                     Спасибо за покупку! Ваш VPN уже работает.
                                 </p>
                                 
+                                <div style="background: linear-gradient(135deg, #1a0000 0%, #2a0000 100%); border: 2px solid #dc2626; padding: 25px; margin-bottom: 25px; border-radius: 10px; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);">
+                                    <h3 style="color: #ef4444; font-size: 18px; margin: 0 0 15px 0; font-weight: 700; text-align: center;">
+                                        👤 Важная информация о вашем аккаунте
+                                    </h3>
+                                    <div style="background: #0a0a0a; padding: 20px; border-radius: 8px; border: 1px solid #7f1d1d; margin-bottom: 15px;">
+                                        <p style="color: #ffffff; font-size: 16px; margin: 0 0 10px 0; text-align: center;">
+                                            Ваш Username: <strong style="color: #ef4444; font-size: 18px;">{username}</strong>
+                                        </p>
+                                    </div>
+                                    <p style="color: #fca5a5; font-size: 14px; line-height: 1.6; margin: 0;">
+                                        <strong style="color: #ef4444;">⚠️ Сохраните этот username!</strong><br><br>
+                                        Он нужен для:<br>
+                                        • Входа в личный кабинет<br>
+                                        • Продления подписки<br>
+                                        • Управления вашим VPN<br><br>
+                                        <strong style="color: #ef4444;">🔒 Не передавайте username третьим лицам!</strong><br>
+                                        Это ваш персональный идентификатор.
+                                    </p>
+                                </div>
+                                
                                 <div style="text-align: center; margin: 25px 0;">
                                     <a href="https://speedvpn.io" style="display: inline-block; background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.5); border: 1px solid #ef4444;">
                                         🚀 Перейти в личный кабинет
@@ -165,6 +185,20 @@ Speed VPN - Подписка активирована!
 Привет, {username}! 👋
 
 Спасибо за покупку! Ваш VPN готов к работе.
+
+👤 ВАЖНАЯ ИНФОРМАЦИЯ О ВАШЕМ АККАУНТЕ
+
+Ваш Username: {username}
+
+⚠️ Сохраните этот username!
+
+Он нужен для:
+• Входа в личный кабинет
+• Продления подписки
+• Управления вашим VPN
+
+🔒 Не передавайте username третьим лицам!
+Это ваш персональный идентификатор.
 
 🔑 Ваша ссылка для подключения:
 {subscription_url}
