@@ -144,6 +144,7 @@ const Admin = () => {
             onEdit={newsManagement.setEditingNews}
             onDelete={newsManagement.handleDeleteNews}
             onMove={newsManagement.handleMoveNews}
+            onTogglePin={newsManagement.handleTogglePin}
             onCreate={newsManagement.handleCreateNews}
           />
         )}

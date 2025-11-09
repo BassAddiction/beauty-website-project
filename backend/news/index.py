@@ -54,16 +54,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     }
                 
                 cur.execute('''
-                    SELECT news_id, title, content, is_active, created_at, updated_at, sort_order
+                    SELECT news_id, title, content, is_active, created_at, updated_at, sort_order, is_pinned
                     FROM news
-                    ORDER BY sort_order DESC, created_at DESC
+                    ORDER BY is_pinned DESC, sort_order DESC, created_at DESC
                 ''')
             else:
                 cur.execute('''
-                    SELECT news_id, title, content, is_active, created_at, updated_at, sort_order
+                    SELECT news_id, title, content, is_active, created_at, updated_at, sort_order, is_pinned
                     FROM news
                     WHERE is_active = true
-                    ORDER BY sort_order DESC, created_at DESC
+                    ORDER BY is_pinned DESC, sort_order DESC, created_at DESC
                 ''')
             
             rows = cur.fetchall()
@@ -76,7 +76,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'is_active': row[3],
                     'created_at': row[4].isoformat() if row[4] else None,
                     'updated_at': row[5].isoformat() if row[5] else None,
-                    'sort_order': row[6]
+                    'sort_order': row[6],
+                    'is_pinned': row[7] if len(row) > 7 else False
                 })
             
             return {
@@ -99,24 +100,25 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             title = body_data.get('title', '')
             content = body_data.get('content', '')
             is_active = body_data.get('is_active', True)
+            is_pinned = body_data.get('is_pinned', False)
             sort_order = body_data.get('sort_order')
             
             if news_id:
                 cur.execute('''
                     UPDATE news
-                    SET title = %s, content = %s, is_active = %s, sort_order = %s, updated_at = CURRENT_TIMESTAMP
+                    SET title = %s, content = %s, is_active = %s, is_pinned = %s, sort_order = %s, updated_at = CURRENT_TIMESTAMP
                     WHERE news_id = %s
-                ''', (title, content, is_active, sort_order, news_id))
+                ''', (title, content, is_active, is_pinned, sort_order, news_id))
             else:
                 if sort_order is None:
                     cur.execute('SELECT COALESCE(MAX(sort_order), 0) + 1 FROM news')
                     sort_order = cur.fetchone()[0]
                 
                 cur.execute('''
-                    INSERT INTO news (title, content, is_active, sort_order)
-                    VALUES (%s, %s, %s, %s)
+                    INSERT INTO news (title, content, is_active, is_pinned, sort_order)
+                    VALUES (%s, %s, %s, %s, %s)
                     RETURNING news_id
-                ''', (title, content, is_active, sort_order))
+                ''', (title, content, is_active, is_pinned, sort_order))
                 news_id = cur.fetchone()[0]
             
             conn.commit()

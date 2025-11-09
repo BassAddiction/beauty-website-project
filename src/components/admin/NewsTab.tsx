@@ -7,6 +7,7 @@ export interface News {
   title: string;
   content: string;
   is_active: boolean;
+  is_pinned?: boolean;
   created_at?: string;
   updated_at?: string;
   sort_order: number;
@@ -18,10 +19,11 @@ interface NewsTabProps {
   onEdit: (news: News) => void;
   onDelete: (newsId: number) => void;
   onMove: (newsId: number, direction: 'up' | 'down') => void;
+  onTogglePin: (newsId: number, isPinned: boolean) => void;
   onCreate: () => void;
 }
 
-export const NewsTab = ({ news, loading, onEdit, onDelete, onMove, onCreate }: NewsTabProps) => {
+export const NewsTab = ({ news, loading, onEdit, onDelete, onMove, onTogglePin, onCreate }: NewsTabProps) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -47,6 +49,12 @@ export const NewsTab = ({ news, loading, onEdit, onDelete, onMove, onCreate }: N
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
                   <h3 className="text-xl font-semibold text-white">{item.title}</h3>
+                  {item.is_pinned && (
+                    <span className="px-2 py-1 text-xs bg-yellow-600 text-white rounded flex items-center gap-1">
+                      <Icon name="Pin" size={12} />
+                      Закреплена
+                    </span>
+                  )}
                   {item.is_active ? (
                     <span className="px-2 py-1 text-xs bg-green-600 text-white rounded">
                       Активна
@@ -66,6 +74,16 @@ export const NewsTab = ({ news, loading, onEdit, onDelete, onMove, onCreate }: N
               </div>
 
               <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => onTogglePin(item.news_id!, !item.is_pinned)}
+                  className={`${item.is_pinned ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-gray-600 hover:bg-gray-700'} border-0`}
+                  title={item.is_pinned ? 'Открепить' : 'Закрепить'}
+                >
+                  <Icon name={item.is_pinned ? "PinOff" : "Pin"} size={16} />
+                </Button>
+
                 <div className="flex flex-col gap-1">
                   <Button
                     size="sm"

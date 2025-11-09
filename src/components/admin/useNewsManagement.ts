@@ -160,8 +160,44 @@ export const useNewsManagement = (NEWS_API: string, password: string) => {
       title: '',
       content: '',
       is_active: true,
+      is_pinned: false,
       sort_order: 0
     });
+  };
+
+  const handleTogglePin = async (newsId: number, isPinned: boolean) => {
+    const newsItem = news.find(n => n.news_id === newsId);
+    if (!newsItem) return;
+    
+    setLoading(true);
+    try {
+      await fetch(NEWS_API, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Password': password
+        },
+        body: JSON.stringify({
+          ...newsItem,
+          is_pinned: isPinned
+        })
+      });
+      
+      toast({
+        title: isPinned ? '📌 Новость закреплена' : '✅ Новость откреплена',
+        description: isPinned ? 'Новость будет показана первой' : 'Новость возвращена в общий список'
+      });
+      
+      loadNews();
+    } catch (error) {
+      toast({
+        title: '❌ Ошибка',
+        description: String(error),
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return {
@@ -174,6 +210,7 @@ export const useNewsManagement = (NEWS_API: string, password: string) => {
     handleSaveNews,
     handleDeleteNews,
     handleMoveNews,
+    handleTogglePin,
     handleCreateNews
   };
 };

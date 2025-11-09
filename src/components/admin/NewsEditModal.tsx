@@ -54,6 +54,19 @@ export const NewsEditModal = ({ news, onSave, onClose, onChange }: NewsEditModal
             </Label>
           </div>
 
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="is_pinned"
+              checked={news.is_pinned || false}
+              onChange={(e) => onChange({ ...news, is_pinned: e.target.checked })}
+              className="w-4 h-4"
+            />
+            <Label htmlFor="is_pinned" className="text-white cursor-pointer">
+              📌 Закрепить (показывать первой)
+            </Label>
+          </div>
+
           <div>
             <Label className="text-white mb-2">Порядок сортировки</Label>
             <Input
