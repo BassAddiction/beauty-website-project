@@ -11,6 +11,7 @@ const PaymentSuccess = () => {
   const { toast } = useToast();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  const [hasReferralBonus, setHasReferralBonus] = useState(false);
 
   useEffect(() => {
     const savedUsername = localStorage.getItem('vpn_username') || '';
@@ -39,7 +40,14 @@ const PaymentSuccess = () => {
         }).then(() => {
           localStorage.removeItem('pending_referral');
           localStorage.removeItem('referral_code');
+          setHasReferralBonus(true);
           console.log('✅ Referral activated');
+          
+          toast({
+            title: "🎉 Бонус начислен!",
+            description: "Вы получили +7 дней к подписке за регистрацию по реферальной ссылке!",
+            duration: 8000
+          });
         }).catch(err => {
           console.error('Failed to activate referral:', err);
         });
@@ -47,7 +55,7 @@ const PaymentSuccess = () => {
         console.error('Error processing referral:', err);
       }
     }
-  }, [navigate]);
+  }, [navigate, toast]);
 
   const copyUsername = () => {
     navigator.clipboard.writeText(username);
@@ -81,6 +89,22 @@ const PaymentSuccess = () => {
               ✅ Платёж обработан успешно! Ваша подписка будет активирована в течение нескольких минут.
             </p>
           </div>
+
+          {hasReferralBonus && (
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 p-4 rounded-lg border-2 border-purple-300 dark:border-purple-700">
+              <div className="flex items-start gap-3">
+                <div className="text-3xl">🎁</div>
+                <div>
+                  <p className="font-semibold text-purple-900 dark:text-purple-100 mb-1">
+                    Реферальный бонус начислен!
+                  </p>
+                  <p className="text-sm text-purple-800 dark:text-purple-200">
+                    Вы получили <strong>+7 дней</strong> к подписке за регистрацию по реферальной ссылке. Приглашайте друзей и получайте ещё больше бонусов!
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {username && (
             <div className="space-y-4">

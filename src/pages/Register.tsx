@@ -41,10 +41,13 @@ const Register = () => {
     
     const finalRef = refFromUrl || refFromStorage || '';
     
-    if (finalRef) {
+    if (finalRef && !localStorage.getItem('referral_code_shown')) {
       setReferralCode(finalRef);
       localStorage.setItem('referral_code', finalRef);
-      alert(`✅ Реферальный код применён: ${finalRef}`);
+      localStorage.setItem('referral_code_shown', 'true');
+    } else if (finalRef) {
+      setReferralCode(finalRef);
+      localStorage.setItem('referral_code', finalRef);
     }
   }, [searchParams]);
 
@@ -202,6 +205,22 @@ const Register = () => {
           </a>
           <h1 className="text-3xl font-bold mb-2">Регистрация в Speed VPN</h1>
           <p className="text-muted-foreground">Выберите тариф и создайте аккаунт</p>
+          
+          {referralCode && (
+            <div className="mt-4 inline-block bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900 px-4 py-2 rounded-lg border border-purple-300 dark:border-purple-700">
+              <div className="flex items-center gap-2 text-sm">
+                <span className="text-2xl">🎁</span>
+                <div>
+                  <p className="font-semibold text-purple-900 dark:text-purple-100">
+                    Реферальный бонус активирован!
+                  </p>
+                  <p className="text-xs text-purple-700 dark:text-purple-300">
+                    Вы получите +7 дней к подписке после оплаты
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {step === 1 && (

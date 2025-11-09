@@ -139,15 +139,15 @@ export const ReferralCard = ({ username }: ReferralCardProps) => {
           </div>
         </div>
 
-        <div className="mt-4 p-4 bg-primary/5 rounded-lg border border-primary/10">
+        <div className="mt-4 p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 rounded-lg border border-purple-200 dark:border-purple-800">
           <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
-            <Icon name="Gift" className="w-4 h-4 text-primary" />
+            <Icon name="Gift" className="w-4 h-4 text-purple-600 dark:text-purple-400" />
             Как это работает?
           </h4>
-          <ul className="text-sm text-muted-foreground space-y-1">
-            <li>• Отправьте ссылку другу</li>
-            <li>• Друг регистрируется и покупает подписку</li>
-            <li>• Вы получаете +7 дней к подписке</li>
+          <ul className="text-sm text-purple-900 dark:text-purple-100 space-y-1">
+            <li>🎁 Вы получаете <strong>+7 дней</strong> за каждого приглашённого</li>
+            <li>🎁 Друг получает <strong>+7 дней</strong> к своей подписке</li>
+            <li>✨ Оба выигрывают от реферальной программы!</li>
           </ul>
         </div>
       </CardContent>
