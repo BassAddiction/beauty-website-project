@@ -1,66 +1,119 @@
-import { Star, Quote } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Star, Quote, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Icon from "@/components/ui/icon";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import FUNC2URL from "../../backend/func2url.json";
 
-const reviews = [
-  {
-    id: 1,
-    name: "Александр М.",
-    location: "Москва",
-    rating: 5,
-    date: "15 октября 2024",
-    text: "Лучший VPN из всех, что я пробовал! Скорость просто космическая, никаких обрывов. Особенно радует, что работает на всех устройствах по одной подписке.",
-    plan: "Год"
-  },
-  {
-    id: 2,
-    name: "Мария К.",
-    location: "Санкт-Петербург",
-    rating: 5,
-    date: "3 ноября 2024",
-    text: "Пользуюсь уже 3 месяца — полный восторг! Все сайты открываются мгновенно, видео в HD без тормозов. Поддержка очень отзывчивая, помогли настроить за 5 минут.",
-    plan: "3 месяца"
-  },
-  {
-    id: 3,
-    name: "Дмитрий В.",
-    location: "Екатеринбург",
-    rating: 5,
-    date: "28 октября 2024",
-    text: "Раньше юзал другие VPN, но там были постоянные лаги. Speed VPN работает стабильно 24/7, цена адекватная. Всем советую!",
-    plan: "Месяц"
-  },
-  {
-    id: 4,
-    name: "Елена С.",
-    location: "Казань",
-    rating: 5,
-    date: "12 ноября 2024",
-    text: "Идеальное соотношение цены и качества. Подключение за секунды, интерфейс понятный даже для новичка. Защита данных на высоте!",
-    plan: "Год"
-  },
-  {
-    id: 5,
-    name: "Игорь Т.",
-    location: "Новосибирск",
-    rating: 5,
-    date: "7 ноября 2024",
-    text: "Работаю удаленно, VPN нужен постоянно. Speed VPN не подводит — связь стабильная, пинг низкий. Годовая подписка окупилась за месяц!",
-    plan: "Год"
-  },
-  {
-    id: 6,
-    name: "Ольга Н.",
-    location: "Краснодар",
-    rating: 5,
-    date: "1 ноября 2024",
-    text: "Очень довольна! Смотрю стримы в 4К без буферизации. Настроила на телефоне и ноутбуке — везде работает безупречно. Спасибо за качественный сервис!",
-    plan: "3 месяца"
-  }
-];
+interface Review {
+  id: number;
+  name: string;
+  location: string;
+  rating: number;
+  plan: string;
+  text: string;
+  date: string;
+}
 
 const Reviews = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [totalReviews, setTotalReviews] = useState(0);
+  const [averageRating, setAverageRating] = useState(5.0);
+  const [showForm, setShowForm] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  
+  const [formData, setFormData] = useState({
+    name: '',
+    location: '',
+    rating: 5,
+    plan: '',
+    text: '',
+    email: ''
+  });
+
+  useEffect(() => {
+    fetchReviews();
+  }, []);
+
+  const fetchReviews = async () => {
+    try {
+      const response = await fetch(FUNC2URL.reviews);
+      const data = await response.json();
+      
+      setReviews(data.reviews || []);
+      setTotalReviews(data.total || 0);
+      setAverageRating(data.average_rating || 5.0);
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+      toast({
+        title: 'Ошибка',
+        description: 'Не удалось загрузить отзывы',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    try {
+      const response = await fetch(FUNC2URL.reviews, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast({
+          title: 'Спасибо за отзыв!',
+          description: 'Ваш отзыв отправлен на модерацию и появится после проверки',
+          duration: 5000
+        });
+        
+        setFormData({
+          name: '',
+          location: '',
+          rating: 5,
+          plan: '',
+          text: '',
+          email: ''
+        });
+        setShowForm(false);
+      } else {
+        throw new Error(data.error || 'Failed to submit review');
+      }
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      toast({
+        title: 'Ошибка',
+        description: 'Не удалось отправить отзыв. Попробуйте позже',
+        variant: 'destructive'
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center">
+        <Loader2 className="w-12 h-12 text-red-500 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
@@ -87,10 +140,133 @@ const Reviews = () => {
                 <Star key={i} className="w-6 h-6 fill-yellow-500 text-yellow-500" />
               ))}
             </div>
-            <span className="text-white font-semibold text-xl">5.0</span>
-            <span className="text-gray-400">на основе 1,247 отзывов</span>
+            <span className="text-white font-semibold text-xl">{averageRating.toFixed(1)}</span>
+            <span className="text-gray-400">на основе {totalReviews} отзывов</span>
           </div>
+
+          <Button
+            onClick={() => setShowForm(!showForm)}
+            className="mt-6 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600"
+          >
+            <Icon name="MessageSquarePlus" className="w-4 h-4 mr-2" />
+            Оставить отзыв
+          </Button>
         </div>
+
+        {showForm && (
+          <div className="max-w-2xl mx-auto mb-12 bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-red-500/20 rounded-2xl p-8">
+            <h2 className="text-2xl font-bold text-white mb-6">Напишите ваш отзыв</h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm text-gray-400 mb-2 block">Ваше имя *</label>
+                  <Input
+                    required
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    placeholder="Александр М."
+                    className="bg-gray-800/50 border-gray-700"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-gray-400 mb-2 block">Город *</label>
+                  <Input
+                    required
+                    value={formData.location}
+                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                    placeholder="Москва"
+                    className="bg-gray-800/50 border-gray-700"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm text-gray-400 mb-2 block">Ваш тариф *</label>
+                  <select
+                    required
+                    value={formData.plan}
+                    onChange={(e) => setFormData({ ...formData, plan: e.target.value })}
+                    className="w-full bg-gray-800/50 border border-gray-700 rounded-md px-3 py-2 text-white"
+                  >
+                    <option value="">Выберите тариф</option>
+                    <option value="Месяц">Месяц</option>
+                    <option value="3 месяца">3 месяца</option>
+                    <option value="Год">Год</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-400 mb-2 block">Email (необязательно)</label>
+                  <Input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    placeholder="your@email.com"
+                    className="bg-gray-800/50 border-gray-700"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-400 mb-2 block">Оценка *</label>
+                <div className="flex gap-2">
+                  {[1, 2, 3, 4, 5].map((rating) => (
+                    <button
+                      key={rating}
+                      type="button"
+                      onClick={() => setFormData({ ...formData, rating })}
+                      className="transition-transform hover:scale-110"
+                    >
+                      <Star
+                        className={`w-8 h-8 ${
+                          rating <= formData.rating
+                            ? 'fill-yellow-500 text-yellow-500'
+                            : 'text-gray-600'
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-400 mb-2 block">Ваш отзыв *</label>
+                <Textarea
+                  required
+                  value={formData.text}
+                  onChange={(e) => setFormData({ ...formData, text: e.target.value })}
+                  placeholder="Расскажите о вашем опыте использования Speed VPN..."
+                  className="bg-gray-800/50 border-gray-700 min-h-[120px]"
+                />
+              </div>
+
+              <div className="flex gap-4">
+                <Button
+                  type="submit"
+                  disabled={submitting}
+                  className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600"
+                >
+                  {submitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Отправка...
+                    </>
+                  ) : (
+                    'Отправить отзыв'
+                  )}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowForm(false)}
+                  className="border-gray-700"
+                >
+                  Отмена
+                </Button>
+              </div>
+            </form>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {reviews.map((review) => (
