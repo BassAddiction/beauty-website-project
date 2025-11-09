@@ -14,6 +14,7 @@ import { NewsTab } from "@/components/admin/NewsTab";
 import { NewsEditModal } from "@/components/admin/NewsEditModal";
 import { TrackingCodesTab } from "@/components/admin/TrackingCodesTab";
 import { ProjectSettingsTab } from "@/components/admin/ProjectSettingsTab";
+import { ReviewsTab } from "@/components/admin/ReviewsTab";
 import { useAdminAuth } from "@/components/admin/useAdminAuth";
 import { usePlansManagement } from "@/components/admin/usePlansManagement";
 import { useLocationsManagement } from "@/components/admin/useLocationsManagement";
@@ -22,7 +23,7 @@ import { useNewsManagement } from "@/components/admin/useNewsManagement";
 import API_ENDPOINTS from '@/config/api';
 
 const Admin = () => {
-  const [activeTab, setActiveTab] = useState<'plans' | 'clients' | 'users' | 'locations' | 'settings' | 'receipts' | 'news' | 'tracking' | 'project'>('plans');
+  const [activeTab, setActiveTab] = useState<'plans' | 'clients' | 'users' | 'locations' | 'settings' | 'receipts' | 'news' | 'tracking' | 'project' | 'reviews'>('plans');
 
   const auth = useAdminAuth(API_ENDPOINTS.GET_SUBSCRIPTION);
   const plansManagement = usePlansManagement(API_ENDPOINTS.GET_SUBSCRIPTION, auth.password, async () => {
@@ -157,6 +158,10 @@ const Admin = () => {
 
         {activeTab === 'project' && (
           <ProjectSettingsTab adminPassword={auth.password} />
+        )}
+
+        {activeTab === 'reviews' && (
+          <ReviewsTab adminPassword={auth.password} />
         )}
       </div>
 
