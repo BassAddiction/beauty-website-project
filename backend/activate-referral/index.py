@@ -140,9 +140,9 @@ def extend_subscription(username: str, days: int):
             'Content-Type': 'application/json'
         }
         
-        # Retry getting user info (user might be just created)
+        # Retry getting user info (user might be just created, AND UUID might have changed!)
         user_data = None
-        for attempt in range(3):
+        for attempt in range(5):
             users_response = requests.get(
                 f'{remnawave_api_url}/api/users',
                 headers=headers,
@@ -160,15 +160,15 @@ def extend_subscription(username: str, days: int):
             if user_data:
                 break
             
-            if attempt < 2:
-                print(f'⚠️ User {username} not found, retrying in 1s... (attempt {attempt + 1}/3)')
-                time.sleep(1)
+            if attempt < 4:
+                wait_time = 2 ** attempt
+                print(f'⚠️ User {username} not found, retrying in {wait_time}s... (attempt {attempt + 1}/5)')
+                time.sleep(wait_time)
         
         if not user_data:
-            print(f'⚠️ User {username} not found in Remnawave after 3 attempts')
+            print(f'⚠️ User {username} not found in Remnawave after 5 attempts')
             return
         
-        user_uuid = user_data.get('uuid')
         current_expire = user_data.get('expireAt', '')
         
         # Calculate new expiration (current + bonus days)
@@ -183,6 +183,28 @@ def extend_subscription(username: str, days: int):
         
         print(f'📅 Extending {username}: current={current_expire}, adding {days} days, new={new_expire_at}')
         
+        # CRITICAL: Get fresh UUID right before PATCH (it might have changed after payment!)
+        users_response = requests.get(
+            f'{remnawave_api_url}/api/users',
+            headers=headers,
+            timeout=10
+        )
+        
+        if users_response.status_code != 200:
+            print(f'⚠️ Failed to get fresh user data: {users_response.status_code}')
+            return
+        
+        users_data = users_response.json()
+        users_list = users_data.get('response', {}).get('users', [])
+        fresh_user_data = next((u for u in users_list if u.get('username') == username), None)
+        
+        if not fresh_user_data:
+            print(f'⚠️ User {username} disappeared before PATCH')
+            return
+        
+        user_uuid = fresh_user_data.get('uuid')
+        print(f'🔄 Fresh UUID: {user_uuid}')
+        
         # Use PATCH to update expireAt directly (safer than DELETE+CREATE)
         patch_response = requests.patch(
             f'{remnawave_api_url}/api/users/{user_uuid}',
@@ -194,26 +216,8 @@ def extend_subscription(username: str, days: int):
         if patch_response.status_code == 200:
             print(f'✅ Extended {username} subscription by {days} days via PATCH')
         else:
-            print(f'⚠️ PATCH failed ({patch_response.status_code}), trying update_user action...')
-            
-            # Fallback: try update_user через remnawave function
-            remnawave_function_url = 'https://functions.poehali.dev/4e61ec57-0f83-4c68-83fb-8b3049f711ab'
-            
-            response = requests.post(
-                remnawave_function_url,
-                headers={'Content-Type': 'application/json'},
-                json={
-                    'action': 'update_user',
-                    'uuid': user_uuid,
-                    'expireAt': new_expire_at
-                },
-                timeout=30
-            )
-            
-            if response.status_code == 200:
-                print(f'✅ Extended {username} via update_user action')
-            else:
-                print(f'⚠️ Failed to extend: {response.status_code} - {response.text}')
+            print(f'⚠️ PATCH failed ({patch_response.status_code}): {patch_response.text}')
+            print(f'⚠️ Will NOT retry - UUID might be stale again')
             
     except Exception as e:
         print(f'❌ Error extending subscription: {str(e)}')
