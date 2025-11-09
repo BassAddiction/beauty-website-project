@@ -202,6 +202,19 @@ def extend_subscription(username: str, days: int, user_uuid: str = None):
         
         print(f'📅 Current: {current_expire_ts}, New: {new_expire_ts} (+{days} days)')
         
+        # Получаем список squad UUIDs (строки, не объекты)
+        active_squads = user_data.get('activeInternalSquads', [])
+        squad_uuids = []
+        
+        # Если это список объектов - извлекаем uuid
+        if active_squads and isinstance(active_squads[0], dict):
+            squad_uuids = [squad.get('uuid') for squad in active_squads if squad.get('uuid')]
+        # Если это уже список строк - используем как есть
+        elif active_squads and isinstance(active_squads[0], str):
+            squad_uuids = active_squads
+        
+        print(f'🎯 Squad UUIDs for extend: {squad_uuids}')
+        
         # Используем extend_subscription action с UUID
         response = requests.post(
             remnawave_function_url,
@@ -211,7 +224,7 @@ def extend_subscription(username: str, days: int, user_uuid: str = None):
                 'username': username,
                 'uuid': user_uuid,
                 'expire': new_expire_ts,
-                'internalSquads': user_data.get('activeInternalSquads', [])
+                'internalSquads': squad_uuids
             },
             timeout=30
         )
