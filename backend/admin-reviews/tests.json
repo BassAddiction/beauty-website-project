@@ -1,0 +1,25 @@
+{
+  "tests": [
+    {
+      "name": "Get pending reviews with admin token",
+      "method": "GET",
+      "path": "/?status=pending",
+      "headers": {
+        "X-Admin-Token": "test-admin-token-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      },
+      "expectedStatus": 200
+    },
+    {
+      "name": "Reject unauthorized access without token",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 401
+    },
+    {
+      "name": "Handle OPTIONS request",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    }
+  ]
+}
