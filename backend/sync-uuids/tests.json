@@ -1,0 +1,10 @@
+{
+  "tests": [
+    {
+      "name": "Sync UUIDs",
+      "method": "POST",
+      "path": "/",
+      "expectedStatus": 200
+    }
+  ]
+}

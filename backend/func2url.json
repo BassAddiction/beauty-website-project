@@ -1,4 +1,5 @@
 {
+  "sync-uuids": "https://functions.poehali.dev/a3d63753-bd5e-4c2b-910d-38daf4569579",
   "manual-extend": "https://functions.poehali.dev/47563c2f-3066-4d84-92ca-5d0fa7fe7a1b",
   "site-settings": "https://functions.poehali.dev/2237e0c8-e783-4bda-9d28-69c441521c66",
   "admin-reviews": "https://functions.poehali.dev/49344173-2053-4177-8e8e-9000c3f9ac42",
@@ -6,7 +7,6 @@
   "reviews": "https://functions.poehali.dev/dbcfb7ae-1464-45f2-b4fd-e2d73edd5369",
   "restore-access": "https://functions.poehali.dev/e1fb7940-e783-4ca2-930a-c1f4504b0921",
   "settings-manager": "https://functions.poehali.dev/5375b8f5-5979-4f46-b106-9c9ca07e2da6",
-  "fix-12mes": "https://functions.poehali.dev/545e1c84-e3bc-47ab-9c56-55ffa01ffca5",
   "fix-mister": "https://functions.poehali.dev/0e777ae2-2f60-42e6-a96c-aa949fb114f3",
   "manual-extend-referrer": "https://functions.poehali.dev/538e5f5a-c872-4fdb-a6fe-69bd507b9b1b",
   "activate-referral": "https://functions.poehali.dev/358b9593-075d-4262-9190-984599107ece",
