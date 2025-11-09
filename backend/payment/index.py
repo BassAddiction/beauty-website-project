@@ -691,6 +691,8 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int, plan_id:
 def activate_referral(username: str, payment_id: str):
     '''Активирует реферальный бонус после успешной оплаты'''
     try:
+        import time
+        
         db_url = os.environ.get('DATABASE_URL', '')
         if not db_url:
             return
@@ -711,6 +713,10 @@ def activate_referral(username: str, payment_id: str):
         referral_code = result[0]
         print(f'🎁 Found referral code: {referral_code} for user {username}')
         
+        # Ждём 3 секунды, чтобы Remnawave успел заиндексировать нового пользователя
+        print(f'⏳ Waiting 3s for user {username} to be indexed in Remnawave...')
+        time.sleep(3)
+        
         # Вызываем функцию активации реферала
         activate_url = 'https://functions.poehali.dev/358b9593-075d-4262-9190-984599107ece'
         response = requests.post(
@@ -720,7 +726,7 @@ def activate_referral(username: str, payment_id: str):
                 'username': username,
                 'referral_code': referral_code
             },
-            timeout=10
+            timeout=15
         )
         
         if response.status_code == 200:
