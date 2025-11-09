@@ -125,6 +125,7 @@ def extend_subscription(username: str, days: int):
     '''Extend user subscription via Remnawave function'''
     try:
         import requests
+        import time
         from datetime import datetime
         
         remnawave_api_url = os.environ.get('REMNAWAVE_API_URL', '').rstrip('/')
@@ -139,23 +140,32 @@ def extend_subscription(username: str, days: int):
             'Content-Type': 'application/json'
         }
         
-        # Get current user info
-        users_response = requests.get(
-            f'{remnawave_api_url}/api/users',
-            headers=headers,
-            timeout=10
-        )
-        
-        if users_response.status_code != 200:
-            print(f'⚠️ Failed to get users from Remnawave: {users_response.status_code}')
-            return
-        
-        users_data = users_response.json()
-        users_list = users_data.get('response', {}).get('users', [])
-        user_data = next((u for u in users_list if u.get('username') == username), None)
+        # Retry getting user info (user might be just created)
+        user_data = None
+        for attempt in range(3):
+            users_response = requests.get(
+                f'{remnawave_api_url}/api/users',
+                headers=headers,
+                timeout=10
+            )
+            
+            if users_response.status_code != 200:
+                print(f'⚠️ Failed to get users from Remnawave: {users_response.status_code}')
+                return
+            
+            users_data = users_response.json()
+            users_list = users_data.get('response', {}).get('users', [])
+            user_data = next((u for u in users_list if u.get('username') == username), None)
+            
+            if user_data:
+                break
+            
+            if attempt < 2:
+                print(f'⚠️ User {username} not found, retrying in 1s... (attempt {attempt + 1}/3)')
+                time.sleep(1)
         
         if not user_data:
-            print(f'⚠️ User {username} not found in Remnawave')
+            print(f'⚠️ User {username} not found in Remnawave after 3 attempts')
             return
         
         user_uuid = user_data.get('uuid')
