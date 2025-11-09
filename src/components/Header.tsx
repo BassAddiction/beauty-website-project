@@ -17,6 +17,7 @@ const Header = () => {
         <nav className="hidden md:flex items-center gap-8">
           <a href="#features" className="text-sm font-medium hover:text-primary transition-colors">Возможности</a>
           <a href="#pricing" className="text-sm font-medium hover:text-primary transition-colors">Тарифы</a>
+          <a href="/reviews" className="text-sm font-medium hover:text-primary transition-colors">Отзывы</a>
           <a href="#training" className="text-sm font-medium hover:text-primary transition-colors">Обучение</a>
           <a href="#faq" className="text-sm font-medium hover:text-primary transition-colors">FAQ</a>
           <a href="#clients" className="text-sm font-medium hover:text-primary transition-colors">VPN-Клиент</a>
@@ -55,6 +56,13 @@ const Header = () => {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Тарифы
+                </a>
+                <a 
+                  href="/reviews" 
+                  className="text-lg font-medium hover:text-primary transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Отзывы
                 </a>
                 <a 
                   href="#training" 

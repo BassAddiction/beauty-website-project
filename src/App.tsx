@@ -17,6 +17,7 @@ import AdminUsers from "./pages/AdminUsers";
 import TestWebhook from "./pages/TestWebhook";
 import Terms from "./pages/Terms";
 import SubscriptionBuilder from "./pages/SubscriptionBuilder";
+import Reviews from "./pages/Reviews";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const App = () => (
           <Route path="/test-webhook" element={<TestWebhook />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/builder" element={<SubscriptionBuilder />} />
+          <Route path="/reviews" element={<Reviews />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
