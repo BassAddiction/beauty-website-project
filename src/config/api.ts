@@ -29,6 +29,7 @@ export const API_ENDPOINTS = {
   
   // Content & Settings
   NEWS: `${API_BASE}/3b70872b-40db-4e8a-81e6-228e407e152b`,
+  SITE_SETTINGS: `${API_BASE}/2237e0c8-e783-4bda-9d28-69c441521c66`,
   SETTINGS_MANAGER: `${API_BASE}/5375b8f5-5979-4f46-b106-9c9ca07e2da6`,
   TRACKING_CODES: `${API_BASE}/7a6acadf-d332-41e0-a309-e41e647fedae`,
   

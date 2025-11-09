@@ -11,6 +11,7 @@ import FAQSection from "@/components/FAQSection";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import { NewsFeed } from "@/components/NewsFeed";
+import { NewYearTheme } from "@/components/NewYearTheme";
 
 const Index = () => {
   const [searchParams] = useSearchParams();
@@ -41,6 +42,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <NewYearTheme />
       <Header />
       <HeroSection />
       <div className="container mx-auto px-4">

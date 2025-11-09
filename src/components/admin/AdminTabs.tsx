@@ -2,8 +2,8 @@ import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 
 interface AdminTabsProps {
-  activeTab: 'plans' | 'clients' | 'users' | 'locations' | 'settings' | 'receipts' | 'news' | 'tracking' | 'project' | 'reviews';
-  setActiveTab: (tab: 'plans' | 'clients' | 'users' | 'locations' | 'settings' | 'receipts' | 'news' | 'tracking' | 'project' | 'reviews') => void;
+  activeTab: 'plans' | 'clients' | 'users' | 'locations' | 'settings' | 'receipts' | 'news' | 'tracking' | 'project' | 'reviews' | 'theme';
+  setActiveTab: (tab: 'plans' | 'clients' | 'users' | 'locations' | 'settings' | 'receipts' | 'news' | 'tracking' | 'project' | 'reviews' | 'theme') => void;
   plansCount: number;
   clientsCount: number;
   locationsCount: number;
@@ -94,6 +94,13 @@ export const AdminTabs = ({ activeTab, setActiveTab, plansCount, clientsCount, l
       >
         <Icon name="MessageSquare" className="w-4 h-4 mr-2" />
         Отзывы
+      </Button>
+      <Button
+        variant={activeTab === 'theme' ? 'default' : 'outline'}
+        onClick={() => setActiveTab('theme')}
+      >
+        <Icon name="Sparkles" className="w-4 h-4 mr-2" />
+        Оформление
       </Button>
     </div>
   );
