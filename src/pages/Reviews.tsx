@@ -192,9 +192,11 @@ const Reviews = () => {
                     className="w-full bg-gray-800/50 border border-gray-700 rounded-md px-3 py-2 text-white"
                   >
                     <option value="">Выберите тариф</option>
-                    <option value="Месяц">Месяц</option>
+                    <option value="7 дней">7 дней</option>
+                    <option value="1 месяц">1 месяц</option>
                     <option value="3 месяца">3 месяца</option>
-                    <option value="Год">Год</option>
+                    <option value="6 месяцев">6 месяцев</option>
+                    <option value="12 месяцев">12 месяцев</option>
                   </select>
                 </div>
                 <div>
