@@ -96,8 +96,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     # Extend referrer subscription by 7 days via Remnawave
                     extend_subscription(referrer, 7)
                     
+                    # Also give 7 days to the referred user (new user bonus)
+                    extend_subscription(username, 7)
+                    
                     conn.commit()
-                    print(f'✅ Referral activated: {referrer} gets +7 days for referring {username}')
+                    print(f'✅ Referral activated: {referrer} gets +7 days for referring {username}, {username} gets +7 days as referral bonus')
                 else:
                     print(f'⚠️ User {username} already has a referral')
         
