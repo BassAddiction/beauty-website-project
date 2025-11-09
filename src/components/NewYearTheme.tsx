@@ -11,10 +11,13 @@ export const NewYearTheme = () => {
         const response = await fetch(`${API_ENDPOINTS.SITE_SETTINGS}?key=new_year_theme`);
         if (response.ok) {
           const data = await response.json();
-          setEnabled(data.value === 'true');
+          console.log('🎄 New Year Theme data:', data);
+          const isEnabled = data.value === 'true' || data.value === true;
+          console.log('🎄 New Year Theme enabled:', isEnabled);
+          setEnabled(isEnabled);
         }
       } catch (error) {
-        console.error('Error loading theme:', error);
+        console.error('❌ Error loading theme:', error);
       }
     };
 
