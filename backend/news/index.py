@@ -99,7 +99,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             title = body_data.get('title', '')
             content = body_data.get('content', '')
             is_active = body_data.get('is_active', True)
-            sort_order = body_data.get('sort_order', 0)
+            sort_order = body_data.get('sort_order')
             
             if news_id:
                 cur.execute('''
@@ -108,6 +108,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     WHERE news_id = %s
                 ''', (title, content, is_active, sort_order, news_id))
             else:
+                if sort_order is None:
+                    cur.execute('SELECT COALESCE(MAX(sort_order), 0) + 1 FROM news')
+                    sort_order = cur.fetchone()[0]
+                
                 cur.execute('''
                     INSERT INTO news (title, content, is_active, sort_order)
                     VALUES (%s, %s, %s, %s)
