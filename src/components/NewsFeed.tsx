@@ -99,17 +99,17 @@ export const NewsFeed = () => {
         </Link>
       </div>
 
-      <Card className="p-6 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/30 hover:border-primary/50 transition-all">
+      <Card className="p-6 bg-gradient-to-br from-blue-900/20 to-purple-900/20 border-blue-500/30 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20 animate-in fade-in slide-in-from-bottom-4">
         <div className="flex items-start gap-3 mb-3">
-          <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-            <Icon name="Sparkles" size={20} className="text-primary" />
+          <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+            <Icon name="Sparkles" size={20} className="text-blue-400" />
           </div>
           <div className="flex-1">
             <h3 className="text-xl font-semibold text-white mb-2">{latestNews.title}</h3>
-            <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed">{latestNews.content}</p>
+            <p className="text-slate-300 whitespace-pre-wrap leading-relaxed">{latestNews.content}</p>
           </div>
         </div>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-slate-500">
           {new Date(latestNews.created_at).toLocaleString('ru-RU', {
             day: 'numeric',
             month: 'long',
@@ -135,28 +135,29 @@ export const NewsFeed = () => {
           </button>
 
           {showOlder && (
-            <div className="relative">
+            <div className="relative animate-in fade-in slide-in-from-top-4 duration-500">
               <div 
                 ref={scrollContainerRef}
                 onScroll={handleScroll}
                 className="flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
-                {olderNews.map((item) => (
+                {olderNews.map((item, index) => (
                   <Card 
                     key={item.news_id} 
-                    className="min-w-full md:min-w-[400px] p-5 bg-gradient-to-br from-gray-900/50 to-gray-800/50 border-gray-700/50 snap-start"
+                    className="min-w-full md:min-w-[400px] p-5 bg-gradient-to-br from-blue-900/20 to-purple-900/20 border-blue-500/30 snap-start hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20 animate-in fade-in slide-in-from-right-4"
+                    style={{ animationDelay: `${index * 100}ms` }}
                   >
                     <div className="flex items-start gap-3 mb-3">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Icon name="Bell" size={16} className="text-primary" />
+                      <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                        <Icon name="Bell" size={16} className="text-blue-400" />
                       </div>
                       <h3 className="text-lg font-semibold text-white flex-1">{item.title}</h3>
                     </div>
-                    <p className="text-muted-foreground text-sm whitespace-pre-wrap leading-relaxed mb-3">
+                    <p className="text-slate-300 text-sm whitespace-pre-wrap leading-relaxed mb-3">
                       {item.content}
                     </p>
-                    <p className="text-xs text-muted-foreground/70">
+                    <p className="text-xs text-slate-500">
                       {new Date(item.created_at).toLocaleString('ru-RU', {
                         day: 'numeric',
                         month: 'long',
@@ -169,15 +170,15 @@ export const NewsFeed = () => {
               </div>
 
               {olderNews.length > 1 && (
-                <div className="flex justify-center gap-2 mt-4">
+                <div className="flex justify-center gap-2 mt-4 animate-in fade-in duration-700">
                   {olderNews.map((_, index) => (
                     <button
                       key={index}
                       onClick={() => scrollToIndex(index)}
-                      className={`w-2 h-2 rounded-full transition-all ${
+                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
                         currentIndex === index 
-                          ? 'bg-primary w-8' 
-                          : 'bg-gray-600 hover:bg-gray-500'
+                          ? 'bg-blue-500 w-8' 
+                          : 'bg-gray-600 hover:bg-blue-400'
                       }`}
                       aria-label={`Перейти к новости ${index + 1}`}
                     />
