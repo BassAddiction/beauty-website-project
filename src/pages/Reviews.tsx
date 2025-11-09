@@ -27,6 +27,8 @@ const Reviews = () => {
   const [averageRating, setAverageRating] = useState(5.0);
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const reviewsPerPage = 12;
   
   const [formData, setFormData] = useState({
     name: '',
@@ -269,7 +271,7 @@ const Reviews = () => {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {reviews.map((review) => (
+          {reviews.slice((currentPage - 1) * reviewsPerPage, currentPage * reviewsPerPage).map((review) => (
             <div
               key={review.id}
               className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-red-500/20 rounded-2xl p-6 hover:border-red-500/40 transition-all duration-300 hover:shadow-xl hover:shadow-red-500/10"
@@ -301,6 +303,44 @@ const Reviews = () => {
             </div>
           ))}
         </div>
+
+        {reviews.length > reviewsPerPage && (
+          <div className="mt-12 flex items-center justify-center gap-2">
+            <Button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              variant="outline"
+              className="border-gray-700 text-gray-400 hover:bg-red-600 hover:text-white disabled:opacity-50"
+            >
+              <Icon name="ChevronLeft" size={20} />
+            </Button>
+            
+            <div className="flex gap-2">
+              {Array.from({ length: Math.ceil(reviews.length / reviewsPerPage) }, (_, i) => i + 1).map((page) => (
+                <Button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  variant={currentPage === page ? 'default' : 'outline'}
+                  className={currentPage === page 
+                    ? 'bg-gradient-to-r from-red-600 to-red-700' 
+                    : 'border-gray-700 text-gray-400 hover:bg-red-600 hover:text-white'
+                  }
+                >
+                  {page}
+                </Button>
+              ))}
+            </div>
+
+            <Button
+              onClick={() => setCurrentPage(p => Math.min(Math.ceil(reviews.length / reviewsPerPage), p + 1))}
+              disabled={currentPage === Math.ceil(reviews.length / reviewsPerPage)}
+              variant="outline"
+              className="border-gray-700 text-gray-400 hover:bg-red-600 hover:text-white disabled:opacity-50"
+            >
+              <Icon name="ChevronRight" size={20} />
+            </Button>
+          </div>
+        )}
 
         <div className="mt-16 text-center bg-gradient-to-br from-red-500/10 to-red-600/5 backdrop-blur-sm border border-red-500/20 rounded-2xl p-8 max-w-3xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
