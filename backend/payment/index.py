@@ -603,49 +603,36 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int, plan_id:
         if not squad_uuids:
             squad_uuids = ['e742f30b-82fb-431a-918b-1b4d22d6ba4d']
         
-        # Если пользователь существует И НЕ только что создан - используем PATCH (безопаснее DELETE+CREATE)
+        # Если пользователь существует И НЕ только что создан - используем extend_subscription через remnawave function
         if user_exists and user_uuid and not user_created_recently:
-            print(f'🔄 Extending user subscription via PATCH: {username}, squads: {squad_uuids}')
+            print(f'🔄 Extending user subscription via remnawave function: {username}, squads: {squad_uuids}')
             
-            # Convert timestamp to ISO format
-            new_expire_at = datetime.fromtimestamp(expire_timestamp).isoformat() + 'Z'
-            
-            # Use direct PATCH to Remnawave API
-            patch_response = requests.patch(
-                f'{remnawave_api_url}/api/users/{user_uuid}',
-                headers={
-                    'Authorization': f'Bearer {remnawave_token}',
-                    'Content-Type': 'application/json'
-                },
+            # Use remnawave cloud function with extend_subscription action
+            extend_response = requests.post(
+                remnawave_url,
+                headers={'Content-Type': 'application/json'},
                 json={
-                    'expireAt': new_expire_at,
-                    'inboundUuids': squad_uuids
+                    'action': 'extend_subscription',
+                    'username': username,
+                    'uuid': user_uuid,
+                    'expire': expire_timestamp,
+                    'internalSquads': squad_uuids
                 },
-                timeout=10
+                timeout=30
             )
             
-            if patch_response.status_code == 200:
-                print(f'✅ User subscription extended via PATCH')
+            if extend_response.status_code == 200:
+                print(f'✅ User subscription extended successfully')
                 
-                # Get subscription URL
-                user_response = requests.get(
-                    f'{remnawave_api_url}/api/users',
-                    headers={'Authorization': f'Bearer {remnawave_token}'},
-                    timeout=10
-                )
-                
-                subscription_url = ''
-                if user_response.status_code == 200:
-                    users_data = user_response.json()
-                    users_list = users_data.get('response', {}).get('users', [])
-                    user_data = next((u for u in users_list if u.get('username') == username), None)
-                    if user_data:
-                        subscription_url = user_data.get('subscriptionUrl', '')
+                # Get subscription URL from response
+                extend_data = extend_response.json()
+                response_data = extend_data.get('response', extend_data)
+                subscription_url = response_data.get('subscriptionUrl', response_data.get('subscription_url', ''))
                 
                 return {'success': True, 'subscription_url': subscription_url}
             else:
-                print(f'❌ PATCH failed: {patch_response.status_code} - {patch_response.text}')
-                return {'success': False, 'error': patch_response.text}
+                print(f'❌ Extension failed: {extend_response.status_code} - {extend_response.text}')
+                return {'success': False, 'error': extend_response.text}
         else:
             # Новый пользователь - создаём через remnawave function
             payload = {
