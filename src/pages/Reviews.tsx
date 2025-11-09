@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Star, Quote, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import Icon from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -118,7 +119,47 @@ const Reviews = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
+    <>
+      <Helmet>
+        <title>Отзывы клиентов Speed VPN — Реальные отзывы о VPN-сервисе</title>
+        <meta name="description" content={`${totalReviews}+ реальных отзывов о Speed VPN. Средняя оценка ${averageRating.toFixed(1)}/5. Читайте мнения пользователей о скорости, стабильности и качестве VPN-сервиса.`} />
+        <meta name="keywords" content="отзывы speed vpn, отзывы vpn, vpn отзывы клиентов, speed vpn мнения, реальные отзывы vpn, отзывы о впн" />
+        <link rel="canonical" href="https://speedvpn.io/reviews" />
+        <meta property="og:title" content="Отзывы клиентов Speed VPN — Реальные отзывы" />
+        <meta property="og:description" content={`${totalReviews}+ отзывов. Оценка ${averageRating.toFixed(1)}/5. Узнайте мнение реальных пользователей Speed VPN.`} />
+        <meta property="og:url" content="https://speedvpn.io/reviews" />
+        <meta property="og:type" content="website" />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            "name": "Speed VPN",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": averageRating.toFixed(1),
+              "reviewCount": totalReviews,
+              "bestRating": "5",
+              "worstRating": "1"
+            },
+            "review": reviews.slice(0, 10).map(review => ({
+              "@type": "Review",
+              "reviewRating": {
+                "@type": "Rating",
+                "ratingValue": review.rating,
+                "bestRating": "5",
+                "worstRating": "1"
+              },
+              "author": {
+                "@type": "Person",
+                "name": review.name
+              },
+              "reviewBody": review.text,
+              "datePublished": review.date
+            }))
+          })}
+        </script>
+      </Helmet>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
       <div className="container mx-auto px-4 py-12 max-w-7xl">
         <button
           onClick={() => navigate('/')}
@@ -360,6 +401,7 @@ const Reviews = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
