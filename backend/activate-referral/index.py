@@ -169,29 +169,41 @@ def extend_subscription(username: str, days: int):
             current_timestamp = int(datetime.now().timestamp())
         
         new_timestamp = current_timestamp + (days * 86400)
+        new_expire_at = datetime.fromtimestamp(new_timestamp).isoformat() + 'Z'
         
-        print(f'📅 Extending {username}: current={current_expire}, adding {days} days, new_timestamp={new_timestamp}')
+        print(f'📅 Extending {username}: current={current_expire}, adding {days} days, new={new_expire_at}')
         
-        # Use extend_subscription (DELETE + CREATE) as workaround for Remnawave PATCH bug
-        remnawave_function_url = 'https://functions.poehali.dev/4e61ec57-0f83-4c68-83fb-8b3049f711ab'
-        
-        response = requests.post(
-            remnawave_function_url,
-            headers={'Content-Type': 'application/json'},
-            json={
-                'action': 'extend_subscription',
-                'username': username,
-                'uuid': user_uuid,
-                'expire': new_timestamp,
-                'internalSquads': user_data.get('internalSquads', [])
-            },
-            timeout=30
+        # Use PATCH to update expireAt directly (safer than DELETE+CREATE)
+        patch_response = requests.patch(
+            f'{remnawave_api_url}/api/users/{user_uuid}',
+            headers=headers,
+            json={'expireAt': new_expire_at},
+            timeout=10
         )
         
-        if response.status_code == 200:
-            print(f'✅ Extended {username} subscription by {days} days (recreated user)')
+        if patch_response.status_code == 200:
+            print(f'✅ Extended {username} subscription by {days} days via PATCH')
         else:
-            print(f'⚠️ Failed to extend subscription: {response.status_code} - {response.text}')
+            print(f'⚠️ PATCH failed ({patch_response.status_code}), trying update_user action...')
+            
+            # Fallback: try update_user через remnawave function
+            remnawave_function_url = 'https://functions.poehali.dev/4e61ec57-0f83-4c68-83fb-8b3049f711ab'
+            
+            response = requests.post(
+                remnawave_function_url,
+                headers={'Content-Type': 'application/json'},
+                json={
+                    'action': 'update_user',
+                    'uuid': user_uuid,
+                    'expireAt': new_expire_at
+                },
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                print(f'✅ Extended {username} via update_user action')
+            else:
+                print(f'⚠️ Failed to extend: {response.status_code} - {response.text}')
             
     except Exception as e:
         print(f'❌ Error extending subscription: {str(e)}')
