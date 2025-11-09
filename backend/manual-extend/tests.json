@@ -7,11 +7,11 @@
       "expectedStatus": 200
     },
     {
-      "name": "Test restore with empty array",
+      "name": "Test extend with empty array",
       "method": "POST",
       "path": "/",
       "body": {
-        "usernames": []
+        "extensions": []
       },
       "expectedStatus": 400,
       "expectedBody": {

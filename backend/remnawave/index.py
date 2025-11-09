@@ -344,9 +344,13 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             'isBase64Encoded': False
                         }
                 
-                # Обработка expire timestamp
+                # Обработка expire timestamp или expireAt строки
                 expire_at = None
-                if body_data.get('expire'):
+                if body_data.get('expireAt'):
+                    # Если передана строка ISO - используем напрямую
+                    expire_at = body_data['expireAt']
+                elif body_data.get('expire'):
+                    # Если передан timestamp - конвертируем
                     from datetime import datetime
                     expire_at = datetime.fromtimestamp(body_data['expire']).isoformat() + 'Z'
                 
