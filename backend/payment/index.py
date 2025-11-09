@@ -678,6 +678,28 @@ def create_user_in_remnawave(username: str, email: str, plan_days: int, plan_id:
                 print(f'✅ User created: {subscription_url}, UUID: {user_uuid}')
                 print(f'✅ User squads were set during creation: {squad_uuids}')
                 
+                # Save UUID to database for referral system
+                if user_uuid:
+                    try:
+                        import psycopg2
+                        db_url = os.environ.get('DATABASE_URL', '')
+                        if db_url:
+                            conn = psycopg2.connect(db_url)
+                            cur = conn.cursor()
+                            safe_username = username.replace("'", "''")
+                            safe_uuid = user_uuid.replace("'", "''")
+                            cur.execute(f"""
+                                INSERT INTO user_uuids (username, remnawave_uuid, created_at)
+                                VALUES ('{safe_username}', '{safe_uuid}', NOW())
+                                ON CONFLICT (username, remnawave_uuid) DO NOTHING
+                            """)
+                            conn.commit()
+                            cur.close()
+                            conn.close()
+                            print(f'💾 UUID saved to DB: {user_uuid}')
+                    except Exception as e:
+                        print(f'⚠️ Failed to save UUID: {str(e)}')
+                
                 return {'success': True, 'subscription_url': subscription_url}
             else:
                 print(f'❌ Remnawave error: {response.status_code} - {response.text}')

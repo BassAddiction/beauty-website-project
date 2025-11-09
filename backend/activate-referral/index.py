@@ -93,11 +93,23 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             """
                         )
                     
+                    # Get UUIDs from DB for both users
+                    safe_ref = referrer.replace("'", "''")
+                    cur.execute(f"SELECT remnawave_uuid FROM user_uuids WHERE username = '{safe_ref}' ORDER BY created_at DESC LIMIT 1")
+                    referrer_uuid_row = cur.fetchone()
+                    referrer_uuid = referrer_uuid_row[0] if referrer_uuid_row else None
+                    
+                    cur.execute(f"SELECT remnawave_uuid FROM user_uuids WHERE username = '{safe_username}' ORDER BY created_at DESC LIMIT 1")
+                    referred_uuid_row = cur.fetchone()
+                    referred_uuid = referred_uuid_row[0] if referred_uuid_row else None
+                    
+                    print(f'🔑 Referrer UUID: {referrer_uuid}, Referred UUID: {referred_uuid}')
+                    
                     # Extend referrer subscription by 7 days via Remnawave
-                    extend_subscription(referrer, 7)
+                    extend_subscription(referrer, 7, referrer_uuid)
                     
                     # Also give 7 days to the referred user (new user bonus)
-                    extend_subscription(username, 7)
+                    extend_subscription(username, 7, referred_uuid)
                     
                     conn.commit()
                     print(f'✅ Referral activated: {referrer} gets +7 days for referring {username}, {username} gets +7 days as referral bonus')
@@ -121,30 +133,91 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'body': json.dumps({'error': str(e)})
         }
 
-def extend_subscription(username: str, days: int):
-    '''Extend user subscription via Remnawave extend_user action (uses DELETE+CREATE internally)'''
+def extend_subscription(username: str, days: int, user_uuid: str = None):
+    '''Extend user subscription using UUID from DB (more reliable than API search)'''
     try:
         import requests
+        import os
+        import psycopg2
+        from datetime import datetime
         
-        # Use remnawave function's extend_user action which handles UUID changes correctly
+        remnawave_api_url = os.environ.get('REMNAWAVE_API_URL', '').rstrip('/')
+        remnawave_token = os.environ.get('REMNAWAVE_API_TOKEN', '')
         remnawave_function_url = 'https://functions.poehali.dev/4e61ec57-0f83-4c68-83fb-8b3049f711ab'
         
-        print(f'📅 Extending {username} by {days} days via extend_user action')
+        # Если UUID не передан - ищем в БД
+        if not user_uuid:
+            db_url = os.environ.get('DATABASE_URL', '')
+            if db_url:
+                conn = psycopg2.connect(db_url)
+                cur = conn.cursor()
+                safe_username = username.replace("'", "''")
+                cur.execute(f"SELECT remnawave_uuid FROM user_uuids WHERE username = '{safe_username}' ORDER BY created_at DESC LIMIT 1")
+                result = cur.fetchone()
+                if result:
+                    user_uuid = result[0]
+                    print(f'🔑 Found UUID in DB: {user_uuid}')
+                cur.close()
+                conn.close()
         
+        if not user_uuid:
+            print(f'⚠️ No UUID found for {username}, cannot extend')
+            return
+        
+        print(f'📅 Extending {username} (UUID: {user_uuid}) by {days} days')
+        
+        # Получаем текущую дату истечения
+        get_response = requests.get(
+            f'{remnawave_api_url}/api/users',
+            headers={'Authorization': f'Bearer {remnawave_token}'},
+            timeout=10
+        )
+        
+        if get_response.status_code != 200:
+            print(f'⚠️ Failed to get users list: {get_response.status_code}')
+            return
+        
+        users_data = get_response.json()
+        users_list = users_data.get('response', {}).get('users', [])
+        user_data = next((u for u in users_list if u.get('uuid') == user_uuid), None)
+        
+        if not user_data:
+            print(f'⚠️ User {username} not found by UUID {user_uuid}')
+            return
+        
+        current_expire_str = user_data.get('expireAt', '')
+        current_expire_ts = 0
+        
+        if current_expire_str:
+            try:
+                current_expire_dt = datetime.fromisoformat(current_expire_str.replace('Z', '+00:00'))
+                current_expire_ts = int(current_expire_dt.timestamp())
+            except:
+                pass
+        
+        # Считаем новую дату
+        now_ts = int(datetime.now().timestamp())
+        base_ts = max(current_expire_ts, now_ts)
+        new_expire_ts = base_ts + (days * 86400)
+        
+        print(f'📅 Current: {current_expire_ts}, New: {new_expire_ts} (+{days} days)')
+        
+        # Используем extend_subscription action с UUID
         response = requests.post(
             remnawave_function_url,
             headers={'Content-Type': 'application/json'},
             json={
-                'action': 'extend_user',
+                'action': 'extend_subscription',
                 'username': username,
-                'days': days
+                'uuid': user_uuid,
+                'expire': new_expire_ts,
+                'internalSquads': user_data.get('activeInternalSquads', [])
             },
             timeout=30
         )
         
         if response.status_code == 200:
-            result = response.json()
-            print(f'✅ Extended {username} subscription by {days} days: {result}')
+            print(f'✅ Extended {username} subscription by {days} days')
         else:
             print(f'⚠️ Failed to extend {username}: {response.status_code} - {response.text}')
             
