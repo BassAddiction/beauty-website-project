@@ -20,15 +20,13 @@ const HeroSection = () => {
             />
           </div>
           <h1 
-            className="text-5xl md:text-7xl font-black mb-6 tracking-tight transition-transform duration-100"
-            style={{ transform: `translateY(${offsetY * 0.3}px)` }}
+            className="text-5xl md:text-7xl font-black mb-6 tracking-tight"
           >
             <span className="hidden md:inline">Подключить VPN для России — быстрый и безопасный<br /></span>
             <span className="text-primary">Speed VPN — Ваша цифровая свобода</span>
           </h1>
           <p 
-            className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto transition-transform duration-100"
-            style={{ transform: `translateY(${offsetY * 0.15}px)` }}
+            className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto"
           >
             Получите доступ к YouTube, Nelzagram, Facebook, ChatGPT. Надёжный VPN-сервис от 79 руб. Работает на iOS, Android, Windows, Mac. Безлимитные устройства, 30 ГБ трафика в день.
           </p>
