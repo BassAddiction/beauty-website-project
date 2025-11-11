@@ -23,14 +23,14 @@ const HeroSection = () => {
             className="text-5xl md:text-7xl font-black mb-6 tracking-tight transition-transform duration-100"
             style={{ transform: `translateY(${offsetY * 0.3}px)` }}
           >
-            <span className="hidden md:inline">Быстрый и безопасный<br /></span>
-            <span className="text-primary">VPN для России</span>
+            <span className="hidden md:inline">Купить VPN для России — быстрый и безопасный<br /></span>
+            <span className="text-primary">Speed VPN с Vless Reality</span>
           </h1>
           <p 
             className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto transition-transform duration-100"
             style={{ transform: `translateY(${offsetY * 0.15}px)` }}
           >
-            Доступ к YouTube, заблокированным соцсетям, ChatGPT и другим сайтам. Vless Reality протокол. От 79 рублей.
+            Обход блокировок YouTube, Instagram, Facebook, ChatGPT. Надёжный VPN-сервис от 79₽/мес. Работает на iOS, Android, Windows, Mac. Безлимитные устройства, 30 ГБ трафика в день.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button size="lg" className="rounded-full text-lg px-8 h-14 button-glow" asChild>
