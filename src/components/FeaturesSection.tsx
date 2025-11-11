@@ -43,7 +43,7 @@ const FeaturesSection = () => {
               </div>
               <CardTitle>Неограниченный доступ к сайтам</CardTitle>
               <CardDescription>
-                Открывайте YouTube, Instagram, Facebook, Netflix, ChatGPT и другие заблокированные сервисы из России. Безлимитные устройства, 30 ГБ трафика ежедневно.
+                Открывайте YouTube, Nelzagram, Facebook, Netflix, ChatGPT и другие заблокированные сервисы из России. Безлимитные устройства, 30 ГБ трафика ежедневно.
               </CardDescription>
             </CardHeader>
           </Card>

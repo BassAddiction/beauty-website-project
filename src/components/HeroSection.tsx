@@ -30,7 +30,7 @@ const HeroSection = () => {
             className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto transition-transform duration-100"
             style={{ transform: `translateY(${offsetY * 0.15}px)` }}
           >
-            Обход блокировок YouTube, Instagram, Facebook, ChatGPT. Надёжный VPN-сервис от 79₽/мес. Работает на iOS, Android, Windows, Mac. Безлимитные устройства, 30 ГБ трафика в день.
+            Получите доступ к YouTube, Nelzagram, Facebook, ChatGPT. Надёжный VPN-сервис от 79₽/мес. Работает на iOS, Android, Windows, Mac. Безлимитные устройства, 30 ГБ трафика в день.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button size="lg" className="rounded-full text-lg px-8 h-14 button-glow" asChild>
