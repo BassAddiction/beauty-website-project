@@ -91,6 +91,14 @@ export const PricingCard = ({ paymentLoading, onPayment }: PricingCardProps) => 
       </CardHeader>
       {isOpen && (
       <CardContent>
+        <div className="mb-4 p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
+          <div className="flex gap-3">
+            <Icon name="Info" className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-muted-foreground">
+              После продления подписки необходимо <span className="font-semibold text-foreground">обновить или заново добавить ссылку в VPN-клиент</span>, чтобы изменения вступили в силу.
+            </p>
+          </div>
+        </div>
         {loading ? (
           <div className="text-center py-8">
             <Icon name="Loader2" className="w-8 h-8 animate-spin mx-auto text-primary" />
