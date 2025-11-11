@@ -23,7 +23,7 @@ const HeroSection = () => {
             className="text-5xl md:text-7xl font-black mb-6 tracking-tight transition-transform duration-100"
             style={{ transform: `translateY(${offsetY * 0.3}px)` }}
           >
-            <span className="hidden md:inline">Купить VPN для России — быстрый и безопасный<br /></span>
+            <span className="hidden md:inline">Подключить VPN для России — быстрый и безопасный<br /></span>
             <span className="text-primary">Speed VPN — Это ваша цифровая свобода</span>
           </h1>
           <p 
