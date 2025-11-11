@@ -24,7 +24,7 @@ const HeroSection = () => {
             style={{ transform: `translateY(${offsetY * 0.3}px)` }}
           >
             <span className="hidden md:inline">Купить VPN для России — быстрый и безопасный<br /></span>
-            <span className="text-primary">Speed VPN с Vless Reality</span>
+            <span className="text-primary">Speed VPN — Это ваша цифровая свобода</span>
           </h1>
           <p 
             className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto transition-transform duration-100"

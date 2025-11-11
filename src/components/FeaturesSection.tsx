@@ -17,7 +17,7 @@ const FeaturesSection = () => {
               <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
                 <Icon name="Shield" size={24} className="text-primary" />
               </div>
-              <CardTitle>Безопасный VPN с Vless Reality</CardTitle>
+              <CardTitle>Безопасный VPN — Это ваша цифровая свобода</CardTitle>
               <CardDescription>
                 Современный протокол Vless Reality с усиленным шифрованием обеспечивает максимальную конфиденциальность и гарантированный обход блокировок в России. Ваши данные под надёжной защитой.
               </CardDescription>
