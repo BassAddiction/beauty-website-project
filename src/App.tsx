@@ -19,6 +19,7 @@ import Terms from "./pages/Terms";
 import SubscriptionBuilder from "./pages/SubscriptionBuilder";
 import Reviews from "./pages/Reviews";
 import News from "./pages/News";
+import VpnYoutube from "./pages/VpnYoutube";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -45,6 +46,7 @@ const App = () => (
           <Route path="/builder" element={<SubscriptionBuilder />} />
           <Route path="/reviews" element={<Reviews />} />
           <Route path="/news" element={<News />} />
+          <Route path="/vpn-youtube" element={<VpnYoutube />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -22,6 +22,7 @@ const Footer = () => {
               <li><a href="#features" className="hover:text-primary transition-colors">Возможности</a></li>
               <li><a href="#pricing" className="hover:text-primary transition-colors">Тарифы</a></li>
               <li><a href="#training" className="hover:text-primary transition-colors">Обучение</a></li>
+              <li><a href="/vpn-youtube" className="hover:text-primary transition-colors">VPN для YouTube</a></li>
             </ul>
           </div>
 
