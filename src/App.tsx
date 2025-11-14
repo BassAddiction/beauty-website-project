@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -51,7 +50,6 @@ const App = () => (
           <Route path="/vpn-youtube" element={<VpnYoutube />} />
           <Route path="/vpn-telegram" element={<VpnTelegram />} />
           <Route path="/vpn-chatgpt" element={<VpnChatGPT />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
