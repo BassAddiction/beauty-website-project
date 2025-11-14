@@ -130,13 +130,13 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                 </div>
                                 
                                 <div style="text-align: center; margin: 25px 0;">
-                                    <a href="https://speedvpn.io" style="display: inline-block; background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.5); border: 1px solid #ef4444;">
+                                    <a href="https://speedvpn.io" style="display: inline-block; background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #991b1b 100%); color: #ffffff; text-decoration: none; padding: 18px 45px; border-radius: 12px; font-weight: 700; font-size: 17px; box-shadow: 0 8px 20px rgba(220, 38, 38, 0.6), 0 0 30px rgba(239, 68, 68, 0.4); border: 2px solid #fca5a5; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">
                                         🚀 Перейти в личный кабинет
                                     </a>
                                 </div>
                                 
                                 <div style="text-align: center; margin: 25px 0;">
-                                    <a href="{subscription_url}" style="display: inline-block; background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.5); border: 1px solid #ef4444;">
+                                    <a href="{subscription_url}" style="display: inline-block; background: linear-gradient(135deg, #f59e0b 0%, #ea580c 50%, #dc2626 100%); color: #ffffff; text-decoration: none; padding: 18px 45px; border-radius: 12px; font-weight: 700; font-size: 17px; box-shadow: 0 8px 20px rgba(245, 158, 11, 0.6), 0 0 30px rgba(234, 88, 12, 0.4); border: 2px solid #fbbf24; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">
                                         ⚡ Быстрое подключение
                                     </a>
                                 </div>
@@ -155,11 +155,30 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         
                         <tr>
                             <td style="background-color: #1a0000; padding: 30px; text-align: center; border-top: 2px solid #7f1d1d;">
-                                <p style="color: #dc2626; font-size: 16px; margin: 0 0 15px 0; font-weight: 600;">
+                                <p style="color: #dc2626; font-size: 16px; margin: 0 0 20px 0; font-weight: 600;">
                                     Нужна помощь? Мы на связи! 💬
                                 </p>
-                                <p style="color: #fca5a5; font-size: 14px; margin: 0;">
-                                    Telegram: <a href="https://t.me/gospeedvpn" style="color: #ef4444; text-decoration: none; font-weight: 600;">@gospeedvpn</a>
+                                <div style="margin-bottom: 20px;">
+                                    <a href="https://t.me/shopspeedvpn_bot" style="display: inline-block; margin: 0 8px; text-decoration: none;">
+                                        <div style="width: 44px; height: 44px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.5); border: 2px solid #fca5a5;">
+                                            <span style="font-size: 22px;">🤖</span>
+                                        </div>
+                                    </a>
+                                    <a href="https://t.me/gospeedvpn" style="display: inline-block; margin: 0 8px; text-decoration: none;">
+                                        <div style="width: 44px; height: 44px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.5); border: 2px solid #fca5a5;">
+                                            <span style="font-size: 22px;">💬</span>
+                                        </div>
+                                    </a>
+                                    <a href="https://t.me/speedvpn_io" style="display: inline-block; margin: 0 8px; text-decoration: none;">
+                                        <div style="width: 44px; height: 44px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.5); border: 2px solid #fca5a5;">
+                                            <span style="font-size: 22px;">📻</span>
+                                        </div>
+                                    </a>
+                                </div>
+                                <p style="color: #fca5a5; font-size: 13px; margin: 0; line-height: 1.6;">
+                                    <a href="https://t.me/shopspeedvpn_bot" style="color: #ef4444; text-decoration: none; font-weight: 600;">Бот для покупки</a> • 
+                                    <a href="https://t.me/gospeedvpn" style="color: #ef4444; text-decoration: none; font-weight: 600;">Поддержка</a> • 
+                                    <a href="https://t.me/speedvpn_io" style="color: #ef4444; text-decoration: none; font-weight: 600;">Новости</a>
                                 </p>
                             </td>
                         </tr>
