@@ -9,11 +9,11 @@ import { NewYearTheme } from "@/components/NewYearTheme";
 const VpnRussia = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = 'VPN для России 2025 — Speed VPN от 79₽ | Доступ к YouTube, Telegram, ChatGPT';
+    document.title = 'VPN для России 2025 — Speed VPN от 79₽ за неделю | Доступ к YouTube, Telegram, ChatGPT';
     
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) {
-      metaDesc.setAttribute('content', 'Надежный VPN для России. Обход блокировок YouTube, Telegram, ChatGPT. Vless Reality протокол. 30 ГБ/день, безлимитные устройства. От 79₽/месяц.');
+      metaDesc.setAttribute('content', 'Надежный VPN для России. Обход блокировок YouTube, Telegram, ChatGPT. Vless Reality протокол. 30 ГБ/день, безлимитные устройства. От 79₽ за 7 дней.');
     }
   }, []);
 
@@ -48,7 +48,7 @@ const VpnRussia = () => {
                 <Icon name="Globe" className="text-primary" size={32} />
               </div>
               <div className="flex-1">
-                <h2 className="text-2xl font-bold mb-3">Интернет без границ за 79₽</h2>
+                <h2 className="text-2xl font-bold mb-3">Интернет без границ от 79₽/неделю</h2>
                 <p className="text-muted-foreground mb-4">
                   Speed VPN — специализированный сервис для России. Стабильный обход любых блокировок. Подключается за 2 минуты.
                 </p>
@@ -145,9 +145,9 @@ const VpnRussia = () => {
 
               <div className="p-6 bg-card rounded-xl border">
                 <Icon name="Wallet" className="text-primary mb-3" size={32} />
-                <h3 className="font-bold text-lg mb-2">От 79₽ в месяц</h3>
+                <h3 className="font-bold text-lg mb-2">От 79₽ за 7 дней</h3>
                 <p className="text-muted-foreground text-sm">
-                  Самые доступные цены на рынке. Дешевле чашки кофе, а пользы на весь месяц. Принимаем оплату российскими картами.
+                  Самые доступные цены на рынке. Дешевле чашки кофе. Месячный тариф — 200₽. Принимаем оплату российскими картами.
                 </p>
               </div>
 

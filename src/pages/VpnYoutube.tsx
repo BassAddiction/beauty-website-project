@@ -13,7 +13,7 @@ const VpnYoutube = () => {
     
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) {
-      metaDesc.setAttribute('content', 'Подробная инструкция как подключить VPN для YouTube в России. Работает на iOS, Android, Windows, Mac. Быстрый доступ к видео без тормозов. От 79 рублей.');
+      metaDesc.setAttribute('content', 'Подробная инструкция как подключить VPN для YouTube в России. Работает на iOS, Android, Windows, Mac. Быстрый доступ к видео без тормозов. От 79 рублей за 7 дней.');
     }
   }, []);
 
@@ -56,7 +56,7 @@ const VpnYoutube = () => {
                   to="/#pricing" 
                   className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all font-semibold"
                 >
-                  Подключить VPN от 79₽
+                  Подключить VPN от 79₽/неделя
                   <Icon name="ArrowRight" size={20} />
                 </Link>
               </div>
@@ -88,7 +88,7 @@ const VpnYoutube = () => {
                   <div className="flex-1">
                     <h3 className="text-xl font-bold mb-3">Выберите тариф Speed VPN</h3>
                     <p className="text-muted-foreground mb-3">
-                      Переходите на <Link to="/#pricing" className="text-primary hover:underline">страницу с тарифами</Link> и выбирайте подходящий план. Рекомендуем начать с месячного за 79₽ — этого достаточно для комфортного просмотра YouTube.
+                      Переходите на <Link to="/#pricing" className="text-primary hover:underline">страницу с тарифами</Link> и выбирайте подходящий план. Рекомендуем начать с тарифа на 7 дней за 79₽ — этого достаточно для комфортного просмотра YouTube.
                     </p>
                     <ul className="list-disc list-inside text-muted-foreground space-y-1">
                       <li>30 ГБ трафика в день — хватит на 6 часов HD-видео</li>

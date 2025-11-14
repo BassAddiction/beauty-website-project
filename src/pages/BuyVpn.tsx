@@ -37,7 +37,7 @@ const BuyVpn = () => {
               Купить VPN для России — Speed VPN
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
-              Надёжный VPN от 79 рублей в месяц. Оплата российскими картами. Мгновенная активация. Обход всех блокировок. Работает на любых устройствах.
+              Надёжный VPN от 79 рублей за 7 дней. Оплата российскими картами. Мгновенная активация. Обход всех блокировок. Работает на любых устройствах.
             </p>
           </div>
 
@@ -46,7 +46,7 @@ const BuyVpn = () => {
             <div className="bg-card rounded-xl p-6 border hover:border-primary transition-all">
               <div className="text-center mb-4">
                 <div className="text-3xl font-bold text-primary mb-2">79₽</div>
-                <p className="text-muted-foreground text-sm">1 месяц</p>
+                <p className="text-muted-foreground text-sm">7 дней</p>
               </div>
               <ul className="space-y-2 text-sm mb-6">
                 <li className="flex items-center gap-2">
@@ -59,7 +59,7 @@ const BuyVpn = () => {
                 </li>
                 <li className="flex items-center gap-2">
                   <Icon name="Check" className="text-primary" size={16} />
-                  <span>Без логов</span>
+                  <span>Базовая поддержка</span>
                 </li>
               </ul>
               <Link 
@@ -75,9 +75,9 @@ const BuyVpn = () => {
                 ПОПУЛЯРНЫЙ
               </div>
               <div className="text-center mb-4">
-                <div className="text-3xl font-bold text-primary mb-2">400₽</div>
+                <div className="text-3xl font-bold text-primary mb-2">900₽</div>
                 <p className="text-muted-foreground text-sm">6 месяцев</p>
-                <p className="text-xs text-primary font-semibold">67₽/месяц • экономия 15%</p>
+                <p className="text-xs text-primary font-semibold">150₽/месяц • скидка 25%</p>
               </div>
               <ul className="space-y-2 text-sm mb-6">
                 <li className="flex items-center gap-2">
@@ -103,9 +103,9 @@ const BuyVpn = () => {
 
             <div className="bg-card rounded-xl p-6 border hover:border-primary transition-all">
               <div className="text-center mb-4">
-                <div className="text-3xl font-bold text-primary mb-2">720₽</div>
+                <div className="text-3xl font-bold text-primary mb-2">1200₽</div>
                 <p className="text-muted-foreground text-sm">12 месяцев</p>
-                <p className="text-xs text-primary font-semibold">60₽/месяц • экономия 24%</p>
+                <p className="text-xs text-primary font-semibold">100₽/месяц • скидка 50%</p>
               </div>
               <ul className="space-y-2 text-sm mb-6">
                 <li className="flex items-center gap-2">

@@ -13,7 +13,7 @@ const VpnChatGPT = () => {
     
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) {
-      metaDesc.setAttribute('content', 'Как получить доступ к ChatGPT из России через VPN. Speed VPN обеспечивает стабильную работу OpenAI, Claude, Midjourney. Тарифы от 79₽.');
+      metaDesc.setAttribute('content', 'Как получить доступ к ChatGPT из России через VPN. Speed VPN обеспечивает стабильную работу OpenAI, Claude, Midjourney. Тарифы от 79₽ за 7 дней.');
     }
   }, []);
 
@@ -56,7 +56,7 @@ const VpnChatGPT = () => {
                   to="/#pricing" 
                   className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all font-semibold"
                 >
-                  Подключить Speed VPN от 79₽
+                  Подключить Speed VPN от 79₽/неделю
                   <Icon name="ArrowRight" size={20} />
                 </Link>
               </div>
@@ -100,7 +100,7 @@ const VpnChatGPT = () => {
                   <div className="flex-1">
                     <h3 className="text-xl font-bold mb-3">Зарегистрируйтесь на speedvpn.io</h3>
                     <p className="text-muted-foreground mb-3">
-                      Перейдите на <Link to="/#pricing" className="text-primary hover:underline">страницу тарифов</Link> и выберите подходящий план. Для ChatGPT рекомендуем базовый тариф за 79₽ — этого достаточно для комфортной работы.
+                      Перейдите на <Link to="/#pricing" className="text-primary hover:underline">страницу тарифов</Link> и выберите подходящий план. Для ChatGPT рекомендуем тариф на 7 дней за 79₽ — этого достаточно для комфортной работы.
                     </p>
                     <ul className="list-disc list-inside text-muted-foreground space-y-1">
                       <li>30 ГБ трафика в сутки — более 100 часов работы с ChatGPT</li>

@@ -9,11 +9,11 @@ import { NewYearTheme } from "@/components/NewYearTheme";
 const VpnTelegram = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = 'VPN для Telegram в России 2025 — Speed VPN от 79₽/мес';
+    document.title = 'VPN для Telegram в России 2025 — Speed VPN от 79₽ за неделю';
     
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) {
-      metaDesc.setAttribute('content', 'Надежный VPN для Telegram в России. Быстрое подключение на iOS, Android, Windows, Mac. Доступ к каналам без блокировок. Тарифы от 79 рублей.');
+      metaDesc.setAttribute('content', 'Надежный VPN для Telegram в России. Быстрое подключение на iOS, Android, Windows, Mac. Доступ к каналам без блокировок. Тарифы от 79 рублей за 7 дней.');
     }
   }, []);
 
@@ -48,7 +48,7 @@ const VpnTelegram = () => {
                 <Icon name="Send" className="text-primary" size={32} />
               </div>
               <div className="flex-1">
-                <h2 className="text-2xl font-bold mb-3">Telegram без тормозов за 79₽</h2>
+                <h2 className="text-2xl font-bold mb-3">Telegram без тормозов от 79₽/неделю</h2>
                 <p className="text-muted-foreground mb-4">
                   Speed VPN мгновенно устраняет проблемы с загрузкой медиа в Telegram. Подключается за 2 минуты на любом устройстве.
                 </p>
@@ -88,7 +88,7 @@ const VpnTelegram = () => {
                   <div className="flex-1">
                     <h3 className="text-xl font-bold mb-3">Выберите тариф Speed VPN</h3>
                     <p className="text-muted-foreground mb-3">
-                      Для Telegram подойдет любой план — даже базовый за 79₽ обеспечит стабильную работу мессенджера на всех устройствах.
+                      Для Telegram подойдет любой план — даже базовый на 7 дней за 79₽ обеспечит стабильную работу мессенджера на всех устройствах.
                     </p>
                     <ul className="list-disc list-inside text-muted-foreground space-y-1">
                       <li>30 ГБ трафика в день — достаточно для любого использования Telegram</li>
