@@ -21,6 +21,8 @@ import News from "./pages/News";
 import VpnYoutube from "./pages/VpnYoutube";
 import VpnTelegram from "./pages/VpnTelegram";
 import VpnChatGPT from "./pages/VpnChatGPT";
+import VpnRussia from "./pages/VpnRussia";
+import BuyVpn from "./pages/BuyVpn";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,6 +52,8 @@ const App = () => (
           <Route path="/vpn-youtube" element={<VpnYoutube />} />
           <Route path="/vpn-telegram" element={<VpnTelegram />} />
           <Route path="/vpn-chatgpt" element={<VpnChatGPT />} />
+          <Route path="/vpn-russia" element={<VpnRussia />} />
+          <Route path="/buy-vpn" element={<BuyVpn />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

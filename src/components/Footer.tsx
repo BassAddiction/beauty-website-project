@@ -5,7 +5,7 @@ const Footer = () => {
   return (
     <footer className="py-12 px-4 border-t border-border">
       <div className="container mx-auto max-w-6xl">
-        <div className="grid md:grid-cols-4 gap-8 mb-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
               <img src={CDN_ASSETS.CLIENT_ICONS.WINDOWS} alt="Speed VPN" className="w-8 h-8 rounded-lg" />
@@ -21,10 +21,18 @@ const Footer = () => {
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><a href="#features" className="hover:text-primary transition-colors">Возможности</a></li>
               <li><a href="#pricing" className="hover:text-primary transition-colors">Тарифы</a></li>
-              <li><a href="#training" className="hover:text-primary transition-colors">Обучение</a></li>
+              <li><a href="/buy-vpn" className="hover:text-primary transition-colors">Купить VPN</a></li>
+              <li><a href="/vpn-russia" className="hover:text-primary transition-colors">VPN для России</a></li>
               <li><a href="/vpn-youtube" className="hover:text-primary transition-colors">VPN для YouTube</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-bold mb-4">Гайды</h4>
+            <ul className="space-y-2 text-sm text-muted-foreground">
               <li><a href="/vpn-telegram" className="hover:text-primary transition-colors">VPN для Telegram</a></li>
               <li><a href="/vpn-chatgpt" className="hover:text-primary transition-colors">VPN для ChatGPT</a></li>
+              <li><a href="#training" className="hover:text-primary transition-colors">Обучение</a></li>
             </ul>
           </div>
 
