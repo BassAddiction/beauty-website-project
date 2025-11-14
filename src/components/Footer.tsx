@@ -23,6 +23,8 @@ const Footer = () => {
               <li><a href="#pricing" className="hover:text-primary transition-colors">Тарифы</a></li>
               <li><a href="#training" className="hover:text-primary transition-colors">Обучение</a></li>
               <li><a href="/vpn-youtube" className="hover:text-primary transition-colors">VPN для YouTube</a></li>
+              <li><a href="/vpn-telegram" className="hover:text-primary transition-colors">VPN для Telegram</a></li>
+              <li><a href="/vpn-chatgpt" className="hover:text-primary transition-colors">VPN для ChatGPT</a></li>
             </ul>
           </div>
 
