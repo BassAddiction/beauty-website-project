@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Star, Quote, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import { useSEO } from "@/hooks/useSEO";
+import { pageSEO } from "@/utils/seo";
 import Icon from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +22,8 @@ interface Review {
 }
 
 const Reviews = () => {
+  useSEO(pageSEO.reviews);
+  
   const navigate = useNavigate();
   const { toast } = useToast();
   const [reviews, setReviews] = useState<Review[]>([]);

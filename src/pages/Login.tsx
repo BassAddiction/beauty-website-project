@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useSEO } from "@/hooks/useSEO";
+import { pageSEO } from "@/utils/seo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,6 +12,8 @@ import API_ENDPOINTS, { CDN_ASSETS } from '@/config/api';
 const AUTH_CHECK_URL = API_ENDPOINTS.AUTH_CHECK;
 
 const Login = () => {
+  useSEO(pageSEO.login);
+  
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);

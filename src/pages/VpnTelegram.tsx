@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useSEO } from "@/hooks/useSEO";
+import { pageSEO } from "@/utils/seo";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -7,14 +9,10 @@ import Icon from '@/components/ui/icon';
 import { NewYearTheme } from "@/components/NewYearTheme";
 
 const VpnTelegram = () => {
+  useSEO(pageSEO.vpnTelegram);
+  
   useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = 'VPN для Telegram в России 2025 — Speed VPN от 79₽ за неделю';
-    
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) {
-      metaDesc.setAttribute('content', 'Надежный VPN для Telegram в России. Быстрое подключение на iOS, Android, Windows, Mac. Доступ к каналам без блокировок. Тарифы от 79 рублей за 7 дней.');
-    }
   }, []);
 
   return (

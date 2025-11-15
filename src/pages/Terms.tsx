@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
+import { useSEO } from "@/hooks/useSEO";
+import { pageSEO } from "@/utils/seo";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 import { CDN_ASSETS } from '@/config/api';
 
 const Terms = () => {
+  useSEO(pageSEO.terms);
+  
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border">

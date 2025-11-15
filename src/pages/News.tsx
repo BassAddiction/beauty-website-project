@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+import { useSEO } from "@/hooks/useSEO";
+import { pageSEO } from "@/utils/seo";
 import Icon from '@/components/ui/icon';
 import API_ENDPOINTS from '@/config/api';
 
@@ -12,6 +14,8 @@ interface NewsItem {
 }
 
 const News = () => {
+  useSEO(pageSEO.news);
+  
   const navigate = useNavigate();
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);

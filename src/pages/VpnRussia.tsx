@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useSEO } from "@/hooks/useSEO";
+import { pageSEO } from "@/utils/seo";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -7,14 +9,10 @@ import Icon from '@/components/ui/icon';
 import { NewYearTheme } from "@/components/NewYearTheme";
 
 const VpnRussia = () => {
+  useSEO(pageSEO.vpnRussia);
+  
   useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = 'VPN для России 2025 — Speed VPN от 79₽ за неделю | Доступ к YouTube, Telegram, ChatGPT';
-    
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) {
-      metaDesc.setAttribute('content', 'Надежный VPN для России. Обход блокировок YouTube, Telegram, ChatGPT. Vless Reality протокол. 30 ГБ/день, безлимитные устройства. От 79₽ за 7 дней.');
-    }
   }, []);
 
   return (

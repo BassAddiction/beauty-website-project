@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useSEO } from "@/hooks/useSEO";
+import { pageSEO } from "@/utils/seo";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -7,14 +9,10 @@ import Icon from '@/components/ui/icon';
 import { NewYearTheme } from "@/components/NewYearTheme";
 
 const VpnYoutube = () => {
+  useSEO(pageSEO.vpnYoutube);
+  
   useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = 'Как подключить VPN для YouTube в России 2025 | Speed VPN';
-    
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) {
-      metaDesc.setAttribute('content', 'Подробная инструкция как подключить VPN для YouTube в России. Работает на iOS, Android, Windows, Mac. Быстрый доступ к видео без тормозов. От 79 рублей за 7 дней.');
-    }
   }, []);
 
   return (

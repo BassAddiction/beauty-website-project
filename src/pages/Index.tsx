@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
+import { useSEO } from "@/hooks/useSEO";
+import { pageSEO } from "@/utils/seo";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import PricingSection from "@/components/PricingSection";
@@ -16,6 +18,8 @@ import { NewYearTheme } from "@/components/NewYearTheme";
 const Index = () => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
+  
+  useSEO(pageSEO.home);
 
   useEffect(() => {
     // Save referral code from URL

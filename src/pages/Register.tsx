@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { useSEO } from "@/hooks/useSEO";
+import { pageSEO } from "@/utils/seo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -19,6 +21,8 @@ interface Plan {
 }
 
 const Register = () => {
+  useSEO(pageSEO.register);
+  
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [step, setStep] = useState(1);

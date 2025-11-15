@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useSEO } from "@/hooks/useSEO";
+import { pageSEO } from "@/utils/seo";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -7,14 +9,10 @@ import Icon from '@/components/ui/icon';
 import { NewYearTheme } from "@/components/NewYearTheme";
 
 const BuyVpn = () => {
+  useSEO(pageSEO.buyVpn);
+  
   useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = 'Купить VPN для России от 79₽ — Speed VPN | Оплата российскими картами';
-    
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) {
-      metaDesc.setAttribute('content', 'Купить VPN недорого от 79₽/месяц. Оплата российскими картами МИР, Visa, Mastercard. Мгновенная активация. Доступ к YouTube, ChatGPT, Telegram. Speed VPN.');
-    }
   }, []);
 
   return (

@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { useSEO } from "@/hooks/useSEO";
+import { pageSEO } from "@/utils/seo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
@@ -34,6 +36,8 @@ interface Payment {
 }
 
 const Dashboard = () => {
+  useSEO(pageSEO.dashboard);
+  
   const navigate = useNavigate();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);

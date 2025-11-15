@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useSEO } from "@/hooks/useSEO";
+import { pageSEO } from "@/utils/seo";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -7,14 +9,10 @@ import Icon from '@/components/ui/icon';
 import { NewYearTheme } from "@/components/NewYearTheme";
 
 const VpnChatGPT = () => {
+  useSEO(pageSEO.vpnChatGPT);
+  
   useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = 'VPN для ChatGPT в России 2025 | Speed VPN — доступ к OpenAI';
-    
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) {
-      metaDesc.setAttribute('content', 'Как получить доступ к ChatGPT из России через VPN. Speed VPN обеспечивает стабильную работу OpenAI, Claude, Midjourney. Тарифы от 79₽ за 7 дней.');
-    }
   }, []);
 
   return (
