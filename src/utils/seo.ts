@@ -62,10 +62,87 @@ export const updatePageMeta = (meta: SEOMetaTags) => {
 export const addStructuredData = (data: object) => {
   if (typeof document === 'undefined') return;
 
+  const existingScript = document.querySelector('script[data-schema-type]');
+  if (existingScript) {
+    existingScript.remove();
+  }
+
   const script = document.createElement('script');
   script.type = 'application/ld+json';
+  script.setAttribute('data-schema-type', 'dynamic');
   script.text = JSON.stringify(data);
   document.head.appendChild(script);
+};
+
+export const createBreadcrumbSchema = (items: Array<{ name: string; url: string }>) => {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': items.map((item, index) => ({
+      '@type': 'ListItem',
+      'position': index + 1,
+      'name': item.name,
+      'item': item.url
+    }))
+  };
+};
+
+export const createOrganizationSchema = () => {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    'name': 'Speed VPN',
+    'url': 'https://speedvpn.io',
+    'logo': 'https://speedvpn.io/favicon.svg',
+    'description': 'Быстрый и безопасный VPN-сервис для России с Vless Reality протоколом',
+    'address': {
+      '@type': 'PostalAddress',
+      'addressCountry': 'RU'
+    },
+    'sameAs': [
+      'https://t.me/speedvpn_support'
+    ]
+  };
+};
+
+export const createProductSchema = (product: {
+  name: string;
+  description: string;
+  price: string;
+  priceCurrency: string;
+}) => {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    'name': product.name,
+    'description': product.description,
+    'offers': {
+      '@type': 'Offer',
+      'price': product.price,
+      'priceCurrency': product.priceCurrency,
+      'availability': 'https://schema.org/InStock',
+      'url': 'https://speedvpn.io/buy-vpn'
+    }
+  };
+};
+
+export const createWebPageSchema = (page: {
+  name: string;
+  description: string;
+  url: string;
+}) => {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    'name': page.name,
+    'description': page.description,
+    'url': page.url,
+    'isPartOf': {
+      '@type': 'WebSite',
+      'name': 'Speed VPN',
+      'url': 'https://speedvpn.io'
+    }
+  };
 };
 
 export const pageSEO = {

@@ -1,15 +1,24 @@
 import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { useSEO } from "@/hooks/useSEO";
-import { pageSEO } from "@/utils/seo";
+import { pageSEO, createWebPageSchema } from "@/utils/seo";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import Icon from '@/components/ui/icon';
 import { NewYearTheme } from "@/components/NewYearTheme";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 const VpnChatGPT = () => {
-  useSEO(pageSEO.vpnChatGPT);
+  const pageSchema = createWebPageSchema({
+    name: 'VPN для ChatGPT',
+    description: 'Полный доступ к ChatGPT из России',
+    url: 'https://speedvpn.io/vpn-chatgpt'
+  });
+
+  useSEO({
+    ...pageSEO.vpnChatGPT,
+    structuredData: pageSchema
+  });
   
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -22,12 +31,7 @@ const VpnChatGPT = () => {
       
       <main className="container mx-auto px-4 py-12 md:py-20">
         <div className="max-w-4xl mx-auto">
-          {/* Breadcrumbs */}
-          <nav className="mb-8 text-sm text-muted-foreground">
-            <Link to="/" className="hover:text-primary transition-colors">Главная</Link>
-            <span className="mx-2">/</span>
-            <span>VPN для ChatGPT</span>
-          </nav>
+          <Breadcrumbs items={[{ name: 'VPN для ChatGPT', path: '/vpn-chatgpt' }]} />
 
           {/* Hero */}
           <div className="mb-12">

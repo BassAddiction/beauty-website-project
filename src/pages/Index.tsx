@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
 import { useSEO } from "@/hooks/useSEO";
-import { pageSEO } from "@/utils/seo";
+import { pageSEO, createOrganizationSchema } from "@/utils/seo";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import PricingSection from "@/components/PricingSection";
@@ -14,12 +14,18 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import { NewsFeed } from "@/components/NewsFeed";
 import { NewYearTheme } from "@/components/NewYearTheme";
+import { InternalLinks } from "@/components/InternalLinks";
 
 const Index = () => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   
-  useSEO(pageSEO.home);
+  const organizationSchema = createOrganizationSchema();
+  
+  useSEO({
+    ...pageSEO.home,
+    structuredData: organizationSchema
+  });
 
   useEffect(() => {
     // Save referral code from URL
@@ -54,6 +60,7 @@ const Index = () => {
       </div>
       <PricingSection />
       <FeaturesSection />
+      <InternalLinks />
       <TrainingSection />
       <VPNClientsSection />
       <FAQSection />

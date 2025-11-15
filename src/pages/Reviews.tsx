@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import FUNC2URL from "../../backend/func2url.json";
 
 interface Review {
@@ -165,13 +166,9 @@ const Reviews = () => {
       </Helmet>
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
       <div className="container mx-auto px-4 py-12 max-w-7xl">
-        <button
-          onClick={() => navigate('/')}
-          className="mb-8 flex items-center gap-2 text-gray-400 hover:text-red-500 transition-colors"
-        >
-          <Icon name="ArrowLeft" size={20} />
-          <span>На главную</span>
-        </button>
+        <div className="mb-8">
+          <Breadcrumbs items={[{ name: 'Отзывы', path: '/reviews' }]} />
+        </div>
 
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">

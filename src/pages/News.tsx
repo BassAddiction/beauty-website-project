@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet';
 import { useSEO } from "@/hooks/useSEO";
 import { pageSEO } from "@/utils/seo";
 import Icon from '@/components/ui/icon';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import API_ENDPOINTS from '@/config/api';
 
 interface NewsItem {
@@ -90,13 +91,9 @@ const News = () => {
 
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
         <div className="container mx-auto px-4 py-12 max-w-4xl">
-          <button
-            onClick={() => navigate('/')}
-            className="mb-8 flex items-center gap-2 text-gray-400 hover:text-red-500 transition-colors"
-          >
-            <Icon name="ArrowLeft" size={20} />
-            <span>На главную</span>
-          </button>
+          <div className="mb-8">
+            <Breadcrumbs items={[{ name: 'Новости', path: '/news' }]} />
+          </div>
 
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">

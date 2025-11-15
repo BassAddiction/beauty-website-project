@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { updatePageMeta } from '@/utils/seo';
+import { updatePageMeta, addStructuredData } from '@/utils/seo';
 
 interface SEOMetaTags {
   title: string;
@@ -10,10 +10,15 @@ interface SEOMetaTags {
   ogImage?: string;
   canonical?: string;
   noindex?: boolean;
+  structuredData?: object;
 }
 
 export const useSEO = (meta: SEOMetaTags) => {
   useEffect(() => {
     updatePageMeta(meta);
+    
+    if (meta.structuredData) {
+      addStructuredData(meta.structuredData);
+    }
   }, [meta]);
 };
