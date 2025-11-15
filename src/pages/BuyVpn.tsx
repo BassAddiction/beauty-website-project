@@ -1,12 +1,13 @@
 import { useEffect } from 'react';
 import { useSEO } from "@/hooks/useSEO";
-import { pageSEO, createProductSchema } from "@/utils/seo";
+import { pageSEO, createProductSchema, addStructuredData } from "@/utils/seo";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import Icon from '@/components/ui/icon';
 import { NewYearTheme } from "@/components/NewYearTheme";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { buyVpnFAQ } from "@/utils/faqSchemas";
 
 const BuyVpn = () => {
   const productSchema = createProductSchema({
@@ -23,6 +24,7 @@ const BuyVpn = () => {
   
   useEffect(() => {
     window.scrollTo(0, 0);
+    addStructuredData(buyVpnFAQ);
   }, []);
 
   return (

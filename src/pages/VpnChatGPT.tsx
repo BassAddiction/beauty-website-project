@@ -1,12 +1,13 @@
 import { useEffect } from 'react';
 import { useSEO } from "@/hooks/useSEO";
-import { pageSEO, createWebPageSchema } from "@/utils/seo";
+import { pageSEO, createWebPageSchema, addStructuredData } from "@/utils/seo";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import Icon from '@/components/ui/icon';
 import { NewYearTheme } from "@/components/NewYearTheme";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { vpnChatGPTFAQ } from "@/utils/faqSchemas";
 
 const VpnChatGPT = () => {
   const pageSchema = createWebPageSchema({
@@ -22,6 +23,7 @@ const VpnChatGPT = () => {
   
   useEffect(() => {
     window.scrollTo(0, 0);
+    addStructuredData(vpnChatGPTFAQ);
   }, []);
 
   return (

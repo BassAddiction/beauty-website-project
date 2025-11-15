@@ -1,12 +1,15 @@
 import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useSEO } from "@/hooks/useSEO";
-import { pageSEO, createWebPageSchema } from "@/utils/seo";
+import { pageSEO, createWebPageSchema, addStructuredData } from "@/utils/seo";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import Icon from '@/components/ui/icon';
 import { NewYearTheme } from "@/components/NewYearTheme";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { FAQBlock } from "@/components/FAQBlock";
+import { vpnYoutubeFAQ } from "@/utils/faqSchemas";
 
 const VpnYoutube = () => {
   const pageSchema = createWebPageSchema({
@@ -22,6 +25,7 @@ const VpnYoutube = () => {
   
   useEffect(() => {
     window.scrollTo(0, 0);
+    addStructuredData(vpnYoutubeFAQ);
   }, []);
 
   return (
@@ -212,55 +216,21 @@ const VpnYoutube = () => {
                 </p>
               </div>
             </div>
+          </article>
+        </div>
+      </main>
 
-            <h2 className="text-2xl md:text-3xl font-bold mb-6 mt-12">
-              Часто задаваемые вопросы
-            </h2>
+      <FAQBlock 
+        faqs={vpnYoutubeFAQ.mainEntity.map((item: any) => ({
+          question: item.name,
+          answer: item.acceptedAnswer.text
+        }))}
+      />
 
-            <div className="space-y-4">
-              <details className="group bg-card rounded-xl p-6 border cursor-pointer">
-                <summary className="font-semibold text-lg list-none flex items-center justify-between">
-                  Можно ли смотреть YouTube бесплатно с VPN?
-                  <Icon name="ChevronDown" className="group-open:rotate-180 transition-transform" size={20} />
-                </summary>
-                <p className="text-muted-foreground mt-4">
-                  Теоретически да, но бесплатные VPN медленные (видео зависает каждые 10 секунд), собирают ваши данные и часто перестают работать. Speed VPN стоит как чашка кофе в месяц, но даёт комфортный просмотр в Full HD.
-                </p>
-              </details>
-
-              <details className="group bg-card rounded-xl p-6 border cursor-pointer">
-                <summary className="font-semibold text-lg list-none flex items-center justify-between">
-                  Хватит ли 30 ГБ в день для YouTube?
-                  <Icon name="ChevronDown" className="group-open:rotate-180 transition-transform" size={20} />
-                </summary>
-                <p className="text-muted-foreground mt-4">
-                  Да, более чем! 30 ГБ — это примерно 6 часов видео в Full HD или 15 часов в обычном качестве. Для большинства пользователей это избыток.
-                </p>
-              </details>
-
-              <details className="group bg-card rounded-xl p-6 border cursor-pointer">
-                <summary className="font-semibold text-lg list-none flex items-center justify-between">
-                  Работает ли Speed VPN на Smart TV?
-                  <Icon name="ChevronDown" className="group-open:rotate-180 transition-transform" size={20} />
-                </summary>
-                <p className="text-muted-foreground mt-4">
-                  Да! Можно настроить VPN на роутере или использовать Android TV приложение. Подробная инструкция придёт вам на почту после покупки.
-                </p>
-              </details>
-
-              <details className="group bg-card rounded-xl p-6 border cursor-pointer">
-                <summary className="font-semibold text-lg list-none flex items-center justify-between">
-                  Что если VPN перестанет работать?
-                  <Icon name="ChevronDown" className="group-open:rotate-180 transition-transform" size={20} />
-                </summary>
-                <p className="text-muted-foreground mt-4">
-                  Мы используем протокол Vless Reality, который практически невозможно заблокировать. Если возникнут проблемы — напишите в поддержку, мы оперативно поможем.
-                </p>
-              </details>
-            </div>
-
-            {/* Final CTA */}
-            <div className="mt-12 p-8 bg-gradient-to-br from-primary to-purple-600 rounded-2xl text-white text-center">
+      <div className="container mx-auto px-4 max-w-4xl">
+        <div className="py-12">
+          {/* Final CTA */}
+          <div className="p-8 bg-gradient-to-br from-primary to-purple-600 rounded-2xl text-white text-center">
               <h2 className="text-2xl md:text-3xl font-bold mb-4">
                 Подключите VPN и смотрите YouTube прямо сейчас
               </h2>
@@ -275,9 +245,8 @@ const VpnYoutube = () => {
                 <Icon name="ArrowRight" size={24} />
               </Link>
             </div>
-          </article>
+          </div>
         </div>
-      </main>
 
       <Footer />
       <ScrollToTop />
