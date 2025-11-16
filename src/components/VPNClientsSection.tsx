@@ -47,15 +47,9 @@ const VPNClientsSection = () => {
       <div className="container mx-auto max-w-6xl">
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-4xl md:text-6xl font-black mb-4">VPN-Клиент</h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-6">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Мы рекомендуем использовать проверенные и надежные клиенты
           </p>
-          <Button asChild size="lg" className="rounded-full button-glow">
-            <Link to="/clients">
-              <Icon name="Download" className="mr-2 w-5 h-5" />
-              Все VPN-Клиенты
-            </Link>
-          </Button>
         </div>
 
         <div className={`grid md:grid-cols-2 gap-8 max-w-4xl mx-auto transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
@@ -106,6 +100,15 @@ const VPNClientsSection = () => {
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        <div className="text-center mt-12">
+          <Button asChild size="lg" className="rounded-full button-glow">
+            <Link to="/clients">
+              <Icon name="Download" className="mr-2 w-5 h-5" />
+              Все VPN-Клиенты
+            </Link>
+          </Button>
         </div>
       </div>
     </section>
