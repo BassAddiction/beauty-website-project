@@ -27,6 +27,24 @@ const UseCasesSection = () => {
       description: "Доступ к ChatGPT, Midjourney и другим заблокированным сервисам",
       image: "https://cdn.poehali.dev/files/12749d3f-7c65-4842-96d5-662879dca06a.jpg",
       alt: "ChatGPT доступен через Speed VPN из России"
+    },
+    {
+      title: "X (Twitter) без ограничений",
+      description: "Полный доступ к X и всем его функциям",
+      image: "https://cdn.poehali.dev/files/ce3c2f14-2ee3-46b2-acee-89296479b8cd.jpg",
+      alt: "X (Twitter) работает через Speed VPN без блокировок"
+    },
+    {
+      title: "Instagram в полном объёме",
+      description: "Смотрите истории, посты и reels без замедления",
+      image: "https://cdn.poehali.dev/files/a723c7b2-8fbc-4b21-b03e-eea510930592.jpg",
+      alt: "Instagram доступен через Speed VPN"
+    },
+    {
+      title: "Facebook и все соцсети",
+      description: "Оставайтесь на связи со всеми социальными сетями",
+      image: "https://cdn.poehali.dev/files/8d467536-0939-4846-af54-6c838202e269.jpg",
+      alt: "Facebook работает через Speed VPN"
     }
   ];
 
