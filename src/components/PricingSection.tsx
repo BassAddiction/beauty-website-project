@@ -36,6 +36,7 @@ const PricingSection = () => {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [showPaymentMethodDialog, setShowPaymentMethodDialog] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'sbp' | 'sberpay' | 'tpay' | null>(null);
+  const [showAllPlans, setShowAllPlans] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -293,11 +294,10 @@ const PricingSection = () => {
             </div>
             )}
 
-            <div className={`relative transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <div className="overflow-x-auto pb-4 -mx-4 px-4 scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent hover:scrollbar-thumb-primary/50">
-                <div className="flex gap-6 min-w-max">
-                  {plans.map((plan, index) => (
-                    <Card key={index} className={`w-80 flex-shrink-0 relative border-2 transition-all duration-300 hover:scale-105 ${plan.popular ? 'border-primary shadow-xl' : plan.custom ? 'border-purple-500 shadow-lg' : 'hover:border-primary'}`}>
+            <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {(showAllPlans ? plans : plans.slice(0, 4)).map((plan, index) => (
+                  <Card key={index} className={`relative border-2 transition-all duration-300 hover:scale-105 ${plan.popular ? 'border-primary shadow-xl' : plan.custom ? 'border-purple-500 shadow-lg' : 'hover:border-primary'}`}>
                       {plan.popular && (
                         <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-bold">
                           Популярный
@@ -360,6 +360,29 @@ const PricingSection = () => {
                     </Card>
                   ))}
                 </div>
+                
+                {plans.length > 4 && (
+                  <div className="flex justify-center mt-8">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      onClick={() => setShowAllPlans(!showAllPlans)}
+                      className="group hover:bg-primary hover:text-primary-foreground transition-all"
+                    >
+                      {showAllPlans ? (
+                        <>
+                          <Icon name="ChevronUp" className="w-5 h-5 mr-2" />
+                          Скрыть
+                        </>
+                      ) : (
+                        <>
+                          <Icon name="ChevronDown" className="w-5 h-5 mr-2" />
+                          Показать все тарифы ({plans.length})
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           </>
