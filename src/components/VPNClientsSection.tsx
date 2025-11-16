@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { Link } from "react-router-dom";
 
 interface VPNClient {
   name: string;
@@ -45,7 +46,11 @@ const VPNClientsSection = () => {
     <section ref={ref} className="py-20 px-4 bg-black/30" id="clients">
       <div className="container mx-auto max-w-6xl">
         <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-4xl md:text-6xl font-black mb-4">VPN-Клиент</h2>
+          <Link to="/clients" className="inline-block group">
+            <h2 className="text-4xl md:text-6xl font-black mb-4 group-hover:text-primary transition-colors">
+              VPN-Клиент
+            </h2>
+          </Link>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Мы рекомендуем использовать проверенные и надежные клиенты
           </p>
