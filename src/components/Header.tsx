@@ -11,12 +11,9 @@ const Header = () => {
     <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-black via-black/95 to-black backdrop-blur-xl border-b border-primary/20 shadow-lg shadow-primary/5">
       <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-purple-500/5 to-primary/5 opacity-50"></div>
       <div className="container mx-auto px-4 py-4 flex items-center justify-between relative">
-        <div className="flex items-center gap-3 group">
-          <div className="relative">
-            <img src={CDN_ASSETS.CLIENT_ICONS.WINDOWS} alt="Speed VPN" className="w-9 h-9 rounded-xl hover:scale-110 transition-transform duration-300 relative z-10" />
-            <div className="absolute inset-0 bg-primary/30 rounded-xl blur-md group-hover:blur-lg transition-all duration-300"></div>
-          </div>
-          <span className="text-xl font-black bg-gradient-to-r from-white via-primary to-white bg-clip-text text-transparent">SPEED VPN</span>
+        <div className="flex items-center gap-2">
+          <img src={CDN_ASSETS.CLIENT_ICONS.WINDOWS} alt="Speed VPN" className="w-8 h-8 rounded-lg hover:scale-110 transition-transform duration-300" />
+          <span className="text-xl font-bold">SPEED VPN</span>
         </div>
         <nav className="hidden md:flex items-center gap-1">
           <a href="/#features" className="relative px-4 py-2 text-sm font-semibold text-gray-300 hover:text-white transition-all duration-300 group">
