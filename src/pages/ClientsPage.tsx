@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Icon from "@/components/ui/icon";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const ClientsPage = () => {
   const navigate = useNavigate();
@@ -131,7 +133,8 @@ const ClientsPage = () => {
 
   return (
     <div className="min-h-screen bg-black">
-      <div className="container mx-auto px-4 py-8 md:py-16">
+      <Header />
+      <div className="container mx-auto px-4 py-24 md:py-32">
         <div className="text-center mb-8 md:mb-12">
           <h1 className="text-3xl md:text-5xl font-bold text-white mb-3 md:mb-4">
             Установка VPN клиента
@@ -265,6 +268,7 @@ const ClientsPage = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

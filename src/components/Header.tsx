@@ -15,12 +15,12 @@ const Header = () => {
           <span className="text-xl font-bold">SPEED VPN</span>
         </div>
         <nav className="hidden md:flex items-center gap-8">
-          <a href="#features" className="text-sm font-medium hover:text-primary transition-colors">Возможности</a>
-          <a href="#pricing" className="text-sm font-medium hover:text-primary transition-colors">Тарифы</a>
+          <a href="/#features" className="text-sm font-medium hover:text-primary transition-colors">Возможности</a>
+          <a href="/#pricing" className="text-sm font-medium hover:text-primary transition-colors">Тарифы</a>
           <a href="/reviews" className="text-sm font-medium hover:text-primary transition-colors">Отзывы</a>
-          <a href="#training" className="text-sm font-medium hover:text-primary transition-colors">Обучение</a>
-          <a href="#faq" className="text-sm font-medium hover:text-primary transition-colors">FAQ</a>
-          <a href="#clients" className="text-sm font-medium hover:text-primary transition-colors">VPN-Клиент</a>
+          <a href="/#training" className="text-sm font-medium hover:text-primary transition-colors">Обучение</a>
+          <a href="/#faq" className="text-sm font-medium hover:text-primary transition-colors">FAQ</a>
+          <a href="/clients" className="text-sm font-medium hover:text-primary transition-colors">VPN-Клиенты</a>
         </nav>
         <div className="flex items-center gap-4">
           <Button variant="ghost" className="hidden md:flex rounded-full" asChild>
@@ -44,14 +44,14 @@ const Header = () => {
             <SheetContent side="right" className="w-[300px] bg-black/95 border-border">
               <nav className="flex flex-col gap-6 mt-8">
                 <a 
-                  href="#features" 
+                  href="/#features" 
                   className="text-lg font-medium hover:text-primary transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Возможности
                 </a>
                 <a 
-                  href="#pricing" 
+                  href="/#pricing" 
                   className="text-lg font-medium hover:text-primary transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -65,25 +65,25 @@ const Header = () => {
                   Отзывы
                 </a>
                 <a 
-                  href="#training" 
+                  href="/#training" 
                   className="text-lg font-medium hover:text-primary transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Обучение
                 </a>
                 <a 
-                  href="#faq" 
+                  href="/#faq" 
                   className="text-lg font-medium hover:text-primary transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   FAQ
                 </a>
                 <a 
-                  href="#clients" 
+                  href="/clients" 
                   className="text-lg font-medium hover:text-primary transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  VPN-Клиент
+                  VPN-Клиенты
                 </a>
                 <Button variant="ghost" className="rounded-full mt-4" asChild>
                   <a href="/get-access">
