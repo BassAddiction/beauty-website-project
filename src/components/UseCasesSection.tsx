@@ -1,12 +1,14 @@
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useState, useEffect } from "react";
 import Icon from "@/components/ui/icon";
+import { Button } from "@/components/ui/button";
 
 const UseCasesSection = () => {
   const { ref, isVisible } = useScrollAnimation();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
+  const [showAll, setShowAll] = useState(false);
 
   const useCases = [
     {
@@ -100,32 +102,57 @@ const UseCasesSection = () => {
         </p>
         
         {/* Desktop Grid */}
-        <div className={`hidden md:grid md:grid-cols-3 gap-6 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          {useCases.map((useCase, index) => (
-            <div 
-              key={index}
-              className="group relative overflow-hidden rounded-2xl border-2 border-border hover:border-primary transition-all duration-300 hover:shadow-2xl hover:scale-105"
-            >
-              <div className="aspect-[9/16] relative overflow-hidden bg-gradient-to-br from-primary/20 to-purple-600/20">
-                <img 
-                  src={useCase.image} 
-                  alt={useCase.alt}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                  <h3 className="text-xl font-bold mb-2">
-                    {useCase.title}
-                  </h3>
-                  <p className="text-sm text-gray-200 opacity-90">
-                    {useCase.description}
-                  </p>
+        <div className={`hidden md:block transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <div className="grid md:grid-cols-3 gap-6">
+            {(showAll ? useCases : useCases.slice(0, 3)).map((useCase, index) => (
+              <div 
+                key={index}
+                className="group relative overflow-hidden rounded-2xl border-2 border-border hover:border-primary transition-all duration-300 hover:shadow-2xl hover:scale-105"
+              >
+                <div className="aspect-[9/16] relative overflow-hidden bg-gradient-to-br from-primary/20 to-purple-600/20">
+                  <img 
+                    src={useCase.image} 
+                    alt={useCase.alt}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                  
+                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                    <h3 className="text-xl font-bold mb-2">
+                      {useCase.title}
+                    </h3>
+                    <p className="text-sm text-gray-200 opacity-90">
+                      {useCase.description}
+                    </p>
+                  </div>
                 </div>
               </div>
+            ))}
+          </div>
+          
+          {useCases.length > 3 && (
+            <div className="flex justify-center mt-8">
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => setShowAll(!showAll)}
+                className="group hover:bg-primary hover:text-primary-foreground transition-all"
+              >
+                {showAll ? (
+                  <>
+                    <Icon name="ChevronUp" className="w-5 h-5 mr-2" />
+                    Скрыть
+                  </>
+                ) : (
+                  <>
+                    <Icon name="ChevronDown" className="w-5 h-5 mr-2" />
+                    Показать все ({useCases.length})
+                  </>
+                )}
+              </Button>
             </div>
-          ))}
+          )}
         </div>
 
         {/* Mobile Carousel */}
