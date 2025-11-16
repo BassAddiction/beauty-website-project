@@ -220,7 +220,7 @@ const ClientsPage = () => {
                       </p>
                       {instruction.action && (
                         <button 
-                          onClick={() => navigate('/payment')}
+                          onClick={() => navigate('/register')}
                           className="mt-3 md:mt-4 px-4 md:px-6 py-2.5 md:py-3 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg transition-colors font-medium text-sm md:text-base w-full md:w-auto"
                         >
                           {instruction.actionText || 'Добавить подписку'}
