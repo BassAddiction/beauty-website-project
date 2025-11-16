@@ -1,15 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import Icon from "@/components/ui/icon";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Checkbox } from "@/components/ui/checkbox";
 import PaymentMethodDialog from "@/components/PaymentMethodDialog";
 import API_ENDPOINTS from '@/config/api';
+import { PricingHeader } from './pricing/PricingHeader';
+import { PricingCard } from './pricing/PricingCard';
+import { PaymentDialog } from './pricing/PaymentDialog';
 
 interface Plan {
   id?: number;
@@ -248,250 +245,65 @@ const PricingSection = () => {
   return (
     <section ref={ref} className="py-20 px-4 bg-black/30" id="pricing">
       <div className="container mx-auto max-w-6xl">
-        <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-4xl md:text-6xl font-black mb-4">Тарифы VPN — Купить от 79₽</h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Доступные цены на VPN-подписку. Выберите тариф и получите мгновенный доступ к YouTube, заблокированным соцсетям, ChatGPT
-          </p>
-        </div>
+        <PricingHeader 
+          showBuilderButton={showBuilderButton}
+          onTestWebhook={handleTestWebhook}
+          testing={testing}
+        />
 
-
-
-        {loading ? (
-          <div className="text-center py-12">
-            <Icon name="Loader2" className="w-12 h-12 animate-spin mx-auto text-primary" />
-            <p className="mt-4 text-muted-foreground">Загрузка тарифов...</p>
-          </div>
+{loading ? (
+          <div className="text-center text-muted-foreground">Загрузка тарифов...</div>
         ) : (
           <>
-            {showBuilderButton && (
-              <div className="flex justify-center mb-8">
-                <Card className="max-w-md w-full border-2 border-purple-500/30 bg-gradient-to-br from-purple-500/5 to-pink-500/5 hover:border-purple-500/50 transition-all">
-                  <CardContent className="pt-6">
-                    <div className="text-center space-y-4">
-                      <div className="flex justify-center">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-                          <Icon name="Sparkles" className="w-6 h-6 text-white" />
-                        </div>
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-bold mb-2">Создайте свою подписку</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Выберите нужные страны и настройте тариф под себя
-                        </p>
-                      </div>
-                      <Button 
-                        size="lg" 
-                        className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 hover:opacity-90"
-                        onClick={() => window.location.href = '/builder'}
-                    >
-                      <Icon name="Wrench" className="w-5 h-5 mr-2" />
-                      Собрать свою подписку
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-            )}
+            <div className="max-w-5xl mx-auto">
+              <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8 transition-all duration-300 ${
+                showAllPlans ? 'max-h-none' : 'max-h-[600px] overflow-hidden'
+              }`}>
+                {plans.map((plan, i) => (
+                  <PricingCard
+                    key={i}
+                    plan={plan}
+                    onSelect={handleOpenPaymentDialog}
+                    paying={paying}
+                  />
+                ))}
+              </div>
 
-            <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {(showAllPlans ? plans : plans.slice(0, 4)).map((plan, index) => (
-                  <Card key={index} className={`relative border-2 transition-all duration-300 hover:scale-105 ${plan.popular ? 'border-primary shadow-xl' : plan.custom ? 'border-purple-500 shadow-lg' : 'hover:border-primary'} ${!showAllPlans && index >= 3 ? 'hidden md:block' : ''}`}>
-                      {plan.popular && (
-                        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-bold">
-                          Популярный
-                        </div>
-                      )}
-                      {plan.custom && (
-                        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-purple-500 text-white px-4 py-1 rounded-full text-sm font-bold">
-                          Премиум
-                        </div>
-                      )}
-                      <CardHeader>
-                        <div className="flex justify-center mb-4">
-                          <img 
-                            src="https://cdn.poehali.dev/files/299c507f-f10f-4048-a927-9fa71def332e.jpg" 
-                            alt="Speed VPN" 
-                            className="w-20 h-20 rounded-full object-cover border-2 border-primary logo-animated"
-                          />
-                        </div>
-                        <CardTitle className="text-2xl break-words">{plan.name}</CardTitle>
-                        <div className="flex items-baseline gap-1 mt-4">
-                          <span className="text-5xl font-black">{plan.price}</span>
-                          <span className="text-2xl text-muted-foreground">{plan.period}</span>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <ul className="space-y-3">
-                          {plan.features.map((feature, featureIndex) => (
-                            <li key={featureIndex} className="flex items-start gap-2">
-                              <Icon name="Check" size={20} className="text-primary shrink-0 mt-0.5" />
-                              <span className="text-sm break-words">{feature}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </CardContent>
-                      <CardFooter>
-                        {plan.price === "Free" ? (
-                          <Button 
-                            className="w-full rounded-full button-glow" 
-                            onClick={handleTestWebhook}
-                            disabled={testing}
-                          >
-                            {testing ? "Отправка..." : "🧪 Тест"}
-                          </Button>
-                        ) : plan.custom ? (
-                          <Button className="w-full rounded-full button-glow" asChild>
-                            <a href="https://t.me/gospeedvpn" target="_blank" rel="noopener noreferrer">
-                              Связаться
-                            </a>
-                          </Button>
-                        ) : (
-                          <Button 
-                            className="w-full rounded-full button-glow relative overflow-hidden group text-sm px-4"
-                            onClick={() => handleOpenPaymentDialog(plan)}
-                          >
-                            <Icon name="Zap" className="w-4 h-4 shrink-0 transition-transform group-hover:translate-x-1" />
-                            <span className="truncate">Подключить</span>
-                          </Button>
-                        )}
-                      </CardFooter>
-                    </Card>
-                  ))}
+              {plans.length > 3 && (
+                <div className="text-center">
+                  <Button
+                    onClick={() => setShowAllPlans(!showAllPlans)}
+                    variant="outline"
+                    size="lg"
+                    className="min-w-[200px]"
+                  >
+                    {showAllPlans ? 'Скрыть тарифы' : 'Показать все тарифы'}
+                  </Button>
                 </div>
-                
-                {plans.length > 4 && (
-                  <div className="flex justify-center mt-8">
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      onClick={() => setShowAllPlans(!showAllPlans)}
-                      className="group hover:bg-primary hover:text-primary-foreground transition-all"
-                    >
-                      {showAllPlans ? (
-                        <>
-                          <Icon name="ChevronUp" className="w-5 h-5 mr-2" />
-                          Скрыть
-                        </>
-                      ) : (
-                        <>
-                          <Icon name="ChevronDown" className="w-5 h-5 mr-2" />
-                          Показать все тарифы ({plans.length})
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                )}
+              )}
             </div>
           </>
         )}
 
-        <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold">Завершите регистрацию</DialogTitle>
-              {selectedPlan && (
-                <p className="text-muted-foreground">
-                  Вы выбрали тариф: <span className="font-bold">{selectedPlan.name}</span> за <span className="font-bold">{selectedPlan.price}₽</span>
-                </p>
-              )}
-            </DialogHeader>
-            
-            <form onSubmit={handlePayment} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="your@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-                <p className="text-xs text-muted-foreground">
-                  На этот email будут отправлены данные для входа
-                </p>
-              </div>
+        <PaymentDialog
+          show={showPaymentDialog}
+          onClose={() => setShowPaymentDialog(false)}
+          selectedPlan={selectedPlan}
+          email={email}
+          onEmailChange={setEmail}
+          agreedToTerms={agreedToTerms}
+          onAgreedToTermsChange={setAgreedToTerms}
+          onSubmit={handlePayment}
+          paying={paying}
+        />
 
-              <div className="flex items-start space-x-2 p-4 rounded-lg bg-muted/50">
-                <Checkbox 
-                  id="terms" 
-                  checked={agreedToTerms}
-                  onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
-                />
-                <div className="grid gap-1.5 leading-none">
-                  <label
-                    htmlFor="terms"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                  >
-                    Я согласен с условиями оферты
-                  </label>
-                  <p className="text-xs text-muted-foreground">
-                    Нажимая кнопку оплаты, вы принимаете{' '}
-                    <a href="/terms" target="_blank" className="text-primary hover:underline">
-                      публичную оферту
-                    </a>{' '}
-                    и{' '}
-                    <a href="/terms" target="_blank" className="text-primary hover:underline">
-                      политику конфиденциальности
-                    </a>
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-2">
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  className="flex-1"
-                  onClick={() => setShowPaymentDialog(false)}
-                >
-                  Назад
-                </Button>
-                <Button 
-                  type="submit" 
-                  className="flex-1 button-glow"
-                  disabled={!agreedToTerms}
-                >
-                  <Icon name="CreditCard" className="w-4 h-4 mr-2" />
-                  Перейти к оплате
-                </Button>
-              </div>
-
-              <div className="mt-4 p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
-                <div className="flex gap-2">
-                  <Icon name="Info" className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
-                  <div className="space-y-1 text-sm">
-                    <p className="font-medium text-blue-400">После оплаты вы получите доступ к личному кабинету с настройками подключения VPN</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-4 p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
-                <div className="flex gap-2">
-                  <Icon name="AlertCircle" className="w-5 h-5 text-yellow-500 shrink-0 mt-0.5" />
-                  <div className="space-y-1 text-sm">
-                    <p className="font-medium text-yellow-400">Не получили доступ после оплаты?</p>
-                    <p className="text-muted-foreground">
-                      Если после оплаты страница не загрузилась - не переживайте! Перейдите на страницу{' '}
-                      <a href="/restore" className="text-primary hover:underline font-medium">
-                        Восстановить доступ
-                      </a>{' '}
-                      и введите ваш email. Вы сразу получите ссылку на VPN.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
-
-        <PaymentMethodDialog 
-          open={showPaymentMethodDialog}
-          onClose={() => setShowPaymentMethodDialog(false)}
+        <PaymentMethodDialog
+          show={showPaymentMethodDialog}
+          onClose={() => {
+            setShowPaymentMethodDialog(false);
+            setShowPaymentDialog(true);
+          }}
           onSelectMethod={handleSelectPaymentMethod}
-          loading={paying}
         />
       </div>
     </section>
