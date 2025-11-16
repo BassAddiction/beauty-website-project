@@ -251,35 +251,37 @@ const PricingSection = () => {
           testing={testing}
         />
 
-        {loading ? (
+{loading ? (
           <div className="text-center text-muted-foreground">Загрузка тарифов...</div>
         ) : (
           <>
-            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8 transition-all duration-300 ${
-              showAllPlans ? 'max-h-none' : 'max-h-[600px] overflow-hidden'
-            }`}>
-              {plans.map((plan, i) => (
-                <PricingCard
-                  key={i}
-                  plan={plan}
-                  onSelect={handleOpenPaymentDialog}
-                  paying={paying}
-                />
-              ))}
-            </div>
-
-            {plans.length > 3 && (
-              <div className="text-center">
-                <Button
-                  onClick={() => setShowAllPlans(!showAllPlans)}
-                  variant="outline"
-                  size="lg"
-                  className="min-w-[200px]"
-                >
-                  {showAllPlans ? 'Скрыть тарифы' : 'Показать все тарифы'}
-                </Button>
+            <div className="max-w-5xl mx-auto">
+              <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8 transition-all duration-300 ${
+                showAllPlans ? 'max-h-none' : 'max-h-[600px] overflow-hidden'
+              }`}>
+                {plans.map((plan, i) => (
+                  <PricingCard
+                    key={i}
+                    plan={plan}
+                    onSelect={handleOpenPaymentDialog}
+                    paying={paying}
+                  />
+                ))}
               </div>
-            )}
+
+              {plans.length > 3 && (
+                <div className="text-center">
+                  <Button
+                    onClick={() => setShowAllPlans(!showAllPlans)}
+                    variant="outline"
+                    size="lg"
+                    className="min-w-[200px]"
+                  >
+                    {showAllPlans ? 'Скрыть тарифы' : 'Показать все тарифы'}
+                  </Button>
+                </div>
+              )}
+            </div>
           </>
         )}
 
