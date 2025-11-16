@@ -1,6 +1,6 @@
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Icon from "@/components/ui/icon";
 
 const UseCasesSection = () => {
@@ -63,6 +63,14 @@ const UseCasesSection = () => {
     setTouchStart(0);
     setTouchEnd(0);
   };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      nextSlide();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [currentSlide]);
 
   return (
     <section ref={ref} className="py-20 px-4 bg-gradient-to-b from-background to-primary/5">
