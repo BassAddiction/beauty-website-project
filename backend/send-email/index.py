@@ -144,6 +144,23 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                     </a>
                                 </div>
                                 
+                                <div style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border: 2px solid #475569; padding: 25px; margin: 30px 0; border-radius: 16px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);">
+                                    <h3 style="color: #a78bfa; font-size: 17px; margin: 0 0 15px 0; font-weight: 700; text-align: center;">
+                                        🔗 Ссылка для добавления в клиент
+                                    </h3>
+                                    <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin: 0 0 15px 0; text-align: center;">
+                                        Скопируйте эту ссылку и вставьте в VPN-клиент в разделе "Профили" → "Импорт"
+                                    </p>
+                                    <div style="background: #0f172a; padding: 16px; border-radius: 10px; border: 2px solid #6366f1; box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);">
+                                        <p style="color: #a5b4fc; font-size: 13px; margin: 0 0 8px 0; text-align: center; font-weight: 600;">
+                                            Ваша ссылка подписки:
+                                        </p>
+                                        <p style="color: #ffffff; font-size: 14px; margin: 0; text-align: center; word-break: break-all; font-family: 'Courier New', monospace; font-weight: 600; line-height: 1.5;">
+                                            {subscription_url}
+                                        </p>
+                                    </div>
+                                </div>
+                                
                                 <div style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border: 2px solid #475569; padding: 28px; border-radius: 16px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);">
                                     <h3 style="color: #a78bfa; font-size: 18px; margin: 0 0 18px 0; font-weight: 700;">
                                         📖 Как подключиться:
