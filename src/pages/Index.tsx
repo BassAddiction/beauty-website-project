@@ -61,8 +61,8 @@ const Index = () => {
       </div>
       <UseCasesSection />
       <PricingSection />
-      <FeaturesSection />
       <InternalLinks />
+      <FeaturesSection />
       <TrainingSection />
       <VPNClientsSection />
       <FAQSection />
