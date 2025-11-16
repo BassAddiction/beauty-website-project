@@ -26,8 +26,7 @@ const VPNClientsSection = () => {
       logo: "https://cdn.poehali.dev/files/ef467f96-b43a-4159-b874-f59e2545f7d7.png",
       platforms: {
         playMarket: "https://play.google.com/store/apps/details?id=com.happproxy",
-        appStore: "https://apps.apple.com/ru/app/happ-proxy-utility-plus/id6746188973?platform=iphone",
-        windows: "https://github.com/hiddify/hiddify-next/releases"
+        appStore: "https://apps.apple.com/ru/app/happ-proxy-utility-plus/id6746188973?platform=iphone"
       }
     },
     {
@@ -36,8 +35,7 @@ const VPNClientsSection = () => {
       logo: "https://cdn.poehali.dev/files/063411ec-f9b3-487a-aeb1-e5717cf643c4.png",
       platforms: {
         playMarket: "https://play.google.com/store/apps/details?id=com.v2raytun.android",
-        appStore: "https://apps.apple.com/app/v2box-v2ray-client/id6446814690",
-        windows: "https://github.com/2dust/v2rayN/releases"
+        appStore: "https://apps.apple.com/app/v2box-v2ray-client/id6446814690"
       }
     }
   ];
