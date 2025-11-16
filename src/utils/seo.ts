@@ -226,5 +226,12 @@ export const pageSEO = {
     title: 'Условия использования Speed VPN',
     description: 'Ознакомьтесь с условиями использования и политикой конфиденциальности Speed VPN.',
     noindex: true
+  },
+
+  clients: {
+    title: 'VPN Клиенты для всех устройств — Скачать Speed VPN',
+    description: 'Скачайте VPN клиенты для Windows, macOS, iOS, Android, Linux. Clash Verge, Hiddify, Happ. Подробная инструкция по установке и настройке.',
+    keywords: 'vpn клиент, скачать vpn, clash verge, hiddify, happ, vpn приложение, vpn для windows, vpn для mac, vpn для android, vpn для ios',
+    ogImage: 'https://speedvpn.io/favicon.svg'
   }
 };

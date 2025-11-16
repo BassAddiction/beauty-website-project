@@ -3,9 +3,22 @@ import { useNavigate } from "react-router-dom";
 import Icon from "@/components/ui/icon";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { useSEO } from "@/hooks/useSEO";
+import { pageSEO, createWebPageSchema } from "@/utils/seo";
 
 const ClientsPage = () => {
   const navigate = useNavigate();
+
+  const webPageSchema = createWebPageSchema({
+    name: 'VPN Клиенты для всех устройств',
+    description: 'Скачайте VPN клиенты для Windows, macOS, iOS, Android, Linux. Подробная инструкция по установке.',
+    url: 'https://speedvpn.io/clients'
+  });
+
+  useSEO({
+    ...pageSEO.clients,
+    structuredData: webPageSchema
+  });
   
   const detectPlatform = (): string => {
     const userAgent = navigator.userAgent.toLowerCase();
