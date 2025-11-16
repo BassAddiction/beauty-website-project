@@ -63,6 +63,12 @@ const ClientsPage = () => {
         featured: true,
         link: "https://github.com/clash-verge-rev/clash-verge-rev/releases/download/v2.2.2/Clash.Verge_2.2.2_x64-setup.exe",
       },
+      {
+        name: "Hiddify",
+        description: "Альтернативный клиент",
+        featured: false,
+        link: "https://github.com/hiddify/hiddify-app/releases/download/v2.5.7/Hiddify-Windows-Setup-x64.exe",
+      },
     ],
     macOS: [
       {
