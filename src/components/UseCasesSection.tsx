@@ -104,7 +104,7 @@ const UseCasesSection = () => {
         {/* Desktop Grid */}
         <div className={`hidden md:block transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <div className="grid md:grid-cols-3 gap-6">
-            {(showAll ? useCases : useCases.slice(0, 3)).map((useCase, index) => (
+            {useCases.slice(0, 3).map((useCase, index) => (
               <div 
                 key={index}
                 className="group relative overflow-hidden rounded-2xl border-2 border-border hover:border-primary transition-all duration-300 hover:shadow-2xl hover:scale-105"
@@ -130,6 +130,37 @@ const UseCasesSection = () => {
               </div>
             ))}
           </div>
+          
+          {showAll && (
+            <div className="grid md:grid-cols-3 gap-6 mt-6 animate-in fade-in slide-in-from-top-4 duration-700">
+              {useCases.slice(3).map((useCase, index) => (
+                <div 
+                  key={index + 3}
+                  className="group relative overflow-hidden rounded-2xl border-2 border-border hover:border-primary transition-all duration-300 hover:shadow-2xl hover:scale-105"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <div className="aspect-[9/16] relative overflow-hidden bg-gradient-to-br from-primary/20 to-purple-600/20">
+                    <img 
+                      src={useCase.image} 
+                      alt={useCase.alt}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                    
+                    <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                      <h3 className="text-xl font-bold mb-2">
+                        {useCase.title}
+                      </h3>
+                      <p className="text-sm text-gray-200 opacity-90">
+                        {useCase.description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
           
           {useCases.length > 3 && (
             <div className="flex justify-center mt-8">
