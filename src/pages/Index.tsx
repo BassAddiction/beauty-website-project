@@ -59,10 +59,10 @@ const Index = () => {
         <NewsFeed />
       </div>
       <UseCasesSection />
-      <VPNClientsSection />
       <PricingSection />
       <InternalLinks />
       <FeaturesSection />
+      <VPNClientsSection />
       <FAQSection />
       <Footer />
       <ScrollToTop />
