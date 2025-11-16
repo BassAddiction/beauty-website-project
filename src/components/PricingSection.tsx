@@ -383,7 +383,6 @@ const PricingSection = () => {
                     </Button>
                   </div>
                 )}
-              </div>
             </div>
           </>
         )}
