@@ -28,8 +28,8 @@ const Header = () => {
             <span className="relative z-10">Отзывы</span>
             <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </a>
-          <a href="/#training" className="relative px-4 py-2 text-sm font-semibold text-gray-300 hover:text-white transition-all duration-300 group">
-            <span className="relative z-10">Обучение</span>
+          <a href="/news" className="relative px-4 py-2 text-sm font-semibold text-gray-300 hover:text-white transition-all duration-300 group">
+            <span className="relative z-10">Новости</span>
             <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </a>
           <a href="/#faq" className="relative px-4 py-2 text-sm font-semibold text-gray-300 hover:text-white transition-all duration-300 group">
@@ -86,11 +86,11 @@ const Header = () => {
                   Отзывы
                 </a>
                 <a 
-                  href="/#training" 
+                  href="/news" 
                   className="text-lg font-medium hover:text-primary transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Обучение
+                  Новости
                 </a>
                 <a 
                   href="/#faq" 
