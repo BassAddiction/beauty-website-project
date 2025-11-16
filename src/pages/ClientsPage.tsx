@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Icon from "@/components/ui/icon";
 
 const ClientsPage = () => {
+  const navigate = useNavigate();
+  
   const detectPlatform = (): string => {
     const userAgent = navigator.userAgent.toLowerCase();
     const platform = navigator.platform.toLowerCase();
@@ -88,33 +91,34 @@ const ClientsPage = () => {
   const instructions = [
     {
       step: 1,
-      title: "Скачайте клиент",
-      description: "Выберите подходящую версию для вашей системы и нажмите на кнопку ниже для установки",
-      icon: "Download",
+      title: "Выберите тариф",
+      description: "Перейдите на страницу тарифов и выберите подходящий план подписки",
+      icon: "CreditCard",
+      action: true,
+      actionText: "Выбрать тариф",
     },
     {
       step: 2,
+      title: "Скачайте клиент",
+      description: "Выберите подходящую версию для вашей системы и нажмите на кнопку выше для скачивания",
+      icon: "Download",
+    },
+    {
+      step: 3,
       title: "Установите приложение",
       description: "Запустите установочный файл и следуйте инструкциям на экране",
       icon: "PackageOpen",
     },
     {
-      step: 3,
-      title: "Добавьте подписку",
-      description: "Нажмите кнопку ниже, чтобы добавить подписку в приложение",
-      icon: "Link",
-      action: true,
-    },
-    {
       step: 4,
-      title: "Если подписка не добавилась",
-      description: "Если после нажатия на кнопку ничего не произошло, добавьте подписку вручную. Нажмите на этой странице кнопку 'Получить ссылку' в правом верхнем углу, скопируйте ссылку. В приложении перейдите в раздел Профили и вставьте ссылку в текстовое поле, затем нажмите на кнопку Импорт",
-      icon: "AlertCircle",
+      title: "Добавьте подписку в приложение",
+      description: "После оплаты в личном кабинете появится ссылка подписки. Скопируйте её и вставьте в приложение в разделе Профили, затем нажмите Импорт",
+      icon: "Link",
     },
     {
       step: 5,
       title: "Подключите и используйте",
-      description: "Выберите сервер из списка и нажмите кнопку подключения",
+      description: "Выберите сервер из списка и нажмите кнопку подключения. Готово!",
       icon: "Rocket",
     },
   ];
@@ -215,8 +219,11 @@ const ClientsPage = () => {
                         {instruction.description}
                       </p>
                       {instruction.action && (
-                        <button className="mt-3 md:mt-4 px-4 md:px-6 py-2.5 md:py-3 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg transition-colors font-medium text-sm md:text-base w-full md:w-auto">
-                          Добавить подписку
+                        <button 
+                          onClick={() => navigate('/payment')}
+                          className="mt-3 md:mt-4 px-4 md:px-6 py-2.5 md:py-3 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg transition-colors font-medium text-sm md:text-base w-full md:w-auto"
+                        >
+                          {instruction.actionText || 'Добавить подписку'}
                         </button>
                       )}
                     </div>
