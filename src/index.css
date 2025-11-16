@@ -161,4 +161,13 @@
       rotate-slow 20s linear infinite;
     transform: scale(1.1);
   }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }

@@ -35,11 +35,11 @@ const UseCasesSection = () => {
           Speed VPN работает со всеми популярными сервисами
         </p>
         
-        <div className={`grid md:grid-cols-3 gap-6 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <div className={`flex md:grid md:grid-cols-3 gap-6 overflow-x-auto md:overflow-x-visible snap-x snap-mandatory scrollbar-hide pb-4 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           {useCases.map((useCase, index) => (
             <div 
               key={index}
-              className="group relative overflow-hidden rounded-2xl border-2 border-border hover:border-primary transition-all duration-300 hover:shadow-2xl hover:scale-105"
+              className="group relative overflow-hidden rounded-2xl border-2 border-border hover:border-primary transition-all duration-300 hover:shadow-2xl md:hover:scale-105 flex-shrink-0 w-[85vw] md:w-auto snap-center"
             >
               <div className="aspect-[9/16] relative overflow-hidden bg-gradient-to-br from-primary/20 to-purple-600/20">
                 <img 
