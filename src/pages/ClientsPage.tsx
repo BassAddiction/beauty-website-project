@@ -57,6 +57,12 @@ const ClientsPage = () => {
         link: "https://play.google.com/store/apps/details?id=com.happproxy",
       },
       {
+        name: "V2RayTun",
+        description: "Альтернативный клиент",
+        featured: false,
+        link: "https://play.google.com/store/apps/details?id=com.v2raytun.android",
+      },
+      {
         name: "Clash Meta",
         description: "Альтернативный клиент",
         featured: false,
@@ -73,9 +79,15 @@ const ClientsPage = () => {
     ],
     Windows: [
       {
-        name: "Clash Verge",
+        name: "Happ",
         description: "Рекомендуемый клиент для Windows",
         featured: true,
+        link: "https://github.com/Happ-proxy/happ-desktop/releases/latest/download/setup-Happ.x86.exe",
+      },
+      {
+        name: "Clash Verge",
+        description: "Альтернативный клиент",
+        featured: false,
         link: "https://github.com/clash-verge-rev/clash-verge-rev/releases/download/v2.2.2/Clash.Verge_2.2.2_x64-setup.exe",
       },
       {
