@@ -233,5 +233,26 @@ export const pageSEO = {
     description: 'Скачайте VPN клиенты для Windows, macOS, iOS, Android, Linux. Clash Verge, Hiddify, Happ. Подробная инструкция по установке и настройке.',
     keywords: 'vpn клиент, скачать vpn, clash verge, hiddify, happ, vpn приложение, vpn для windows, vpn для mac, vpn для android, vpn для ios',
     ogImage: 'https://speedvpn.io/favicon.svg'
+  },
+
+  vpnInstagram: {
+    title: 'VPN для Instagram — Быстрый доступ к Stories и Reels | Speed VPN',
+    description: 'Пользуйтесь Instagram без ограничений с Speed VPN. Смотрите Stories, Reels, публикуйте посты. Высокая скорость, стабильное соединение. От 79₽/неделя.',
+    keywords: 'vpn для instagram, впн инстаграм, разблокировка instagram, доступ к instagram, instagram reels, instagram stories',
+    ogImage: 'https://cdn.poehali.dev/files/a723c7b2-8fbc-4b21-b03e-eea510930592.jpg'
+  },
+
+  vpnFacebook: {
+    title: 'VPN для Facebook — Стабильный доступ к соцсети | Speed VPN',
+    description: 'Используйте Facebook без блокировок с Speed VPN. Общайтесь с друзьями, смотрите видео, публикуйте посты. Быстрое и надёжное соединение. От 79₽/неделя.',
+    keywords: 'vpn для facebook, впн фейсбук, разблокировка facebook, доступ к facebook, facebook messenger',
+    ogImage: 'https://cdn.poehali.dev/files/8d467536-0939-4846-af54-6c838202e269.jpg'
+  },
+
+  vpnTwitter: {
+    title: 'VPN для X (Twitter) — Полный доступ из России | Speed VPN',
+    description: 'Доступ к X (Twitter) без ограничений с Speed VPN. Читайте твиты, публикуйте посты, смотрите видео. Vless Reality протокол. От 79₽/неделя.',
+    keywords: 'vpn для twitter, vpn для x, впн твиттер, разблокировка twitter, доступ к twitter, twitter x',
+    ogImage: 'https://cdn.poehali.dev/files/ce3c2f14-2ee3-46b2-acee-89296479b8cd.jpg'
   }
 };

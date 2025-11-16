@@ -24,6 +24,9 @@ import VpnChatGPT from "./pages/VpnChatGPT";
 import VpnRussia from "./pages/VpnRussia";
 import BuyVpn from "./pages/BuyVpn";
 import ClientsPage from "./pages/ClientsPage";
+import VpnInstagramPage from "./pages/VpnInstagramPage";
+import VpnFacebookPage from "./pages/VpnFacebookPage";
+import VpnTwitterPage from "./pages/VpnTwitterPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -56,6 +59,9 @@ const App = () => (
           <Route path="/vpn-russia" element={<VpnRussia />} />
           <Route path="/buy-vpn" element={<BuyVpn />} />
           <Route path="/clients" element={<ClientsPage />} />
+          <Route path="/vpn-instagram" element={<VpnInstagramPage />} />
+          <Route path="/vpn-facebook" element={<VpnFacebookPage />} />
+          <Route path="/vpn-twitter" element={<VpnTwitterPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
