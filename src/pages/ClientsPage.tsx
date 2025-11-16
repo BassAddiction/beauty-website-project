@@ -1,8 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Icon from "@/components/ui/icon";
 
 const ClientsPage = () => {
-  const [selectedPlatform, setSelectedPlatform] = useState<string>("Windows");
+  const detectPlatform = (): string => {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const platform = navigator.platform.toLowerCase();
+
+    if (/iphone|ipad|ipod/.test(userAgent)) {
+      return "iOS";
+    } else if (/android/.test(userAgent)) {
+      return "Android";
+    } else if (/mac/.test(platform)) {
+      return "macOS";
+    } else if (/win/.test(platform)) {
+      return "Windows";
+    } else if (/linux/.test(platform)) {
+      return "Linux";
+    }
+    return "Windows";
+  };
+
+  const [selectedPlatform, setSelectedPlatform] = useState<string>(detectPlatform());
 
   const platforms = [
     { id: "Android", name: "Android", icon: "Smartphone", shortName: "Android" },
@@ -115,22 +133,27 @@ const ClientsPage = () => {
 
         <div className="max-w-4xl mx-auto">
           <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-4 md:p-8 border border-blue-500/20 mb-8">
-            <div className="flex justify-center mb-8 overflow-x-auto">
-              <div className="inline-flex gap-1 md:gap-2 bg-gray-900/50 p-1.5 md:p-2 rounded-xl min-w-min">
-                {platforms.map((platform) => (
-                  <button
-                    key={platform.id}
-                    onClick={() => setSelectedPlatform(platform.id)}
-                    className={`flex items-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 rounded-lg transition-all whitespace-nowrap ${
-                      selectedPlatform === platform.id
-                        ? "bg-cyan-500 text-white"
-                        : "text-gray-400 hover:text-white hover:bg-gray-800"
-                    }`}
+            <div className="flex justify-center mb-8">
+              <div className="w-full max-w-md">
+                <label className="block text-sm font-medium text-blue-200 mb-3 text-center">
+                  Выберите вашу операционную систему
+                </label>
+                <div className="relative">
+                  <select
+                    value={selectedPlatform}
+                    onChange={(e) => setSelectedPlatform(e.target.value)}
+                    className="w-full bg-gray-900/80 border-2 border-cyan-500/50 text-white rounded-xl px-4 py-3 pr-10 appearance-none cursor-pointer focus:outline-none focus:border-cyan-400 transition-colors text-lg font-medium"
                   >
-                    <Icon name={platform.icon} size={18} className="md:w-5 md:h-5" />
-                    <span className="font-medium text-sm md:text-base">{platform.shortName}</span>
-                  </button>
-                ))}
+                    {platforms.map((platform) => (
+                      <option key={platform.id} value={platform.id}>
+                        {platform.name}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <Icon name="ChevronDown" size={24} className="text-cyan-400" />
+                  </div>
+                </div>
               </div>
             </div>
 
