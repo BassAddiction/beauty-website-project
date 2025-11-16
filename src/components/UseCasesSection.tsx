@@ -1,4 +1,5 @@
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { Link } from "react-router-dom";
 
 const UseCasesSection = () => {
   const { ref, isVisible } = useScrollAnimation();
@@ -53,9 +54,15 @@ const UseCasesSection = () => {
                   <h3 className="text-xl font-bold mb-2">
                     {useCase.title}
                   </h3>
-                  <p className="text-sm text-gray-200 opacity-90">
+                  <p className="text-sm text-gray-200 opacity-90 mb-4">
                     {useCase.description}
                   </p>
+                  <Link 
+                    to="/#pricing"
+                    className="inline-block w-full text-center px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all font-semibold text-sm shadow-lg"
+                  >
+                    Попробовать
+                  </Link>
                 </div>
               </div>
             </div>
