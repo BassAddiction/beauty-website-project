@@ -1,5 +1,4 @@
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Icon from "@/components/ui/icon";
 
@@ -120,15 +119,9 @@ const UseCasesSection = () => {
                   <h3 className="text-xl font-bold mb-2">
                     {useCase.title}
                   </h3>
-                  <p className="text-sm text-gray-200 opacity-90 mb-4">
+                  <p className="text-sm text-gray-200 opacity-90">
                     {useCase.description}
                   </p>
-                  <Link 
-                    to="/#pricing"
-                    className="inline-block w-full text-center px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all font-semibold text-sm shadow-lg"
-                  >
-                    Попробовать
-                  </Link>
                 </div>
               </div>
             </div>
@@ -165,15 +158,9 @@ const UseCasesSection = () => {
                       <h3 className="text-2xl font-bold mb-2">
                         {useCase.title}
                       </h3>
-                      <p className="text-sm text-gray-200 opacity-90 mb-4">
+                      <p className="text-sm text-gray-200 opacity-90">
                         {useCase.description}
                       </p>
-                      <Link 
-                        to="/#pricing"
-                        className="inline-block w-full text-center px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all font-semibold shadow-lg"
-                      >
-                        Попробовать
-                      </Link>
                     </div>
                   </div>
                 </div>
