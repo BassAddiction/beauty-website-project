@@ -124,29 +124,29 @@ const ClientsPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
+    <div className="min-h-screen bg-black">
       <div className="container mx-auto px-4 py-8 md:py-16">
         <div className="text-center mb-8 md:mb-12">
           <h1 className="text-3xl md:text-5xl font-bold text-white mb-3 md:mb-4">
             Установка VPN клиента
           </h1>
-          <p className="text-base md:text-xl text-blue-200">
+          <p className="text-base md:text-xl text-gray-400">
             Выберите вашу платформу и следуйте инструкциям
           </p>
         </div>
 
         <div className="max-w-4xl mx-auto">
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-4 md:p-8 border border-blue-500/20 mb-8">
+          <div className="bg-card/50 backdrop-blur-sm rounded-2xl p-4 md:p-8 border border-border mb-8">
             <div className="flex justify-center mb-8">
               <div className="w-full max-w-md">
-                <label className="block text-sm font-medium text-blue-200 mb-3 text-center">
+                <label className="block text-sm font-medium text-muted-foreground mb-3 text-center">
                   Выберите вашу операционную систему
                 </label>
                 <div className="relative">
                   <select
                     value={selectedPlatform}
                     onChange={(e) => setSelectedPlatform(e.target.value)}
-                    className="w-full bg-gray-900/80 border-2 border-cyan-500/50 text-white rounded-xl px-4 py-3 pr-10 appearance-none cursor-pointer focus:outline-none focus:border-cyan-400 transition-colors text-lg font-medium"
+                    className="w-full bg-secondary border-2 border-border text-white rounded-xl px-4 py-3 pr-10 appearance-none cursor-pointer focus:outline-none focus:border-primary transition-colors text-lg font-medium hover:border-primary/50"
                   >
                     {platforms.map((platform) => (
                       <option key={platform.id} value={platform.id}>
@@ -155,7 +155,7 @@ const ClientsPage = () => {
                     ))}
                   </select>
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                    <Icon name="ChevronDown" size={24} className="text-cyan-400" />
+                    <Icon name="ChevronDown" size={24} className="text-primary" />
                   </div>
                 </div>
               </div>
@@ -165,27 +165,27 @@ const ClientsPage = () => {
               {clients[selectedPlatform as keyof typeof clients].map((client, index) => (
                 <div
                   key={index}
-                  className={`p-4 md:p-6 rounded-xl border transition-all ${
+                  className={`p-4 md:p-6 rounded-xl border transition-all hover:border-primary/50 ${
                     client.featured
-                      ? "bg-cyan-500/10 border-cyan-500/50"
-                      : "bg-gray-900/30 border-gray-700"
+                      ? "bg-primary/10 border-primary/50"
+                      : "bg-secondary/30 border-border"
                   }`}
                 >
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         {client.featured && (
-                          <Icon name="Star" size={18} className="text-cyan-400 flex-shrink-0" />
+                          <Icon name="Star" size={18} className="text-primary flex-shrink-0" />
                         )}
                         <h3 className="text-lg md:text-xl font-bold text-white">{client.name}</h3>
                       </div>
-                      <p className="text-sm md:text-base text-gray-400">{client.description}</p>
+                      <p className="text-sm md:text-base text-muted-foreground">{client.description}</p>
                     </div>
                     <a
                       href={client.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 px-4 md:px-6 py-2.5 md:py-3 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg transition-colors text-sm md:text-base whitespace-nowrap"
+                      className="flex items-center justify-center gap-2 px-4 md:px-6 py-2.5 md:py-3 bg-primary hover:bg-primary/90 text-white rounded-lg transition-all text-sm md:text-base whitespace-nowrap button-glow"
                     >
                       <Icon name="Download" size={18} />
                       Скачать
@@ -196,18 +196,18 @@ const ClientsPage = () => {
             </div>
           </div>
 
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-4 md:p-8 border border-blue-500/20">
+          <div className="bg-card/50 backdrop-blur-sm rounded-2xl p-4 md:p-8 border border-border">
             <h2 className="text-xl md:text-2xl font-bold text-white mb-6 md:mb-8 text-center">
               Инструкция по установке
             </h2>
 
             <div className="relative">
-              <div className="absolute left-4 md:left-6 top-8 bottom-8 w-0.5 bg-gradient-to-b from-cyan-500 via-blue-500 to-cyan-500"></div>
+              <div className="absolute left-4 md:left-6 top-8 bottom-8 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-primary"></div>
 
               <div className="space-y-6">
                 {instructions.map((instruction) => (
                   <div key={instruction.step} className="relative flex gap-3 md:gap-6">
-                    <div className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-cyan-500 flex items-center justify-center z-10 border-2 md:border-4 border-gray-900">
+                    <div className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary flex items-center justify-center z-10 border-2 md:border-4 border-black">
                       <Icon name={instruction.icon} size={18} className="text-white md:w-5 md:h-5" />
                     </div>
 
@@ -215,13 +215,13 @@ const ClientsPage = () => {
                       <h3 className="text-base md:text-lg font-bold text-white mb-2">
                         {instruction.title}
                       </h3>
-                      <p className="text-sm md:text-base text-gray-400 leading-relaxed">
+                      <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
                         {instruction.description}
                       </p>
                       {instruction.action && (
                         <button 
                           onClick={() => navigate('/register')}
-                          className="mt-3 md:mt-4 px-4 md:px-6 py-2.5 md:py-3 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg transition-colors font-medium text-sm md:text-base w-full md:w-auto"
+                          className="mt-3 md:mt-4 px-4 md:px-6 py-2.5 md:py-3 bg-primary hover:bg-primary/90 text-white rounded-lg transition-all font-medium text-sm md:text-base w-full md:w-auto button-glow"
                         >
                           {instruction.actionText || 'Добавить подписку'}
                         </button>
@@ -233,24 +233,24 @@ const ClientsPage = () => {
             </div>
           </div>
 
-          <div className="mt-6 md:mt-8 bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 md:p-6">
+          <div className="mt-6 md:mt-8 bg-primary/10 border border-primary/30 rounded-xl p-4 md:p-6">
             <div className="flex gap-3 md:gap-4">
-              <Icon name="Info" size={20} className="text-yellow-400 flex-shrink-0 mt-1 md:w-6 md:h-6" />
+              <Icon name="Info" size={20} className="text-primary flex-shrink-0 mt-1 md:w-6 md:h-6" />
               <div>
-                <h3 className="text-base md:text-lg font-bold text-yellow-300 mb-2">
+                <h3 className="text-base md:text-lg font-bold text-white mb-2">
                   Важная информация
                 </h3>
-                <ul className="space-y-2 text-sm md:text-base text-gray-300">
+                <ul className="space-y-2 text-sm md:text-base text-muted-foreground">
                   <li className="flex items-start gap-2">
-                    <span className="text-yellow-400 mt-1">•</span>
+                    <span className="text-primary mt-1">•</span>
                     <span>На iOS требуется установка профиля VPN в настройках системы</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-yellow-400 mt-1">•</span>
+                    <span className="text-primary mt-1">•</span>
                     <span>На Android может потребоваться разрешение на установку из неизвестных источников</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-yellow-400 mt-1">•</span>
+                    <span className="text-primary mt-1">•</span>
                     <span>Держите приложение обновленным для лучшей производительности</span>
                   </li>
                 </ul>
