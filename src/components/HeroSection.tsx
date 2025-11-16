@@ -20,7 +20,7 @@ const HeroSection = () => {
             />
           </div>
           <h1 
-            className="text-5xl md:text-7xl font-black mb-6 tracking-tight"
+            className="text-4xl md:text-5xl font-black mb-6 tracking-tight"
           >
             <span className="hidden md:inline">Подключить VPN для России — быстрый и безопасный<br /></span>
             <span className="text-primary">Speed VPN — Ваша цифровая свобода</span>
