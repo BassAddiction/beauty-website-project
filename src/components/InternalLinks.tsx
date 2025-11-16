@@ -28,6 +28,24 @@ const links: InternalLink[] = [
     icon: 'Bot'
   },
   {
+    title: 'VPN для Instagram',
+    description: 'Stories, Reels и общение без ограничений',
+    path: '/vpn-instagram',
+    icon: 'Camera'
+  },
+  {
+    title: 'VPN для Facebook',
+    description: 'Полный доступ к соцсети и Messenger',
+    path: '/vpn-facebook',
+    icon: 'Users'
+  },
+  {
+    title: 'VPN для X (Twitter)',
+    description: 'Читайте твиты и публикуйте посты',
+    path: '/vpn-twitter',
+    icon: 'Bird'
+  },
+  {
     title: 'VPN для России',
     description: 'Обход всех блокировок Роскомнадзора',
     path: '/vpn-russia',
