@@ -61,8 +61,8 @@ const Index = () => {
       <UseCasesSection />
       <PricingSection />
       <InternalLinks />
-      <FeaturesSection />
       <VPNClientsSection />
+      <FeaturesSection />
       <FAQSection />
       <Footer />
       <ScrollToTop />
