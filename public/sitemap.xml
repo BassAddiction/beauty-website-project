@@ -88,6 +88,46 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://speedvpn.io/vpn-russia" />
   </url>
   
+  <!-- VPN Клиенты -->
+  <url>
+    <loc>https://speedvpn.io/clients</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://speedvpn.io/clients" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://speedvpn.io/clients" />
+  </url>
+  
+  <!-- VPN для Instagram -->
+  <url>
+    <loc>https://speedvpn.io/vpn-instagram</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://speedvpn.io/vpn-instagram" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://speedvpn.io/vpn-instagram" />
+  </url>
+  
+  <!-- VPN для Facebook -->
+  <url>
+    <loc>https://speedvpn.io/vpn-facebook</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://speedvpn.io/vpn-facebook" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://speedvpn.io/vpn-facebook" />
+  </url>
+  
+  <!-- VPN для X (Twitter) -->
+  <url>
+    <loc>https://speedvpn.io/vpn-twitter</loc>
+    <lastmod>2025-11-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://speedvpn.io/vpn-twitter" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://speedvpn.io/vpn-twitter" />
+  </url>
+  
   <!-- Условия использования -->
   <url>
     <loc>https://speedvpn.io/terms</loc>
