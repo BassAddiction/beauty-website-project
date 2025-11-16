@@ -6,6 +6,8 @@ import Icon from "@/components/ui/icon";
 const UseCasesSection = () => {
   const { ref, isVisible } = useScrollAnimation();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
 
   const useCases = [
     {
@@ -34,6 +36,32 @@ const UseCasesSection = () => {
 
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + useCases.length) % useCases.length);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe) {
+      nextSlide();
+    }
+    if (isRightSwipe) {
+      prevSlide();
+    }
+
+    setTouchStart(0);
+    setTouchEnd(0);
   };
 
   return (
@@ -83,7 +111,12 @@ const UseCasesSection = () => {
 
         {/* Mobile Carousel */}
         <div className={`md:hidden relative transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <div className="relative overflow-hidden rounded-2xl">
+          <div 
+            className="relative overflow-hidden rounded-2xl"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
             <div 
               className="flex transition-transform duration-500 ease-out"
               style={{ transform: `translateX(-${currentSlide * 100}%)` }}
