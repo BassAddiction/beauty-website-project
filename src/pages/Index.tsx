@@ -9,7 +9,6 @@ import PricingSection from "@/components/PricingSection";
 import UseCasesSection from "@/components/UseCasesSection";
 import FeaturesSection from "@/components/FeaturesSection";
 import VPNClientsSection from "@/components/VPNClientsSection";
-import TrainingSection from "@/components/TrainingSection";
 import FAQSection from "@/components/FAQSection";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -63,7 +62,6 @@ const Index = () => {
       <PricingSection />
       <InternalLinks />
       <FeaturesSection />
-      <TrainingSection />
       <VPNClientsSection />
       <FAQSection />
       <Footer />
