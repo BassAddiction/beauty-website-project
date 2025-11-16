@@ -8,31 +8,55 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-border">
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <img src={CDN_ASSETS.CLIENT_ICONS.WINDOWS} alt="Speed VPN" className="w-8 h-8 rounded-lg hover:scale-110 transition-transform duration-300" />
-          <span className="text-xl font-bold">SPEED VPN</span>
+    <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-black via-black/95 to-black backdrop-blur-xl border-b border-primary/20 shadow-lg shadow-primary/5">
+      <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-purple-500/5 to-primary/5 opacity-50"></div>
+      <div className="container mx-auto px-4 py-4 flex items-center justify-between relative">
+        <div className="flex items-center gap-3 group">
+          <div className="relative">
+            <img src={CDN_ASSETS.CLIENT_ICONS.WINDOWS} alt="Speed VPN" className="w-9 h-9 rounded-xl hover:scale-110 transition-transform duration-300 relative z-10" />
+            <div className="absolute inset-0 bg-primary/30 rounded-xl blur-md group-hover:blur-lg transition-all duration-300"></div>
+          </div>
+          <span className="text-xl font-black bg-gradient-to-r from-white via-primary to-white bg-clip-text text-transparent">SPEED VPN</span>
         </div>
-        <nav className="hidden md:flex items-center gap-8">
-          <a href="/#features" className="text-sm font-medium hover:text-primary transition-colors">Возможности</a>
-          <a href="/#pricing" className="text-sm font-medium hover:text-primary transition-colors">Тарифы</a>
-          <a href="/reviews" className="text-sm font-medium hover:text-primary transition-colors">Отзывы</a>
-          <a href="/#training" className="text-sm font-medium hover:text-primary transition-colors">Обучение</a>
-          <a href="/#faq" className="text-sm font-medium hover:text-primary transition-colors">FAQ</a>
-          <a href="/clients" className="text-sm font-medium hover:text-primary transition-colors">VPN-Клиенты</a>
+        <nav className="hidden md:flex items-center gap-1">
+          <a href="/#features" className="relative px-4 py-2 text-sm font-semibold text-gray-300 hover:text-white transition-all duration-300 group">
+            <span className="relative z-10">Возможности</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </a>
+          <a href="/#pricing" className="relative px-4 py-2 text-sm font-semibold text-gray-300 hover:text-white transition-all duration-300 group">
+            <span className="relative z-10">Тарифы</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </a>
+          <a href="/reviews" className="relative px-4 py-2 text-sm font-semibold text-gray-300 hover:text-white transition-all duration-300 group">
+            <span className="relative z-10">Отзывы</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </a>
+          <a href="/#training" className="relative px-4 py-2 text-sm font-semibold text-gray-300 hover:text-white transition-all duration-300 group">
+            <span className="relative z-10">Обучение</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </a>
+          <a href="/#faq" className="relative px-4 py-2 text-sm font-semibold text-gray-300 hover:text-white transition-all duration-300 group">
+            <span className="relative z-10">FAQ</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </a>
+          <a href="/clients" className="relative px-4 py-2 text-sm font-semibold text-gray-300 hover:text-white transition-all duration-300 group">
+            <span className="relative z-10">VPN-Клиенты</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </a>
         </nav>
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" className="hidden md:flex rounded-full" asChild>
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" className="hidden md:flex rounded-full hover:bg-primary/10 hover:text-primary transition-all duration-300 relative group" asChild>
             <a href="/get-access">
               <Icon name="Key" className="w-4 h-4 mr-2" />
               Восстановить доступ
+              <div className="absolute inset-0 bg-primary/5 rounded-full opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300"></div>
             </a>
           </Button>
-          <Button variant="outline" className="hidden md:flex rounded-full" asChild>
+          <Button variant="outline" className="hidden md:flex rounded-full border-2 border-primary/40 hover:border-primary hover:bg-primary/10 hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 relative group" asChild>
             <a href="/login">
               <Icon name="User" className="w-4 h-4 mr-2" />
               Личный кабинет
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-purple-500/10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </a>
           </Button>
           <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
