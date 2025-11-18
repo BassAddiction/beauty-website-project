@@ -23,11 +23,10 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /dashboard
-Disallow: /buy-vpn
-Disallow: /vpn-russia
-Disallow: /vpn-chatgpt
-Disallow: /register
-Disallow: /news
+Disallow: /payment
+Disallow: /login
+Disallow: /builder
+Disallow: /test-webhook
 Crawl-delay: 1
 
 # Sitemap

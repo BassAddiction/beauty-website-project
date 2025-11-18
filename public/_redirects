@@ -1,5 +1,4 @@
-/buy-vpn /pricing 301
-/vpn-russia /pricing 301
-/vpn-chatgpt /pricing 301
-/register /pricing 301
+/buy-vpn / 301
+/register / 301
+/news / 301
 /news/* / 301
