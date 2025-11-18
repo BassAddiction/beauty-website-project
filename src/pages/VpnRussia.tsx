@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import { useSEO } from "@/hooks/useSEO";
 import { pageSEO, createWebPageSchema, addStructuredData } from "@/utils/seo";
 import Header from "@/components/Header";
@@ -28,9 +29,14 @@ const VpnRussia = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
-      <NewYearTheme />
-      <Header />
+    <>
+      <Helmet>
+        <link rel="canonical" href="https://speedvpn.io/news" />
+      </Helmet>
+      
+      <div className="min-h-screen bg-background">
+        <NewYearTheme />
+        <Header />
       
       <main className="container mx-auto px-4 py-12 md:py-20">
         <div className="max-w-4xl mx-auto">
@@ -449,9 +455,10 @@ const VpnRussia = () => {
         </div>
       </main>
 
-      <Footer />
-      <ScrollToTop />
-    </div>
+        <Footer />
+        <ScrollToTop />
+      </div>
+    </>
   );
 };
 
