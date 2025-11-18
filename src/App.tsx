@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Payment from "./pages/Payment";
 import PaymentSuccess from "./pages/PaymentSuccess";
@@ -16,10 +17,12 @@ import TestWebhook from "./pages/TestWebhook";
 import Terms from "./pages/Terms";
 import SubscriptionBuilder from "./pages/SubscriptionBuilder";
 import Reviews from "./pages/Reviews";
+import News from "./pages/News";
 import VpnYoutube from "./pages/VpnYoutube";
 import VpnTelegram from "./pages/VpnTelegram";
 import VpnChatGPT from "./pages/VpnChatGPT";
 import VpnRussia from "./pages/VpnRussia";
+import BuyVpn from "./pages/BuyVpn";
 import ClientsPage from "./pages/ClientsPage";
 import VpnInstagramPage from "./pages/VpnInstagramPage";
 import VpnFacebookPage from "./pages/VpnFacebookPage";
@@ -37,6 +40,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/payment" element={<Payment />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/get-access" element={<GetAccess />} />
@@ -48,10 +52,12 @@ const App = () => (
           <Route path="/terms" element={<Terms />} />
           <Route path="/builder" element={<SubscriptionBuilder />} />
           <Route path="/reviews" element={<Reviews />} />
+          <Route path="/news" element={<News />} />
           <Route path="/vpn-youtube" element={<VpnYoutube />} />
           <Route path="/vpn-telegram" element={<VpnTelegram />} />
           <Route path="/vpn-chatgpt" element={<VpnChatGPT />} />
           <Route path="/vpn-russia" element={<VpnRussia />} />
+          <Route path="/buy-vpn" element={<BuyVpn />} />
           <Route path="/clients" element={<ClientsPage />} />
           <Route path="/vpn-instagram" element={<VpnInstagramPage />} />
           <Route path="/vpn-facebook" element={<VpnFacebookPage />} />

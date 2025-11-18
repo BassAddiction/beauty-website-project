@@ -25,6 +25,7 @@ Disallow: /admin
 Disallow: /dashboard
 Disallow: /payment
 Disallow: /login
+Disallow: /register
 Disallow: /builder
 Disallow: /test-webhook
 Crawl-delay: 1
