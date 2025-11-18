@@ -79,6 +79,26 @@ const VpnChatGPT = () => {
               OpenAI заблокировала доступ к ChatGPT для пользователей из России и ряда других стран по политическим причинам. При попытке зайти на сайт появляется ошибка "Access denied". Единственный способ использовать ChatGPT — подключить надёжный VPN, который изменит ваше виртуальное местоположение.
             </p>
 
+            <p className="text-muted-foreground leading-relaxed mb-6">
+              Блокировка ChatGPT в России не связана с решением Роскомнадзора — это ограничение самой компании OpenAI. С марта 2023 года сервис определяет российские IP-адреса и запрещает доступ на уровне своих серверов. Более того, даже если вы создадите аккаунт за границей, при входе из России аккаунт может быть заблокирован. OpenAI также блокирует регистрацию с российскими номерами телефонов и не принимает оплату российскими картами за ChatGPT Plus.
+            </p>
+
+            <p className="text-muted-foreground leading-relaxed mb-6">
+              Для работы с ChatGPT через VPN критически важна стабильность соединения. Если VPN-подключение прерывается во время диалога с чат-ботом, ваш настоящий IP-адрес может быть обнаружен, что приведёт к блокировке аккаунта. Speed VPN обеспечивает постоянное соединение без разрывов благодаря протоколу Vless Reality. В отличие от обычных VPN, которые могут внезапно отключиться, наше решение поддерживает стабильный туннель даже при проблемах с интернет-провайдером.
+            </p>
+
+            <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-xl p-6 border border-purple-500/20 mb-6">
+              <div className="flex items-start gap-3">
+                <Icon name="Sparkles" className="text-purple-500 flex-shrink-0 mt-1" size={24} />
+                <div>
+                  <p className="font-semibold mb-2">ChatGPT и другие ИИ-сервисы</p>
+                  <p className="text-muted-foreground text-sm">
+                    Speed VPN открывает доступ не только к ChatGPT, но и к Claude (Anthropic), Midjourney (генерация изображений), GitHub Copilot (помощник программиста), Perplexity AI и другим заблокированным ИИ-инструментам. Одна подписка для всех сервисов — без необходимости настраивать отдельные VPN под каждый.
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <div className="bg-amber-500/10 border-l-4 border-amber-500 rounded-r-xl p-6 my-8">
               <div className="flex items-start gap-3">
                 <Icon name="AlertTriangle" className="text-amber-500 flex-shrink-0 mt-1" size={24} />
