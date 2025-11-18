@@ -154,9 +154,9 @@ export const pageSEO = {
   },
   
   buyVpn: {
-    title: 'Купить VPN для России — Тарифы от 79₽ | Speed VPN',
-    description: 'Выбирайте лучший тариф VPN для России. От 79₽ за неделю. Vless Reality протокол, 30 ГБ/день, безлимитные устройства. Мгновенная активация.',
-    keywords: 'купить vpn, тарифы vpn, vpn цена, vpn от 79 рублей, подписка vpn, vpn недорого',
+    title: 'Купить VPN для России 2025 — Speed VPN от 79₽ с оплатой картой РФ',
+    description: 'Покупка VPN для России: оплата российскими картами МИР, Visa, Mastercard. Мгновенная активация. Vless Reality протокол не блокируется РКН. Работает на всех устройствах. Тарифы от 79₽/неделя.',
+    keywords: 'купить vpn россия, vpn российской картой, оплата vpn мир, купить впн 2025, тарифы vpn цена',
     ogImage: 'https://speedvpn.io/favicon.svg'
   },
 
@@ -175,16 +175,16 @@ export const pageSEO = {
   },
 
   vpnChatGPT: {
-    title: 'VPN для ChatGPT — Полный доступ из России | Speed VPN',
-    description: 'Используйте ChatGPT из России с Speed VPN. Стабильное соединение, быстрый доступ. Vless Reality протокол. От 79₽/неделя.',
-    keywords: 'vpn для chatgpt, впн чатгпт, доступ к chatgpt, chatgpt из россии',
+    title: 'VPN для ChatGPT из России — доступ к OpenAI, GPT-4, Claude, Midjourney',
+    description: 'Полный доступ к ChatGPT из России через Speed VPN. Работает с GPT-4, DALL-E, Claude, Midjourney, GitHub Copilot. Стабильное соединение без блокировки аккаунта. Vless Reality обходит детекцию OpenAI. От 79₽/неделя.',
+    keywords: 'vpn для chatgpt россия, chatgpt из рф, openai vpn, claude midjourney доступ, gpt-4 через vpn',
     ogImage: 'https://speedvpn.io/favicon.svg'
   },
 
   vpnRussia: {
-    title: 'VPN для России — Обход блокировок | Speed VPN',
-    description: 'Лучший VPN для России. Обход блокировок Роскомнадзора, доступ ко всем сайтам. Vless Reality протокол, высокая скорость. От 79₽/неделя.',
-    keywords: 'vpn для россии, обход блокировок, роскомнадзор, впн россия, разблокировка сайтов',
+    title: 'VPN для России 2025 — обход блокировок РКН, YouTube, Telegram',
+    description: 'Лучший VPN для России в 2025 году. Обход блокировок Роскомнадзора: YouTube, Instagram, Facebook, Discord. Vless Reality не блокируется DPI. Стабильная работа при замедлении. От 79₽/неделя.',
+    keywords: 'vpn для россии 2025, обход ркн, впн роскомнадзор, разблокировка ютуб инстаграм, vpn dpi обход',
     ogImage: 'https://speedvpn.io/favicon.svg'
   },
 
