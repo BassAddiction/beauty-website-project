@@ -23,6 +23,11 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /dashboard
+Disallow: /buy-vpn
+Disallow: /vpn-russia
+Disallow: /vpn-chatgpt
+Disallow: /register
+Disallow: /news
 Crawl-delay: 1
 
 # Sitemap
