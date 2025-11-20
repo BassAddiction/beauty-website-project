@@ -219,7 +219,7 @@ const PaymentSuccess = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
-      <Card className="max-w-2xl w-full border-green-500">
+      <Card className={`max-w-2xl w-full ${paymentStatus === 'pending' ? 'border-yellow-500' : 'border-green-500'}`}>
         <CardHeader>
           <div className="flex justify-center mb-4">
             <a href="/" className="transition-transform hover:scale-105">
@@ -230,22 +230,16 @@ const PaymentSuccess = () => {
               />
             </a>
           </div>
-          <CardTitle className="flex items-center gap-2 text-green-600 justify-center">
-            <Icon name="CheckCircle" className="w-8 h-8" />
-            Оплата успешна!
+          <CardTitle className={`flex items-center gap-2 ${paymentStatus === 'pending' ? 'text-yellow-600' : 'text-green-600'} justify-center`}>
+            <Icon name={paymentStatus === 'pending' ? 'Clock' : 'CheckCircle'} className="w-8 h-8" />
+            {paymentStatus === 'pending' ? 'Платёж в обработке' : 'Оплата успешна!'}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="bg-green-50 dark:bg-green-950 p-4 rounded-lg">
-            <p className="text-sm text-green-800 dark:text-green-200">
-              ✅ Платёж обработан успешно! Ваша подписка будет активирована в течение нескольких минут.
-            </p>
-          </div>
-
-          {paymentStatus === 'pending' && (
+          {paymentStatus === 'pending' ? (
             <div className="bg-yellow-50 dark:bg-yellow-950 p-4 rounded-lg">
               <p className="text-sm text-yellow-800 dark:text-yellow-200 mb-3">
-                ⏳ Платёж в обработке. Ожидаем подтверждение оплаты. Страница обновится автоматически.
+                ⏳ Ожидаем подтверждение оплаты от банка. Обычно это занимает 1-2 минуты.
               </p>
               <Button 
                 onClick={forceCheckPayment} 
@@ -261,10 +255,16 @@ const PaymentSuccess = () => {
                 ) : (
                   <>
                     <Icon name="RefreshCw" className="w-4 h-4 mr-2" />
-                    Проверить статус сейчас
+                    Проверить статус прямо сейчас
                   </>
                 )}
               </Button>
+            </div>
+          ) : (
+            <div className="bg-green-50 dark:bg-green-950 p-4 rounded-lg">
+              <p className="text-sm text-green-800 dark:text-green-200">
+                ✅ Платёж обработан успешно! Ваша подписка будет активирована в течение нескольких минут.
+              </p>
             </div>
           )}
 
