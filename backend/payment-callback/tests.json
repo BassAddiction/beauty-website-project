@@ -1,0 +1,20 @@
+{
+  "tests": [
+    {
+      "name": "Handle Yookassa callback",
+      "method": "POST",
+      "body": {
+        "object": {
+          "id": "test-payment-123",
+          "status": "succeeded",
+          "paid": true
+        }
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "status": "ok"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
