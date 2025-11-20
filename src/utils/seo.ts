@@ -150,6 +150,7 @@ export const pageSEO = {
     title: 'Speed VPN — Быстрый и безопасный VPN для России от 79₽',
     description: 'Надёжный VPN-сервис с Vless Reality протоколом. Доступ к YouTube, Telegram, ChatGPT. 30 ГБ/день, безлимитные устройства. Мгновенная активация от 79₽.',
     keywords: 'vpn для россии, купить vpn, vpn недорого, vless reality, vpn youtube, vpn telegram, быстрый vpn',
+    canonical: 'https://speedvpn.io/',
     ogImage: 'https://speedvpn.io/favicon.svg'
   },
   
@@ -157,6 +158,7 @@ export const pageSEO = {
     title: 'Купить VPN для России 2025 — Speed VPN от 79₽ с оплатой картой РФ',
     description: 'Покупка VPN для России: оплата российскими картами МИР, Visa, Mastercard. Мгновенная активация. Vless Reality протокол не блокируется РКН. Работает на всех устройствах. Тарифы от 79₽/неделя.',
     keywords: 'купить vpn россия, vpn российской картой, оплата vpn мир, купить впн 2025, тарифы vpn цена',
+    canonical: 'https://speedvpn.io/buy-vpn',
     ogImage: 'https://speedvpn.io/favicon.svg'
   },
 
@@ -164,6 +166,7 @@ export const pageSEO = {
     title: 'VPN для YouTube — Быстрый доступ к видео | Speed VPN',
     description: 'Смотрите YouTube без ограничений с Speed VPN. Высокая скорость, стабильное соединение, HD качество. Vless Reality протокол. От 79₽/неделя.',
     keywords: 'vpn для youtube, впн ютуб, разблокировка youtube, доступ к youtube, смотреть youtube',
+    canonical: 'https://speedvpn.io/vpn-youtube',
     ogImage: 'https://speedvpn.io/favicon.svg'
   },
 
@@ -171,6 +174,7 @@ export const pageSEO = {
     title: 'VPN для Telegram — Стабильный доступ | Speed VPN',
     description: 'Пользуйтесь Telegram без блокировок с Speed VPN. Быстрое соединение, высокая надёжность. Vless Reality протокол. От 79₽/неделя.',
     keywords: 'vpn для telegram, впн телеграм, разблокировка telegram, доступ к telegram',
+    canonical: 'https://speedvpn.io/vpn-telegram',
     ogImage: 'https://speedvpn.io/favicon.svg'
   },
 
@@ -178,6 +182,7 @@ export const pageSEO = {
     title: 'VPN для ChatGPT из России — доступ к OpenAI, GPT-4, Claude, Midjourney',
     description: 'Полный доступ к ChatGPT из России через Speed VPN. Работает с GPT-4, DALL-E, Claude, Midjourney, GitHub Copilot. Стабильное соединение без блокировки аккаунта. Vless Reality обходит детекцию OpenAI. От 79₽/неделя.',
     keywords: 'vpn для chatgpt россия, chatgpt из рф, openai vpn, claude midjourney доступ, gpt-4 через vpn',
+    canonical: 'https://speedvpn.io/vpn-chatgpt',
     ogImage: 'https://speedvpn.io/favicon.svg'
   },
 
@@ -185,6 +190,7 @@ export const pageSEO = {
     title: 'VPN для России 2025 — обход блокировок РКН, YouTube, Telegram',
     description: 'Лучший VPN для России в 2025 году. Обход блокировок Роскомнадзора: YouTube, Instagram, Facebook, Discord. Vless Reality не блокируется DPI. Стабильная работа при замедлении. От 79₽/неделя.',
     keywords: 'vpn для россии 2025, обход ркн, впн роскомнадзор, разблокировка ютуб инстаграм, vpn dpi обход',
+    canonical: 'https://speedvpn.io/vpn-russia',
     ogImage: 'https://speedvpn.io/favicon.svg'
   },
 
@@ -212,6 +218,7 @@ export const pageSEO = {
     title: 'Отзывы о Speed VPN — Реальные отзывы пользователей',
     description: 'Читайте честные отзывы пользователей Speed VPN. Более 1000 довольных клиентов. Средняя оценка 4.8/5.',
     keywords: 'отзывы speed vpn, отзывы vpn, speed vpn отзывы пользователей',
+    canonical: 'https://speedvpn.io/reviews',
     ogImage: 'https://speedvpn.io/favicon.svg'
   },
 
@@ -219,6 +226,7 @@ export const pageSEO = {
     title: 'Новости Speed VPN — Обновления и акции',
     description: 'Последние новости Speed VPN: обновления сервиса, новые функции, специальные предложения и акции.',
     keywords: 'новости vpn, обновления vpn, акции vpn',
+    canonical: 'https://speedvpn.io/news',
     ogImage: 'https://speedvpn.io/favicon.svg'
   },
 
@@ -232,6 +240,7 @@ export const pageSEO = {
     title: 'VPN Клиенты для всех устройств — Скачать Speed VPN',
     description: 'Скачайте VPN клиенты для Windows, macOS, iOS, Android, Linux. Clash Verge, Hiddify, Happ. Подробная инструкция по установке и настройке.',
     keywords: 'vpn клиент, скачать vpn, clash verge, hiddify, happ, vpn приложение, vpn для windows, vpn для mac, vpn для android, vpn для ios',
+    canonical: 'https://speedvpn.io/clients',
     ogImage: 'https://speedvpn.io/favicon.svg'
   },
 
@@ -239,6 +248,7 @@ export const pageSEO = {
     title: 'VPN для Instagram — Быстрый доступ к Stories и Reels | Speed VPN',
     description: 'Пользуйтесь Instagram без ограничений с Speed VPN. Смотрите Stories, Reels, публикуйте посты. Высокая скорость, стабильное соединение. От 79₽/неделя.',
     keywords: 'vpn для instagram, впн инстаграм, разблокировка instagram, доступ к instagram, instagram reels, instagram stories',
+    canonical: 'https://speedvpn.io/vpn-instagram',
     ogImage: 'https://cdn.poehali.dev/files/a723c7b2-8fbc-4b21-b03e-eea510930592.jpg'
   },
 
@@ -246,6 +256,7 @@ export const pageSEO = {
     title: 'VPN для Facebook — Стабильный доступ к соцсети | Speed VPN',
     description: 'Используйте Facebook без блокировок с Speed VPN. Общайтесь с друзьями, смотрите видео, публикуйте посты. Быстрое и надёжное соединение. От 79₽/неделя.',
     keywords: 'vpn для facebook, впн фейсбук, разблокировка facebook, доступ к facebook, facebook messenger',
+    canonical: 'https://speedvpn.io/vpn-facebook',
     ogImage: 'https://cdn.poehali.dev/files/8d467536-0939-4846-af54-6c838202e269.jpg'
   },
 
@@ -253,6 +264,7 @@ export const pageSEO = {
     title: 'VPN для X (Twitter) — Полный доступ из России | Speed VPN',
     description: 'Доступ к X (Twitter) без ограничений с Speed VPN. Читайте твиты, публикуйте посты, смотрите видео. Vless Reality протокол. От 79₽/неделя.',
     keywords: 'vpn для twitter, vpn для x, впн твиттер, разблокировка twitter, доступ к twitter, twitter x',
+    canonical: 'https://speedvpn.io/vpn-twitter',
     ogImage: 'https://cdn.poehali.dev/files/ce3c2f14-2ee3-46b2-acee-89296479b8cd.jpg'
   }
 };
