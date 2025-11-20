@@ -10,28 +10,24 @@ const PaymentSuccess = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
+  
+  // КРИТИЧЕСКИ ВАЖНО: Проверяем username ДО рендера компонента
+  const savedUsername = localStorage.getItem('vpn_username') || '';
+  const savedEmail = localStorage.getItem('vpn_email') || '';
+  
+  const [username, setUsername] = useState(savedUsername);
+  const [email, setEmail] = useState(savedEmail);
   const [hasReferralBonus, setHasReferralBonus] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'loading' | 'succeeded' | 'canceled' | 'pending'>('loading');
 
-  console.log('🚀🚀🚀 PaymentSuccess v2.0 LOADED 🚀🚀🚀');
+  console.log('🚀🚀🚀 PaymentSuccess v3.0 LOADED - username:', savedUsername, '🚀🚀🚀');
 
   useEffect(() => {
-    console.log('🔄🔄🔄 useEffect v2.0 TRIGGERED 🔄🔄🔄');
-    
-    const savedUsername = localStorage.getItem('vpn_username');
-    const savedEmail = localStorage.getItem('vpn_email');
-    setUsername(savedUsername || '');
-    setEmail(savedEmail || '');
+    console.log('🔄🔄🔄 useEffect v3.0 TRIGGERED - username:', savedUsername, '🔄🔄🔄');
     
     const checkPayment = async () => {
-      console.log('🔍 checkPayment function started, username:', savedUsername);
-      
-      console.log('🔍 PaymentSuccess: username from localStorage:', savedUsername);
-      
       if (!savedUsername) {
-        console.log('⚠️ No username found, showing success by default');
+        console.log('⚠️ No username in localStorage, showing success by default');
         setPaymentStatus('succeeded');
         return;
       }
@@ -125,7 +121,7 @@ const PaymentSuccess = () => {
         console.error('Error processing referral:', err);
       }
     }
-  }, [navigate, toast]);
+  }, [navigate, toast, savedUsername]);
 
   const copyUsername = () => {
     navigator.clipboard.writeText(username);
