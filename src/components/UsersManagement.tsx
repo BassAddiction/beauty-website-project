@@ -215,6 +215,150 @@ const UsersManagement = ({ adminPassword }: UsersManagementProps) => {
     setLoading(false);
   };
 
+  const handleRestoreSingleUser = async () => {
+    const username = prompt('Введите username пользователя для восстановления:');
+    if (!username) return;
+
+    const daysInput = prompt('Введите количество дней подписки (например, 180 для 6 месяцев):');
+    if (!daysInput) return;
+
+    const days = parseInt(daysInput);
+    if (isNaN(days) || days <= 0) {
+      toast({
+        title: '❌ Ошибка',
+        description: 'Неверное количество дней',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    if (!confirm(`Восстановить пользователя ${username} с подпиской на ${days} дней?`)) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch(API_ENDPOINTS.RESTORE_USERS, {
+        method: 'POST',
+        headers: {
+          'X-Admin-Key': adminPassword,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: username,
+          custom_days: days
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to restore user');
+      }
+
+      const result = await response.json();
+      
+      if (result.restored > 0) {
+        toast({
+          title: '✅ Пользователь восстановлен',
+          description: `${username} создан в Remnawave с подпиской на ${days} дней`,
+          duration: 10000
+        });
+        console.log('Restored user details:', result.restored_users[0]);
+      } else if (result.skipped > 0) {
+        toast({
+          title: '⚠️ Пропущено',
+          description: `Пользователь ${username} уже существует в Remnawave`,
+          variant: 'default'
+        });
+      } else {
+        toast({
+          title: '❌ Ошибка',
+          description: result.error_details?.[0]?.error || 'Не удалось восстановить пользователя',
+          variant: 'destructive'
+        });
+      }
+
+      await loadUsers();
+    } catch (error) {
+      console.error('Restore error:', error);
+      toast({
+        title: '❌ Ошибка',
+        description: 'Не удалось восстановить пользователя',
+        variant: 'destructive'
+      });
+    }
+    setLoading(false);
+  };
+
+  const handleSendApologyEmail = async () => {
+    const email = prompt('Введите email клиента:');
+    if (!email) return;
+
+    const username = prompt('Введите username клиента:');
+    if (!username) return;
+
+    const daysInput = prompt('Введите количество дней подписки (например, 180 для 6 месяцев):');
+    if (!daysInput) return;
+
+    const days = parseInt(daysInput);
+    if (isNaN(days) || days <= 0) {
+      toast({
+        title: '❌ Ошибка',
+        description: 'Неверное количество дней',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    if (!confirm(`Отправить письмо с извинениями на ${email}?\n\nПодписка: ${days} дней\nКопия будет отправлена на mistersvolk@yandex.ru`)) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch(API_ENDPOINTS.SEND_APOLOGY_EMAIL, {
+        method: 'POST',
+        headers: {
+          'X-Admin-Key': adminPassword,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: email,
+          username: username,
+          subscription_url: '',
+          days: days
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send email');
+      }
+
+      const result = await response.json();
+      
+      if (result.success) {
+        toast({
+          title: '✅ Письмо отправлено',
+          description: `Письмо с извинениями отправлено на ${email} с копией на mistersvolk@yandex.ru`,
+          duration: 10000
+        });
+      } else {
+        toast({
+          title: '❌ Ошибка',
+          description: result.error || 'Не удалось отправить письмо',
+          variant: 'destructive'
+        });
+      }
+    } catch (error) {
+      console.error('Email error:', error);
+      toast({
+        title: '❌ Ошибка',
+        description: 'Не удалось отправить письмо',
+        variant: 'destructive'
+      });
+    }
+    setLoading(false);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -222,10 +366,18 @@ const UsersManagement = ({ adminPassword }: UsersManagementProps) => {
           <h2 className="text-2xl font-bold">Управление пользователями VPN</h2>
           <p className="text-muted-foreground">Всего пользователей: {uniqueUsers.length}</p>
         </div>
-        <div className="flex gap-2">
-          <Button onClick={handleRestoreUsers} disabled={loading} variant="default">
+        <div className="flex gap-2 flex-wrap">
+          <Button onClick={handleSendApologyEmail} disabled={loading} variant="default">
+            <Icon name="Mail" size={16} className="mr-2" />
+            Отправить извинения
+          </Button>
+          <Button onClick={handleRestoreSingleUser} disabled={loading} variant="outline">
+            <Icon name="UserCog" size={16} className="mr-2" />
+            Восстановить одного
+          </Button>
+          <Button onClick={handleRestoreUsers} disabled={loading} variant="outline">
             <Icon name="UserPlus" size={16} className="mr-2" />
-            Восстановить из БД
+            Восстановить всех
           </Button>
           <Button onClick={loadUsers} disabled={loading} variant="outline">
             <Icon name="RefreshCw" size={16} className="mr-2" />

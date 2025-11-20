@@ -51,9 +51,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         body_data = {}
     
     target_username = body_data.get('username', '')
+    custom_days = body_data.get('custom_days', 0)
     
     try:
-        result = restore_users(target_username)
+        result = restore_users(target_username, custom_days)
         
         return {
             'statusCode': 200,
@@ -72,7 +73,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         }
 
 
-def restore_users(target_username: str = '') -> Dict[str, Any]:
+def restore_users(target_username: str = '', custom_days: int = 0) -> Dict[str, Any]:
     '''Восстанавливает пользователей в Remnawave'''
     
     db_url = os.environ.get('DATABASE_URL', '')
@@ -166,7 +167,9 @@ def restore_users(target_username: str = '') -> Dict[str, Any]:
         # Создаем пользователя в Remnawave
         print(f'🔄 Restoring user: {username}')
         
-        result = create_user_in_remnawave(username, email, plan_days)
+        # Используем custom_days если указаны, иначе plan_days из БД
+        days_to_use = custom_days if custom_days > 0 else plan_days
+        result = create_user_in_remnawave(username, email, days_to_use)
         
         if result.get('success'):
             restored.append({
