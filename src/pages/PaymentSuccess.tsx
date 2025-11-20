@@ -84,9 +84,6 @@ const PaymentSuccess = () => {
         console.error('Failed to check payment status:', err);
         setPaymentStatus('succeeded');
       }
-      } else {
-        setPaymentStatus('succeeded');
-      }
     };
     
     const savedUsername = localStorage.getItem('vpn_username') || '';
