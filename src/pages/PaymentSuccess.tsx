@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
@@ -9,95 +9,20 @@ import API_ENDPOINTS, { CDN_ASSETS } from '@/config/api';
 const PaymentSuccess = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [searchParams] = useSearchParams();
-  
-  // КРИТИЧЕСКИ ВАЖНО: Проверяем username ДО рендера компонента
-  const savedUsername = localStorage.getItem('vpn_username') || '';
-  const savedEmail = localStorage.getItem('vpn_email') || '';
-  
-  const [username, setUsername] = useState(savedUsername);
-  const [email, setEmail] = useState(savedEmail);
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [hasReferralBonus, setHasReferralBonus] = useState(false);
-  const [paymentStatus, setPaymentStatus] = useState<'loading' | 'succeeded' | 'canceled' | 'pending'>('loading');
-  const [isChecking, setIsChecking] = useState(false);
-
-  console.log('🚀🚀🚀 PaymentSuccess v3.0 LOADED - username:', savedUsername, '🚀🚀🚀');
 
   useEffect(() => {
-    console.log('🔄🔄🔄 useEffect v4.0 TRIGGERED 🔄🔄🔄');
+    const savedUsername = localStorage.getItem('vpn_username') || '';
+    const savedEmail = localStorage.getItem('vpn_email') || '';
+    setUsername(savedUsername);
+    setEmail(savedEmail);
     
-    const checkPayment = async () => {
-      // Получаем payment_id из localStorage
-      const paymentId = localStorage.getItem('vpn_payment_id');
-      
-      if (!paymentId) {
-        console.log('⚠️ No payment_id in localStorage - user never started payment');
-        setPaymentStatus('canceled');
-        toast({
-          title: "❌ Платёж не найден",
-          description: "Попробуйте оформить подписку снова.",
-          variant: "destructive"
-        });
-        setTimeout(() => navigate('/'), 3000);
-        return;
-      }
-      
-      try {
-        console.log('📡 Checking payment status in Yookassa:', paymentId);
-        const url = `https://functions.poehali.dev/e9deb528-c2f6-4c74-b99c-04112d649dcf?payment_id=${paymentId}`;
-        
-        const response = await fetch(url);
-        const data = await response.json();
-        
-        console.log('✅ Yookassa response:', data);
-        
-        if (data.paid && data.status === 'succeeded') {
-          setPaymentStatus('succeeded');
-        } else if (data.status === 'canceled') {
-          setPaymentStatus('canceled');
-          toast({
-            title: "❌ Платёж отменён",
-            description: "Оплата не была завершена",
-            variant: "destructive"
-          });
-          setTimeout(() => navigate('/'), 3000);
-        } else {
-          setPaymentStatus('pending');
-        }
-        
-        if (data.status === 'canceled') {
-          console.log('❌ Payment canceled, clearing data and redirecting');
-          localStorage.removeItem('vpn_username');
-          localStorage.removeItem('vpn_email');
-          
-          toast({
-            title: "❌ Платёж отменён",
-            description: "Оплата не была завершена. Попробуйте снова.",
-            variant: "destructive",
-            duration: 5000
-          });
-          
-          setTimeout(() => navigate('/'), 3000);
-          return;
-        }
-        
-        if (data.status === 'pending') {
-          toast({
-            title: "⏳ Платёж в обработке",
-            description: "Ожидаем подтверждение оплаты от банка.",
-          });
-        }
-        
-        if (data.status === 'succeeded') {
-          console.log('✅ Payment succeeded');
-        }
-      } catch (err) {
-        console.error('Failed to check payment status:', err);
-        setPaymentStatus('succeeded');
-      }
-    };
-    
-    checkPayment();
+    if (!savedUsername) {
+      navigate('/?payment=success');
+      return;
+    }
     
     // Activate referral if exists
     const pendingReferral = localStorage.getItem('pending_referral');
@@ -130,7 +55,7 @@ const PaymentSuccess = () => {
         console.error('Error processing referral:', err);
       }
     }
-  }, [navigate, toast, savedUsername]);
+  }, [navigate, toast]);
 
   const copyUsername = () => {
     navigator.clipboard.writeText(username);
@@ -140,94 +65,9 @@ const PaymentSuccess = () => {
     });
   };
 
-  const forceCheckPayment = async () => {
-    setIsChecking(true);
-    try {
-      const url = `${API_ENDPOINTS.PAYMENT}?username=${encodeURIComponent(savedUsername)}`;
-      const response = await fetch(url);
-      const data = await response.json();
-      
-      setPaymentStatus(data.status);
-      
-      if (data.status === 'pending') {
-        toast({
-          title: "⏳ Всё ещё в обработке",
-          description: "Платёж ещё обрабатывается. Попробуйте через минуту.",
-        });
-      } else if (data.status === 'succeeded') {
-        toast({
-          title: "✅ Подтверждено!",
-          description: "Платёж успешно подтверждён!",
-        });
-        window.location.reload();
-      }
-    } catch (err) {
-      toast({
-        title: "❌ Ошибка",
-        description: "Не удалось проверить статус",
-        variant: "destructive"
-      });
-    } finally {
-      setIsChecking(false);
-    }
-  };
-
-  if (paymentStatus === 'loading') {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
-        <Card className="max-w-2xl w-full">
-          <CardContent className="py-12 text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Проверяем статус платежа...</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (paymentStatus === 'canceled') {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
-        <Card className="max-w-2xl w-full border-red-500">
-          <CardHeader>
-            <div className="flex justify-center mb-4">
-              <a href="/" className="transition-transform hover:scale-105">
-                <img 
-                  src={CDN_ASSETS.LOGO} 
-                  alt="Speed VPN" 
-                  className="w-16 h-16 rounded-full object-cover border-2 border-primary"
-                />
-              </a>
-            </div>
-            <CardTitle className="flex items-center gap-2 text-red-600 justify-center">
-              <Icon name="XCircle" className="w-8 h-8" />
-              Платёж отменён
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="bg-red-50 dark:bg-red-950 p-4 rounded-lg">
-              <p className="text-sm text-red-800 dark:text-red-200">
-                ❌ Оплата не была завершена. Вы можете попробовать оплатить снова.
-              </p>
-            </div>
-            <div className="space-y-3 pt-2">
-              <Button 
-                onClick={() => navigate('/')} 
-                className="w-full"
-              >
-                <Icon name="Home" className="w-4 h-4 mr-2" />
-                Вернуться на главную
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
-      <Card className={`max-w-2xl w-full ${paymentStatus === 'pending' ? 'border-yellow-500' : 'border-green-500'}`}>
+      <Card className="max-w-2xl w-full border-green-500">
         <CardHeader>
           <div className="flex justify-center mb-4">
             <a href="/" className="transition-transform hover:scale-105">
@@ -238,43 +78,17 @@ const PaymentSuccess = () => {
               />
             </a>
           </div>
-          <CardTitle className={`flex items-center gap-2 ${paymentStatus === 'pending' ? 'text-yellow-600' : 'text-green-600'} justify-center`}>
-            <Icon name={paymentStatus === 'pending' ? 'Clock' : 'CheckCircle'} className="w-8 h-8" />
-            {paymentStatus === 'pending' ? 'Платёж в обработке' : 'Оплата успешна!'}
+          <CardTitle className="flex items-center gap-2 text-green-600 justify-center">
+            <Icon name="CheckCircle" className="w-8 h-8" />
+            Оплата успешна!
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {paymentStatus === 'pending' ? (
-            <div className="bg-yellow-50 dark:bg-yellow-950 p-4 rounded-lg">
-              <p className="text-sm text-yellow-800 dark:text-yellow-200 mb-3">
-                ⏳ Ожидаем подтверждение оплаты от банка. Обычно это занимает 1-2 минуты.
-              </p>
-              <Button 
-                onClick={forceCheckPayment} 
-                disabled={isChecking}
-                variant="outline"
-                className="w-full"
-              >
-                {isChecking ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
-                    Проверяем...
-                  </>
-                ) : (
-                  <>
-                    <Icon name="RefreshCw" className="w-4 h-4 mr-2" />
-                    Проверить статус прямо сейчас
-                  </>
-                )}
-              </Button>
-            </div>
-          ) : (
-            <div className="bg-green-50 dark:bg-green-950 p-4 rounded-lg">
-              <p className="text-sm text-green-800 dark:text-green-200">
-                ✅ Платёж обработан успешно! Ваша подписка будет активирована в течение нескольких минут.
-              </p>
-            </div>
-          )}
+          <div className="bg-green-50 dark:bg-green-950 p-4 rounded-lg">
+            <p className="text-sm text-green-800 dark:text-green-200">
+              ✅ Платёж обработан успешно! Ваша подписка будет активирована в течение нескольких минут.
+            </p>
+          </div>
 
           {hasReferralBonus && (
             <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 p-4 rounded-lg border-2 border-purple-300 dark:border-purple-700">

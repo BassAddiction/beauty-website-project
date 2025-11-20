@@ -7,12 +7,12 @@
       "expectedStatus": 200
     },
     {
-      "name": "Check payment by username - not found",
+      "name": "Missing parameters - GET",
       "method": "GET",
-      "path": "/?username=nonexistent_user",
-      "expectedStatus": 404,
+      "path": "/?username=test",
+      "expectedStatus": 400,
       "expectedBody": {
-        "status": "not_found"
+        "error": "string"
       },
       "bodyMatcher": "partial"
     },

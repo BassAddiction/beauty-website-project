@@ -180,8 +180,6 @@ const Register = () => {
       }
       
       if (paymentData.confirmation_url) {
-        // Сохраняем payment_id перед редиректом
-        localStorage.setItem('vpn_payment_id', paymentData.payment_id);
         window.location.href = paymentData.confirmation_url;
       } else {
         throw new Error('Не получена ссылка на оплату');

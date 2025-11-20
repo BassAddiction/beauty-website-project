@@ -32,16 +32,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'isBase64Encoded': False
         }
     
-    # GET - создать платёж или проверить статус платежа
+    # GET - создать платёж (старый способ через query params)
     if method == 'GET':
-        params = event.get('queryStringParameters', {})
-        # Если есть payment_id - проверяем статус
-        if params.get('payment_id'):
-            return check_payment_status(params.get('payment_id'), cors_headers)
-        # Если есть username но нет email/amount - проверяем последний платёж
-        if params.get('username') and not params.get('email'):
-            return check_last_payment_by_username(params.get('username'), cors_headers)
-        # Иначе создаём платёж (старый способ)
         return handle_create_payment_get(event, cors_headers)
     
     # POST - webhook от YooKassa или создание платежа
@@ -234,10 +226,11 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
         print(f'✅ Payment created: {payment_id}')
         print(f'📋 Receipt: tax_system=УСН_доходы-расходы(3), vat_code=БезНДС(4), status={receipt_info}')
         
-        # НЕ СОХРАНЯЕМ платёж в БД! 
-        # Платёж будет создан только когда придёт callback от Юкассы с подтверждением
-        # Сохраняем metadata в Юкассе - этого достаточно
-        print(f'⚠️ Payment NOT saved to DB yet. Will be created on callback from Yookassa')
+        # Сохраняем платёж в БД со статусом pending
+        save_payment_to_db(payment_id, username, email, amount, plan_name, plan_days, 'pending', referral_code)
+        
+        # Сохраняем данные чека в БД
+        save_receipt_to_db(payment_id, email, amount, plan_name, 3, 4)
         
         return {
             'statusCode': 200,
@@ -252,128 +245,6 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
         
     except Exception as e:
         print(f'❌ Error creating payment: {str(e)}')
-        return {
-            'statusCode': 500,
-            'headers': cors_headers,
-            'body': json.dumps({'error': str(e)}),
-            'isBase64Encoded': False
-        }
-
-
-def check_last_payment_by_username(username: str, cors_headers: Dict[str, str]) -> Dict[str, Any]:
-    '''Проверяет статус последнего платежа пользователя по username'''
-    try:
-        dsn = os.environ.get('DATABASE_URL', '')
-        if not dsn:
-            return {
-                'statusCode': 500,
-                'headers': cors_headers,
-                'body': json.dumps({'error': 'Database not configured'}),
-                'isBase64Encoded': False
-            }
-        
-        print(f'🔍 Checking last payment for username: {username}')
-        
-        conn = psycopg2.connect(dsn)
-        cur = conn.cursor()
-        
-        cur.execute(
-            "SELECT payment_id, status, created_at FROM payments WHERE username = %s ORDER BY created_at DESC LIMIT 1",
-            (username,)
-        )
-        
-        result = cur.fetchone()
-        cur.close()
-        conn.close()
-        
-        if not result:
-            print(f'⚠️ No payment found for username: {username}')
-            return {
-                'statusCode': 404,
-                'headers': cors_headers,
-                'body': json.dumps({'error': 'No payment found', 'status': 'not_found'}),
-                'isBase64Encoded': False
-            }
-        
-        payment_id, status, created_at = result
-        print(f'✅ Last payment: {payment_id}, status: {status}')
-        
-        return {
-            'statusCode': 200,
-            'headers': cors_headers,
-            'body': json.dumps({
-                'payment_id': payment_id,
-                'status': status,
-                'username': username,
-                'created_at': created_at.isoformat() if created_at else None
-            }),
-            'isBase64Encoded': False
-        }
-        
-    except Exception as e:
-        print(f'❌ Error checking payment by username: {str(e)}')
-        return {
-            'statusCode': 500,
-            'headers': cors_headers,
-            'body': json.dumps({'error': str(e)}),
-            'isBase64Encoded': False
-        }
-
-
-def check_payment_status(payment_id: str, cors_headers: Dict[str, str]) -> Dict[str, Any]:
-    '''Проверяет статус платежа в YooKassa и возвращает информацию'''
-    try:
-        shop_id = os.environ.get('YOOKASSA_SHOP_ID', '')
-        secret_key = os.environ.get('YOOKASSA_SECRET_KEY', '')
-        
-        if not shop_id or not secret_key:
-            return {
-                'statusCode': 500,
-                'headers': cors_headers,
-                'body': json.dumps({'error': 'YooKassa credentials not configured'}),
-                'isBase64Encoded': False
-            }
-        
-        print(f'🔍 Checking payment status: {payment_id}')
-        
-        response = requests.get(
-            f'https://api.yookassa.ru/v3/payments/{payment_id}',
-            auth=(shop_id, secret_key),
-            timeout=10
-        )
-        
-        if response.status_code != 200:
-            print(f'❌ YooKassa API error: {response.status_code} - {response.text}')
-            return {
-                'statusCode': 500,
-                'headers': cors_headers,
-                'body': json.dumps({'error': 'Failed to check payment status'}),
-                'isBase64Encoded': False
-            }
-        
-        payment_data = response.json()
-        payment_status = payment_data.get('status', '')
-        metadata = payment_data.get('metadata', {})
-        
-        print(f'✅ Payment status: {payment_status}')
-        
-        # Обновляем статус в БД
-        update_payment_status(payment_id, payment_status)
-        
-        return {
-            'statusCode': 200,
-            'headers': cors_headers,
-            'body': json.dumps({
-                'payment_id': payment_id,
-                'status': payment_status,
-                'username': metadata.get('username', ''),
-                'email': metadata.get('email', '')
-            }),
-            'isBase64Encoded': False
-        }
-        
-    except Exception as e:
-        print(f'❌ Error checking payment status: {str(e)}')
         return {
             'statusCode': 500,
             'headers': cors_headers,
