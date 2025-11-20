@@ -48,42 +48,42 @@ const PaymentSuccess = () => {
         }
         
         setPaymentStatus(data.status);
+        
+        if (data.status === 'canceled') {
+          console.log('❌ Payment canceled, clearing data and redirecting');
+          localStorage.removeItem('vpn_username');
+          localStorage.removeItem('vpn_email');
           
-          if (data.status === 'canceled') {
-            console.log('❌ Payment canceled, clearing data and redirecting');
-            localStorage.removeItem('vpn_username');
-            localStorage.removeItem('vpn_email');
-            
-            toast({
-              title: "❌ Платёж отменён",
-              description: "Оплата не была завершена. Попробуйте снова.",
-              variant: "destructive",
-              duration: 5000
-            });
-            
-            setTimeout(() => navigate('/'), 3000);
-            return;
-          }
+          toast({
+            title: "❌ Платёж отменён",
+            description: "Оплата не была завершена. Попробуйте снова.",
+            variant: "destructive",
+            duration: 5000
+          });
           
-          if (data.status === 'pending') {
-            toast({
-              title: "⏳ Платёж в обработке",
-              description: "Ожидаем подтверждение оплаты. Страница обновится автоматически.",
-            });
-            
-            setTimeout(() => {
-              window.location.reload();
-            }, 5000);
-            return;
-          }
-          
-          if (data.status === 'succeeded') {
-            console.log('✅ Payment succeeded');
-          }
-        } catch (err) {
-          console.error('Failed to check payment status:', err);
-          setPaymentStatus('succeeded');
+          setTimeout(() => navigate('/'), 3000);
+          return;
         }
+        
+        if (data.status === 'pending') {
+          toast({
+            title: "⏳ Платёж в обработке",
+            description: "Ожидаем подтверждение оплаты. Страница обновится автоматически.",
+          });
+          
+          setTimeout(() => {
+            window.location.reload();
+          }, 5000);
+          return;
+        }
+        
+        if (data.status === 'succeeded') {
+          console.log('✅ Payment succeeded');
+        }
+      } catch (err) {
+        console.error('Failed to check payment status:', err);
+        setPaymentStatus('succeeded');
+      }
       } else {
         setPaymentStatus('succeeded');
       }
