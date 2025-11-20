@@ -79,17 +79,12 @@ const PaymentSuccess = () => {
       }
     };
     
-    checkPayment();
-    
     const savedUsername = localStorage.getItem('vpn_username') || '';
     const savedEmail = localStorage.getItem('vpn_email') || '';
     setUsername(savedUsername);
     setEmail(savedEmail);
     
-    if (!savedUsername) {
-      navigate('/?payment=success');
-      return;
-    }
+    checkPayment();
     
     // Activate referral if exists
     const pendingReferral = localStorage.getItem('pending_referral');
