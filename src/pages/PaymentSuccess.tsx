@@ -12,19 +12,72 @@ const PaymentSuccess = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [hasReferralBonus, setHasReferralBonus] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [paymentStatus, setPaymentStatus] = useState<'checking' | 'succeeded' | 'pending' | 'canceled' | 'failed'>('checking');
 
   useEffect(() => {
-    const savedUsername = localStorage.getItem('vpn_username') || '';
-    const savedEmail = localStorage.getItem('vpn_email') || '';
-    setUsername(savedUsername);
-    setEmail(savedEmail);
+    const checkPayment = async () => {
+      const savedUsername = localStorage.getItem('vpn_username') || '';
+      const savedEmail = localStorage.getItem('vpn_email') || '';
+      const paymentId = localStorage.getItem('vpn_payment_id') || '';
+      
+      setUsername(savedUsername);
+      setEmail(savedEmail);
+      
+      if (!savedUsername || !paymentId) {
+        navigate('/register');
+        return;
+      }
+
+      // Проверяем статус платежа через наш backend
+      try {
+        const response = await fetch(`${API_ENDPOINTS.CHECK_PAYMENT_STATUS}?payment_id=${paymentId}`);
+        const data = await response.json();
+        
+        if (data.status === 'succeeded') {
+          setPaymentStatus('succeeded');
+          setLoading(false);
+        } else if (data.status === 'pending' || data.status === 'waiting_for_capture') {
+          setPaymentStatus('pending');
+          setLoading(false);
+        } else if (data.status === 'canceled') {
+          setPaymentStatus('canceled');
+          setLoading(false);
+          toast({
+            title: "❌ Платеж отменен",
+            description: "Вы отменили оплату. Попробуйте еще раз.",
+            variant: "destructive"
+          });
+          setTimeout(() => navigate('/register'), 2000);
+        } else {
+          setPaymentStatus('failed');
+          setLoading(false);
+          toast({
+            title: "⚠️ Ошибка платежа",
+            description: "Что-то пошло не так. Попробуйте еще раз.",
+            variant: "destructive"
+          });
+          setTimeout(() => navigate('/register'), 2000);
+        }
+      } catch (error) {
+        console.error('Failed to check payment:', error);
+        setPaymentStatus('failed');
+        setLoading(false);
+        toast({
+          title: "⚠️ Ошибка проверки платежа",
+          description: "Не удалось проверить статус платежа",
+          variant: "destructive"
+        });
+      }
+    };
+
+    checkPayment();
+  }, [navigate, toast]);
+
+  useEffect(() => {
+    if (paymentStatus !== 'succeeded') return;
     
-    if (!savedUsername) {
-      navigate('/?payment=success');
-      return;
-    }
-    
-    // Activate referral if exists
+    // Activate referral if exists - moved to separate effect
     const pendingReferral = localStorage.getItem('pending_referral');
     if (pendingReferral) {
       try {
@@ -55,7 +108,7 @@ const PaymentSuccess = () => {
         console.error('Error processing referral:', err);
       }
     }
-  }, [navigate, toast]);
+  }, [paymentStatus, toast]);
 
   const copyUsername = () => {
     navigator.clipboard.writeText(username);
@@ -64,6 +117,113 @@ const PaymentSuccess = () => {
       description: "Username скопирован в буфер обмена"
     });
   };
+
+  if (loading || paymentStatus === 'checking') {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
+        <Card className="max-w-md w-full">
+          <CardContent className="pt-6">
+            <div className="text-center space-y-4">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              <p className="text-muted-foreground">Проверяем статус платежа...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (paymentStatus === 'pending') {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
+        <Card className="max-w-2xl w-full border-yellow-500">
+          <CardHeader>
+            <div className="flex justify-center mb-4">
+              <a href="/" className="transition-transform hover:scale-105">
+                <img 
+                  src={CDN_ASSETS.LOGO} 
+                  alt="Speed VPN" 
+                  className="w-16 h-16 rounded-full object-cover border-2 border-primary"
+                />
+              </a>
+            </div>
+            <CardTitle className="flex items-center gap-2 text-yellow-600 justify-center">
+              <Icon name="Clock" className="w-8 h-8" />
+              Ожидание оплаты
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="bg-yellow-50 dark:bg-yellow-950 p-4 rounded-lg">
+              <p className="text-sm text-yellow-800 dark:text-yellow-200 mb-2">
+                ⏳ Платеж создан, но еще не оплачен.
+              </p>
+              <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                Завершите оплату, чтобы активировать подписку.
+              </p>
+            </div>
+            <div className="space-y-3">
+              <Button 
+                onClick={() => window.location.reload()} 
+                className="w-full"
+              >
+                <Icon name="RefreshCw" className="w-4 h-4 mr-2" />
+                Обновить статус
+              </Button>
+              <Button 
+                onClick={() => navigate('/register')} 
+                variant="outline" 
+                className="w-full"
+              >
+                <Icon name="ArrowLeft" className="w-4 h-4 mr-2" />
+                Вернуться к регистрации
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (paymentStatus === 'canceled' || paymentStatus === 'failed') {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
+        <Card className="max-w-2xl w-full border-red-500">
+          <CardHeader>
+            <div className="flex justify-center mb-4">
+              <a href="/" className="transition-transform hover:scale-105">
+                <img 
+                  src={CDN_ASSETS.LOGO} 
+                  alt="Speed VPN" 
+                  className="w-16 h-16 rounded-full object-cover border-2 border-primary"
+                />
+              </a>
+            </div>
+            <CardTitle className="flex items-center gap-2 text-red-600 justify-center">
+              <Icon name="XCircle" className="w-8 h-8" />
+              {paymentStatus === 'canceled' ? 'Платеж отменен' : 'Ошибка оплаты'}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="bg-red-50 dark:bg-red-950 p-4 rounded-lg">
+              <p className="text-sm text-red-800 dark:text-red-200">
+                {paymentStatus === 'canceled' 
+                  ? '❌ Вы отменили оплату. Попробуйте еще раз, чтобы активировать подписку.'
+                  : '⚠️ Произошла ошибка при обработке платежа. Попробуйте еще раз.'
+                }
+              </p>
+            </div>
+            <Button 
+              onClick={() => navigate('/register')} 
+              className="w-full"
+            >
+              <Icon name="ArrowLeft" className="w-4 h-4 mr-2" />
+              Вернуться к регистрации
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
