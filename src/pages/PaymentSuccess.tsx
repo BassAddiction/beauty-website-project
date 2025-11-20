@@ -27,15 +27,15 @@ const PaymentSuccess = () => {
     console.log('🔄🔄🔄 useEffect v4.0 TRIGGERED 🔄🔄🔄');
     
     const checkPayment = async () => {
-      // Получаем payment_id из URL
-      const paymentId = searchParams.get('payment_id');
+      // Получаем payment_id из localStorage
+      const paymentId = localStorage.getItem('vpn_payment_id');
       
       if (!paymentId) {
-        console.log('⚠️ No payment_id in URL - user closed payment before completion');
+        console.log('⚠️ No payment_id in localStorage - user never started payment');
         setPaymentStatus('canceled');
         toast({
-          title: "❌ Платёж не завершён",
-          description: "Вы закрыли страницу оплаты. Попробуйте снова.",
+          title: "❌ Платёж не найден",
+          description: "Попробуйте оформить подписку снова.",
           variant: "destructive"
         });
         setTimeout(() => navigate('/'), 3000);

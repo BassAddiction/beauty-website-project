@@ -165,7 +165,7 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
             },
             'confirmation': {
                 'type': 'redirect',
-                'return_url': f'https://{domain}/payment-success?payment_id={{payment_id}}'
+                'return_url': f'https://{domain}/payment-success'
             },
             'payment_method_data': {
                 'type': yookassa_payment_type
