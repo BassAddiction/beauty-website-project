@@ -19,6 +19,7 @@ const PaymentSuccess = () => {
   const [email, setEmail] = useState(savedEmail);
   const [hasReferralBonus, setHasReferralBonus] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'loading' | 'succeeded' | 'canceled' | 'pending'>('loading');
+  const [isChecking, setIsChecking] = useState(false);
 
   console.log('🚀🚀🚀 PaymentSuccess v3.0 LOADED - username:', savedUsername, '🚀🚀🚀');
 
@@ -131,6 +132,38 @@ const PaymentSuccess = () => {
     });
   };
 
+  const forceCheckPayment = async () => {
+    setIsChecking(true);
+    try {
+      const url = `${API_ENDPOINTS.PAYMENT}?username=${encodeURIComponent(savedUsername)}`;
+      const response = await fetch(url);
+      const data = await response.json();
+      
+      setPaymentStatus(data.status);
+      
+      if (data.status === 'pending') {
+        toast({
+          title: "⏳ Всё ещё в обработке",
+          description: "Платёж ещё обрабатывается. Попробуйте через минуту.",
+        });
+      } else if (data.status === 'succeeded') {
+        toast({
+          title: "✅ Подтверждено!",
+          description: "Платёж успешно подтверждён!",
+        });
+        window.location.reload();
+      }
+    } catch (err) {
+      toast({
+        title: "❌ Ошибка",
+        description: "Не удалось проверить статус",
+        variant: "destructive"
+      });
+    } finally {
+      setIsChecking(false);
+    }
+  };
+
   if (paymentStatus === 'loading') {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
@@ -208,6 +241,32 @@ const PaymentSuccess = () => {
               ✅ Платёж обработан успешно! Ваша подписка будет активирована в течение нескольких минут.
             </p>
           </div>
+
+          {paymentStatus === 'pending' && (
+            <div className="bg-yellow-50 dark:bg-yellow-950 p-4 rounded-lg">
+              <p className="text-sm text-yellow-800 dark:text-yellow-200 mb-3">
+                ⏳ Платёж в обработке. Ожидаем подтверждение оплаты. Страница обновится автоматически.
+              </p>
+              <Button 
+                onClick={forceCheckPayment} 
+                disabled={isChecking}
+                variant="outline"
+                className="w-full"
+              >
+                {isChecking ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+                    Проверяем...
+                  </>
+                ) : (
+                  <>
+                    <Icon name="RefreshCw" className="w-4 h-4 mr-2" />
+                    Проверить статус сейчас
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
 
           {hasReferralBonus && (
             <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 p-4 rounded-lg border-2 border-purple-300 dark:border-purple-700">
