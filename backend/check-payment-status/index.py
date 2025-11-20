@@ -20,7 +20,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'Access-Control-Allow-Headers': 'Content-Type',
                 'Access-Control-Max-Age': '86400'
             },
-            'body': ''
+            'body': '',
+            'isBase64Encoded': False
         }
     
     query_params = event.get('queryStringParameters', {})
@@ -30,7 +31,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         return {
             'statusCode': 400,
             'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-            'body': json.dumps({'error': 'payment_id required'})
+            'body': json.dumps({'error': 'payment_id required'}),
+            'isBase64Encoded': False
         }
     
     shop_id = os.environ.get('YOOKASSA_SHOP_ID', '')
@@ -40,7 +42,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         return {
             'statusCode': 500,
             'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-            'body': json.dumps({'error': 'YooKassa credentials not configured'})
+            'body': json.dumps({'error': 'YooKassa credentials not configured'}),
+            'isBase64Encoded': False
         }
     
     try:
@@ -58,7 +61,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             return {
                 'statusCode': response.status_code,
                 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                'body': json.dumps({'error': 'Failed to get payment status'})
+                'body': json.dumps({'error': 'Failed to get payment status'}),
+                'isBase64Encoded': False
             }
         
         payment_data = response.json()
@@ -74,12 +78,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'payment_id': payment_id,
                 'status': status,
                 'paid': paid
-            })
+            }),
+            'isBase64Encoded': False
         }
         
     except Exception as e:
         return {
             'statusCode': 500,
             'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-            'body': json.dumps({'error': str(e)})
+            'body': json.dumps({'error': str(e)}),
+            'isBase64Encoded': False
         }
