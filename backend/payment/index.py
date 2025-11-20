@@ -32,8 +32,13 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'isBase64Encoded': False
         }
     
-    # GET - создать платёж (старый способ через query params)
+    # GET - создать платёж или проверить статус платежа
     if method == 'GET':
+        params = event.get('queryStringParameters', {})
+        # Если есть payment_id - проверяем статус
+        if params.get('payment_id'):
+            return check_payment_status(params.get('payment_id'), cors_headers)
+        # Иначе создаём платёж (старый способ)
         return handle_create_payment_get(event, cors_headers)
     
     # POST - webhook от YooKassa или создание платежа
@@ -221,6 +226,12 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
         payment_id = payment_response.get('id', '')
         confirmation_url = payment_response.get('confirmation', {}).get('confirmation_url', '')
         
+        # Добавляем payment_id к confirmation_url
+        if '?' in confirmation_url:
+            confirmation_url += f'&return_payment_id={payment_id}'
+        else:
+            confirmation_url += f'?return_payment_id={payment_id}'
+        
         # Логируем детали чека для контроля
         receipt_info = payment_response.get('receipt_registration', 'not_applicable')
         print(f'✅ Payment created: {payment_id}')
@@ -245,6 +256,68 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
         
     except Exception as e:
         print(f'❌ Error creating payment: {str(e)}')
+        return {
+            'statusCode': 500,
+            'headers': cors_headers,
+            'body': json.dumps({'error': str(e)}),
+            'isBase64Encoded': False
+        }
+
+
+def check_payment_status(payment_id: str, cors_headers: Dict[str, str]) -> Dict[str, Any]:
+    '''Проверяет статус платежа в YooKassa и возвращает информацию'''
+    try:
+        shop_id = os.environ.get('YOOKASSA_SHOP_ID', '')
+        secret_key = os.environ.get('YOOKASSA_SECRET_KEY', '')
+        
+        if not shop_id or not secret_key:
+            return {
+                'statusCode': 500,
+                'headers': cors_headers,
+                'body': json.dumps({'error': 'YooKassa credentials not configured'}),
+                'isBase64Encoded': False
+            }
+        
+        print(f'🔍 Checking payment status: {payment_id}')
+        
+        response = requests.get(
+            f'https://api.yookassa.ru/v3/payments/{payment_id}',
+            auth=(shop_id, secret_key),
+            timeout=10
+        )
+        
+        if response.status_code != 200:
+            print(f'❌ YooKassa API error: {response.status_code} - {response.text}')
+            return {
+                'statusCode': 500,
+                'headers': cors_headers,
+                'body': json.dumps({'error': 'Failed to check payment status'}),
+                'isBase64Encoded': False
+            }
+        
+        payment_data = response.json()
+        payment_status = payment_data.get('status', '')
+        metadata = payment_data.get('metadata', {})
+        
+        print(f'✅ Payment status: {payment_status}')
+        
+        # Обновляем статус в БД
+        update_payment_status(payment_id, payment_status)
+        
+        return {
+            'statusCode': 200,
+            'headers': cors_headers,
+            'body': json.dumps({
+                'payment_id': payment_id,
+                'status': payment_status,
+                'username': metadata.get('username', ''),
+                'email': metadata.get('email', '')
+            }),
+            'isBase64Encoded': False
+        }
+        
+    except Exception as e:
+        print(f'❌ Error checking payment status: {str(e)}')
         return {
             'statusCode': 500,
             'headers': cors_headers,

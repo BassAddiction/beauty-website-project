@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
@@ -9,11 +9,51 @@ import API_ENDPOINTS, { CDN_ASSETS } from '@/config/api';
 const PaymentSuccess = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [hasReferralBonus, setHasReferralBonus] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState<'loading' | 'succeeded' | 'canceled' | 'pending'>('loading');
 
   useEffect(() => {
+    const checkPayment = async () => {
+      const paymentId = searchParams.get('return_payment_id');
+      
+      if (paymentId) {
+        try {
+          const response = await fetch(`${API_ENDPOINTS.PAYMENT}?payment_id=${paymentId}`);
+          const data = await response.json();
+          
+          console.log('Payment status:', data.status);
+          setPaymentStatus(data.status);
+          
+          if (data.status === 'canceled') {
+            toast({
+              title: "❌ Платёж отменён",
+              description: "Оплата не была завершена. Попробуйте снова.",
+              variant: "destructive"
+            });
+            setTimeout(() => navigate('/'), 3000);
+            return;
+          }
+          
+          if (data.status === 'pending') {
+            toast({
+              title: "⏳ Платёж в обработке",
+              description: "Ожидаем подтверждение оплаты. Обновите страницу через несколько секунд.",
+            });
+          }
+        } catch (err) {
+          console.error('Failed to check payment status:', err);
+          setPaymentStatus('succeeded');
+        }
+      } else {
+        setPaymentStatus('succeeded');
+      }
+    };
+    
+    checkPayment();
+    
     const savedUsername = localStorage.getItem('vpn_username') || '';
     const savedEmail = localStorage.getItem('vpn_email') || '';
     setUsername(savedUsername);
@@ -64,6 +104,59 @@ const PaymentSuccess = () => {
       description: "Username скопирован в буфер обмена"
     });
   };
+
+  if (paymentStatus === 'loading') {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
+        <Card className="max-w-2xl w-full">
+          <CardContent className="py-12 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Проверяем статус платежа...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (paymentStatus === 'canceled') {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
+        <Card className="max-w-2xl w-full border-red-500">
+          <CardHeader>
+            <div className="flex justify-center mb-4">
+              <a href="/" className="transition-transform hover:scale-105">
+                <img 
+                  src={CDN_ASSETS.LOGO} 
+                  alt="Speed VPN" 
+                  className="w-16 h-16 rounded-full object-cover border-2 border-primary"
+                />
+              </a>
+            </div>
+            <CardTitle className="flex items-center gap-2 text-red-600 justify-center">
+              <Icon name="XCircle" className="w-8 h-8" />
+              Платёж отменён
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="bg-red-50 dark:bg-red-950 p-4 rounded-lg">
+              <p className="text-sm text-red-800 dark:text-red-200">
+                ❌ Оплата не была завершена. Вы можете попробовать оплатить снова.
+              </p>
+            </div>
+            <div className="space-y-3 pt-2">
+              <Button 
+                onClick={() => navigate('/')} 
+                className="w-full"
+              >
+                <Icon name="Home" className="w-4 h-4 mr-2" />
+                Вернуться на главную
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
