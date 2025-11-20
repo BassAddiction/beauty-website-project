@@ -19,13 +19,24 @@ const PaymentSuccess = () => {
     const checkPayment = async () => {
       const paymentId = localStorage.getItem('vpn_payment_id');
       
+      console.log('🔍 PaymentSuccess: payment_id from localStorage:', paymentId);
+      console.log('🔍 PaymentSuccess: all localStorage:', {
+        payment_id: localStorage.getItem('vpn_payment_id'),
+        username: localStorage.getItem('vpn_username'),
+        email: localStorage.getItem('vpn_email')
+      });
+      
       if (paymentId) {
         try {
-          console.log('Checking payment:', paymentId);
-          const response = await fetch(`${API_ENDPOINTS.PAYMENT}?payment_id=${paymentId}`);
+          console.log('📡 Checking payment:', paymentId);
+          const url = `${API_ENDPOINTS.PAYMENT}?payment_id=${paymentId}`;
+          console.log('📡 Request URL:', url);
+          
+          const response = await fetch(url);
           const data = await response.json();
           
-          console.log('Payment status:', data.status);
+          console.log('✅ Payment API response:', data);
+          console.log('📊 Payment status:', data.status);
           setPaymentStatus(data.status);
           
           if (data.status === 'canceled') {
