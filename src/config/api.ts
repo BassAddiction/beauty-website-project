@@ -14,6 +14,7 @@ export const API_ENDPOINTS = {
   
   // Payment & Plans
   PAYMENT: `${API_BASE}/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c`,
+  CHECK_PAYMENT_STATUS: `${API_BASE}/e9deb528-c2f6-4c74-b99c-04112d649dcf`,
   PLANS: `${API_BASE}/fbbbfbaf-a8c7-4eec-8f61-5976ed535592`,
   GET_RECEIPTS: `${API_BASE}/2eb021b7-8d70-47e2-b4ca-6e113a73d436`,
   
