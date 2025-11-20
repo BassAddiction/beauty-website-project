@@ -15,7 +15,10 @@ const PaymentSuccess = () => {
   const [hasReferralBonus, setHasReferralBonus] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'loading' | 'succeeded' | 'canceled' | 'pending'>('loading');
 
+  console.log('🚀 PaymentSuccess component mounted');
+
   useEffect(() => {
+    console.log('🔄 PaymentSuccess useEffect triggered');
     const checkPayment = async () => {
       const paymentId = localStorage.getItem('vpn_payment_id');
       
