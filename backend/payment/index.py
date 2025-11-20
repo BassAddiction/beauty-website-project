@@ -38,6 +38,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         # Если есть payment_id - проверяем статус
         if params.get('payment_id'):
             return check_payment_status(params.get('payment_id'), cors_headers)
+        # Если есть username но нет email/amount - проверяем последний платёж
+        if params.get('username') and not params.get('email'):
+            return check_last_payment_by_username(params.get('username'), cors_headers)
         # Иначе создаём платёж (старый способ)
         return handle_create_payment_get(event, cors_headers)
     
@@ -250,6 +253,66 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
         
     except Exception as e:
         print(f'❌ Error creating payment: {str(e)}')
+        return {
+            'statusCode': 500,
+            'headers': cors_headers,
+            'body': json.dumps({'error': str(e)}),
+            'isBase64Encoded': False
+        }
+
+
+def check_last_payment_by_username(username: str, cors_headers: Dict[str, str]) -> Dict[str, Any]:
+    '''Проверяет статус последнего платежа пользователя по username'''
+    try:
+        dsn = os.environ.get('DATABASE_URL', '')
+        if not dsn:
+            return {
+                'statusCode': 500,
+                'headers': cors_headers,
+                'body': json.dumps({'error': 'Database not configured'}),
+                'isBase64Encoded': False
+            }
+        
+        print(f'🔍 Checking last payment for username: {username}')
+        
+        conn = psycopg2.connect(dsn)
+        cur = conn.cursor()
+        
+        cur.execute(
+            "SELECT payment_id, status, created_at FROM payments WHERE username = %s ORDER BY created_at DESC LIMIT 1",
+            (username,)
+        )
+        
+        result = cur.fetchone()
+        cur.close()
+        conn.close()
+        
+        if not result:
+            print(f'⚠️ No payment found for username: {username}')
+            return {
+                'statusCode': 404,
+                'headers': cors_headers,
+                'body': json.dumps({'error': 'No payment found', 'status': 'not_found'}),
+                'isBase64Encoded': False
+            }
+        
+        payment_id, status, created_at = result
+        print(f'✅ Last payment: {payment_id}, status: {status}')
+        
+        return {
+            'statusCode': 200,
+            'headers': cors_headers,
+            'body': json.dumps({
+                'payment_id': payment_id,
+                'status': status,
+                'username': username,
+                'created_at': created_at.isoformat() if created_at else None
+            }),
+            'isBase64Encoded': False
+        }
+        
+    except Exception as e:
+        print(f'❌ Error checking payment by username: {str(e)}')
         return {
             'statusCode': 500,
             'headers': cors_headers,

@@ -20,30 +20,37 @@ const PaymentSuccess = () => {
   useEffect(() => {
     console.log('🔄 PaymentSuccess useEffect triggered');
     const checkPayment = async () => {
-      const paymentId = localStorage.getItem('vpn_payment_id');
+      const savedUsername = localStorage.getItem('vpn_username');
       
-      console.log('🔍 PaymentSuccess: payment_id from localStorage:', paymentId);
-      console.log('🔍 PaymentSuccess: all localStorage:', {
-        payment_id: localStorage.getItem('vpn_payment_id'),
-        username: localStorage.getItem('vpn_username'),
-        email: localStorage.getItem('vpn_email')
-      });
+      console.log('🔍 PaymentSuccess: username from localStorage:', savedUsername);
       
-      if (paymentId) {
-        try {
-          console.log('📡 Checking payment:', paymentId);
-          const url = `${API_ENDPOINTS.PAYMENT}?payment_id=${paymentId}`;
-          console.log('📡 Request URL:', url);
-          
-          const response = await fetch(url);
-          const data = await response.json();
-          
-          console.log('✅ Payment API response:', data);
-          console.log('📊 Payment status:', data.status);
-          setPaymentStatus(data.status);
+      if (!savedUsername) {
+        console.log('⚠️ No username found, showing success by default');
+        setPaymentStatus('succeeded');
+        return;
+      }
+      
+      try {
+        console.log('📡 Checking last payment for username:', savedUsername);
+        const url = `${API_ENDPOINTS.PAYMENT}?username=${encodeURIComponent(savedUsername)}`;
+        console.log('📡 Request URL:', url);
+        
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        console.log('✅ Payment API response:', data);
+        console.log('📊 Payment status:', data.status);
+        
+        if (data.status === 'not_found') {
+          console.log('⚠️ No payment found, showing success');
+          setPaymentStatus('succeeded');
+          return;
+        }
+        
+        setPaymentStatus(data.status);
           
           if (data.status === 'canceled') {
-            localStorage.removeItem('vpn_payment_id');
+            console.log('❌ Payment canceled, clearing data and redirecting');
             localStorage.removeItem('vpn_username');
             localStorage.removeItem('vpn_email');
             
@@ -71,7 +78,7 @@ const PaymentSuccess = () => {
           }
           
           if (data.status === 'succeeded') {
-            localStorage.removeItem('vpn_payment_id');
+            console.log('✅ Payment succeeded');
           }
         } catch (err) {
           console.error('Failed to check payment status:', err);
