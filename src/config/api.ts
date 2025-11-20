@@ -11,6 +11,7 @@ export const API_ENDPOINTS = {
   GET_SUBSCRIPTION: `${API_BASE}/c56efe3d-0219-4eab-a894-5d98f0549ef0`,
   ADMIN_USERS: `${API_BASE}/e99b698b-6c6b-46cc-9206-1d6dac7e8575`,
   UPDATE_ALL_USERS: `${API_BASE}/058e87bb-5d15-4a90-8f78-2ab58eeaf5c8`,
+  RESTORE_USERS: `${API_BASE}/dc4e5bd5-cc26-454f-8fbf-eec2ba7b3554`,
   
   // Payment & Plans
   PAYMENT: `${API_BASE}/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c`,

@@ -172,6 +172,49 @@ const UsersManagement = ({ adminPassword }: UsersManagementProps) => {
     new Map(filteredUsers.map(user => [user.username, user])).values()
   );
 
+  const handleRestoreUsers = async () => {
+    if (!confirm('Восстановить всех удаленных пользователей из базы данных в Remnawave?\n\nЭто создаст пользователей в VPN системе на основе данных из БД.')) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch(API_ENDPOINTS.RESTORE_USERS, {
+        method: 'POST',
+        headers: {
+          'X-Admin-Key': adminPassword,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to restore users');
+      }
+
+      const result = await response.json();
+      
+      toast({
+        title: '✅ Восстановление завершено',
+        description: `Восстановлено: ${result.restored}, Пропущено: ${result.skipped}, Ошибок: ${result.errors}`,
+        duration: 10000
+      });
+
+      if (result.error_details && result.error_details.length > 0) {
+        console.error('Restore errors:', result.error_details);
+      }
+
+      await loadUsers();
+    } catch (error) {
+      console.error('Restore error:', error);
+      toast({
+        title: '❌ Ошибка',
+        description: 'Не удалось восстановить пользователей',
+        variant: 'destructive'
+      });
+    }
+    setLoading(false);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -179,10 +222,16 @@ const UsersManagement = ({ adminPassword }: UsersManagementProps) => {
           <h2 className="text-2xl font-bold">Управление пользователями VPN</h2>
           <p className="text-muted-foreground">Всего пользователей: {uniqueUsers.length}</p>
         </div>
-        <Button onClick={loadUsers} disabled={loading} variant="outline">
-          <Icon name="RefreshCw" size={16} className="mr-2" />
-          Обновить
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={handleRestoreUsers} disabled={loading} variant="default">
+            <Icon name="UserPlus" size={16} className="mr-2" />
+            Восстановить из БД
+          </Button>
+          <Button onClick={loadUsers} disabled={loading} variant="outline">
+            <Icon name="RefreshCw" size={16} className="mr-2" />
+            Обновить
+          </Button>
+        </div>
       </div>
 
       <Card>

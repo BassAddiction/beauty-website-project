@@ -1,0 +1,16 @@
+{
+  "tests": [
+    {
+      "name": "Unauthorized access",
+      "method": "POST",
+      "headers": {
+        "X-Admin-Key": "wrong_key"
+      },
+      "expectedStatus": 403,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
