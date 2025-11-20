@@ -44,13 +44,17 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         }
     
     try:
+        print(f'🔍 Checking payment status: {payment_id}')
         response = requests.get(
             f'https://api.yookassa.ru/v3/payments/{payment_id}',
             auth=(shop_id, secret_key),
             timeout=10
         )
         
+        print(f'📋 YooKassa response: status_code={response.status_code}')
+        
         if response.status_code != 200:
+            print(f'❌ YooKassa error: {response.text}')
             return {
                 'statusCode': response.status_code,
                 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
@@ -60,6 +64,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         payment_data = response.json()
         status = payment_data.get('status', 'unknown')
         paid = payment_data.get('paid', False)
+        
+        print(f'✅ Payment status: {status}, paid: {paid}')
         
         return {
             'statusCode': 200,
