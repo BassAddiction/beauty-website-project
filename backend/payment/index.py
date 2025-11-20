@@ -302,6 +302,19 @@ def handle_yookassa_webhook(webhook_data: Dict[str, Any], cors_headers: Dict[str
         # Обновляем платёж в БД
         update_payment_status(payment_id, payment_status)
         
+        # Если платёж отменён - не создаём пользователя
+        if payment_status == 'canceled' or event_type == 'payment.canceled':
+            print(f'❌ Payment canceled, user will not be created')
+            return {
+                'statusCode': 200,
+                'headers': cors_headers,
+                'body': json.dumps({
+                    'status': 'ok',
+                    'message': 'Payment canceled'
+                }),
+                'isBase64Encoded': False
+            }
+        
         # Если платёж успешен - создаём пользователя в Remnawave
         if event_type == 'payment.succeeded' or payment_status == 'succeeded':
             print(f'✅ Payment succeeded, creating user in Remnawave...')
