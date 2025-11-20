@@ -1,4 +1,5 @@
 {
+  "manual-complete-payment": "https://functions.poehali.dev/64349051-38a3-4993-91e2-ad34c054fed4",
   "payment-callback": "https://functions.poehali.dev/dce621ec-99e0-44a9-aa7f-5f5bd6509305",
   "sync-uuids": "https://functions.poehali.dev/a3d63753-bd5e-4c2b-910d-38daf4569579",
   "manual-extend": "https://functions.poehali.dev/47563c2f-3066-4d84-92ca-5d0fa7fe7a1b",

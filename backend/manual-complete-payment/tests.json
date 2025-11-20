@@ -1,0 +1,14 @@
+{
+  "tests": [
+    {
+      "name": "Complete payment manually",
+      "method": "POST",
+      "path": "/?payment_id=test-123",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
