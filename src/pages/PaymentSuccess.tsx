@@ -31,8 +31,11 @@ const PaymentSuccess = () => {
 
       // Проверяем статус платежа через наш backend
       try {
+        console.log('🔍 Checking payment:', paymentId);
         const response = await fetch(`${API_ENDPOINTS.CHECK_PAYMENT_STATUS}?payment_id=${paymentId}`);
+        console.log('📋 Response status:', response.status);
         const data = await response.json();
+        console.log('📋 Payment data:', data);
         
         if (data.status === 'succeeded') {
           setPaymentStatus('succeeded');
