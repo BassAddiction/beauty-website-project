@@ -167,6 +167,9 @@ const Register = () => {
 
       const paymentData = await paymentResponse.json();
       
+      console.log('💳 Payment response:', paymentData);
+      console.log('💳 Payment ID:', paymentData.payment_id);
+      
       localStorage.setItem('vpn_username', username);
       localStorage.setItem('vpn_email', email);
       localStorage.setItem('vpn_payment_id', paymentData.payment_id || '');
