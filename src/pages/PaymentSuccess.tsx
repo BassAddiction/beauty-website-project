@@ -24,35 +24,46 @@ const PaymentSuccess = () => {
   console.log('🚀🚀🚀 PaymentSuccess v3.0 LOADED - username:', savedUsername, '🚀🚀🚀');
 
   useEffect(() => {
-    console.log('🔄🔄🔄 useEffect v3.0 TRIGGERED - username:', savedUsername, '🔄🔄🔄');
+    console.log('🔄🔄🔄 useEffect v4.0 TRIGGERED 🔄🔄🔄');
     
     const checkPayment = async () => {
-      if (!savedUsername) {
-        console.log('⚠️ No username in localStorage, showing pending for testing');
-        setPaymentStatus('pending');
+      // Получаем payment_id из URL
+      const paymentId = searchParams.get('payment_id');
+      
+      if (!paymentId) {
+        console.log('⚠️ No payment_id in URL - user closed payment before completion');
+        setPaymentStatus('canceled');
+        toast({
+          title: "❌ Платёж не завершён",
+          description: "Вы закрыли страницу оплаты. Попробуйте снова.",
+          variant: "destructive"
+        });
+        setTimeout(() => navigate('/'), 3000);
         return;
       }
       
       try {
-        console.log('📡 Checking last payment for username:', savedUsername);
-        const url = `${API_ENDPOINTS.PAYMENT}?username=${encodeURIComponent(savedUsername)}`;
-        console.log('📡 Request URL:', url);
+        console.log('📡 Checking payment status in Yookassa:', paymentId);
+        const url = `https://functions.poehali.dev/e9deb528-c2f6-4c74-b99c-04112d649dcf?payment_id=${paymentId}`;
         
         const response = await fetch(url);
         const data = await response.json();
         
-        console.log('✅ Payment API response:', data);
-        console.log('📊 Payment status:', data.status);
+        console.log('✅ Yookassa response:', data);
         
-        if (data.status === 'not_found') {
-          console.log('⚠️ No payment found, showing pending');
+        if (data.paid && data.status === 'succeeded') {
+          setPaymentStatus('succeeded');
+        } else if (data.status === 'canceled') {
+          setPaymentStatus('canceled');
+          toast({
+            title: "❌ Платёж отменён",
+            description: "Оплата не была завершена",
+            variant: "destructive"
+          });
+          setTimeout(() => navigate('/'), 3000);
+        } else {
           setPaymentStatus('pending');
-          return;
         }
-        
-        // FORCE PENDING FOR TESTING
-        console.log('🔧 FORCING PENDING STATUS FOR TESTING');
-        setPaymentStatus('pending');
         
         if (data.status === 'canceled') {
           console.log('❌ Payment canceled, clearing data and redirecting');
