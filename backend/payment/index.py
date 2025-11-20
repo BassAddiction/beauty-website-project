@@ -226,12 +226,6 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
         payment_id = payment_response.get('id', '')
         confirmation_url = payment_response.get('confirmation', {}).get('confirmation_url', '')
         
-        # Добавляем payment_id к confirmation_url
-        if '?' in confirmation_url:
-            confirmation_url += f'&return_payment_id={payment_id}'
-        else:
-            confirmation_url += f'?return_payment_id={payment_id}'
-        
         # Логируем детали чека для контроля
         receipt_info = payment_response.get('receipt_registration', 'not_applicable')
         print(f'✅ Payment created: {payment_id}')

@@ -17,10 +17,11 @@ const PaymentSuccess = () => {
 
   useEffect(() => {
     const checkPayment = async () => {
-      const paymentId = searchParams.get('return_payment_id');
+      const paymentId = localStorage.getItem('vpn_payment_id');
       
       if (paymentId) {
         try {
+          console.log('Checking payment:', paymentId);
           const response = await fetch(`${API_ENDPOINTS.PAYMENT}?payment_id=${paymentId}`);
           const data = await response.json();
           
@@ -28,11 +29,17 @@ const PaymentSuccess = () => {
           setPaymentStatus(data.status);
           
           if (data.status === 'canceled') {
+            localStorage.removeItem('vpn_payment_id');
+            localStorage.removeItem('vpn_username');
+            localStorage.removeItem('vpn_email');
+            
             toast({
               title: "❌ Платёж отменён",
               description: "Оплата не была завершена. Попробуйте снова.",
-              variant: "destructive"
+              variant: "destructive",
+              duration: 5000
             });
+            
             setTimeout(() => navigate('/'), 3000);
             return;
           }
@@ -40,8 +47,17 @@ const PaymentSuccess = () => {
           if (data.status === 'pending') {
             toast({
               title: "⏳ Платёж в обработке",
-              description: "Ожидаем подтверждение оплаты. Обновите страницу через несколько секунд.",
+              description: "Ожидаем подтверждение оплаты. Страница обновится автоматически.",
             });
+            
+            setTimeout(() => {
+              window.location.reload();
+            }, 5000);
+            return;
+          }
+          
+          if (data.status === 'succeeded') {
+            localStorage.removeItem('vpn_payment_id');
           }
         } catch (err) {
           console.error('Failed to check payment status:', err);
