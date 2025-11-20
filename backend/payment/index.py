@@ -234,11 +234,10 @@ def create_yookassa_payment(username: str, email: str, amount: float, plan_name:
         print(f'✅ Payment created: {payment_id}')
         print(f'📋 Receipt: tax_system=УСН_доходы-расходы(3), vat_code=БезНДС(4), status={receipt_info}')
         
-        # Сохраняем платёж в БД со статусом pending
-        save_payment_to_db(payment_id, username, email, amount, plan_name, plan_days, 'pending', referral_code)
-        
-        # Сохраняем данные чека в БД
-        save_receipt_to_db(payment_id, email, amount, plan_name, 3, 4)
+        # НЕ СОХРАНЯЕМ платёж в БД! 
+        # Платёж будет создан только когда придёт callback от Юкассы с подтверждением
+        # Сохраняем metadata в Юкассе - этого достаточно
+        print(f'⚠️ Payment NOT saved to DB yet. Will be created on callback from Yookassa')
         
         return {
             'statusCode': 200,
