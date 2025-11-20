@@ -28,8 +28,8 @@ const PaymentSuccess = () => {
     
     const checkPayment = async () => {
       if (!savedUsername) {
-        console.log('⚠️ No username in localStorage, showing success by default');
-        setPaymentStatus('succeeded');
+        console.log('⚠️ No username in localStorage, showing pending for testing');
+        setPaymentStatus('pending');
         return;
       }
       
@@ -45,12 +45,14 @@ const PaymentSuccess = () => {
         console.log('📊 Payment status:', data.status);
         
         if (data.status === 'not_found') {
-          console.log('⚠️ No payment found, showing success');
-          setPaymentStatus('succeeded');
+          console.log('⚠️ No payment found, showing pending');
+          setPaymentStatus('pending');
           return;
         }
         
-        setPaymentStatus(data.status);
+        // FORCE PENDING FOR TESTING
+        console.log('🔧 FORCING PENDING STATUS FOR TESTING');
+        setPaymentStatus('pending');
         
         if (data.status === 'canceled') {
           console.log('❌ Payment canceled, clearing data and redirecting');
