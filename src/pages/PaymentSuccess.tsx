@@ -71,13 +71,8 @@ const PaymentSuccess = () => {
         if (data.status === 'pending') {
           toast({
             title: "⏳ Платёж в обработке",
-            description: "Ожидаем подтверждение оплаты. Страница обновится автоматически.",
+            description: "Ожидаем подтверждение оплаты от банка.",
           });
-          
-          setTimeout(() => {
-            window.location.reload();
-          }, 5000);
-          return;
         }
         
         if (data.status === 'succeeded') {
