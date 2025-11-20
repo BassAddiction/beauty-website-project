@@ -15,12 +15,18 @@ const PaymentSuccess = () => {
   const [hasReferralBonus, setHasReferralBonus] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'loading' | 'succeeded' | 'canceled' | 'pending'>('loading');
 
-  console.log('🚀 PaymentSuccess component mounted');
+  console.log('🚀🚀🚀 PaymentSuccess v2.0 LOADED 🚀🚀🚀');
 
   useEffect(() => {
-    console.log('🔄 PaymentSuccess useEffect triggered');
+    console.log('🔄🔄🔄 useEffect v2.0 TRIGGERED 🔄🔄🔄');
+    
+    const savedUsername = localStorage.getItem('vpn_username');
+    const savedEmail = localStorage.getItem('vpn_email');
+    setUsername(savedUsername || '');
+    setEmail(savedEmail || '');
+    
     const checkPayment = async () => {
-      const savedUsername = localStorage.getItem('vpn_username');
+      console.log('🔍 checkPayment function started, username:', savedUsername);
       
       console.log('🔍 PaymentSuccess: username from localStorage:', savedUsername);
       
@@ -85,11 +91,6 @@ const PaymentSuccess = () => {
         setPaymentStatus('succeeded');
       }
     };
-    
-    const savedUsername = localStorage.getItem('vpn_username') || '';
-    const savedEmail = localStorage.getItem('vpn_email') || '';
-    setUsername(savedUsername);
-    setEmail(savedEmail);
     
     checkPayment();
     
