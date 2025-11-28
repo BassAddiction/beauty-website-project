@@ -17,7 +17,7 @@ const VpnRussia = () => {
     url: 'https://speedvpn.io/vpn-russia'
   });
 
-  useSEO({
+  const seoComponent = useSEO({
     ...pageSEO.vpnRussia,
     structuredData: pageSchema
   });
@@ -28,7 +28,9 @@ const VpnRussia = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      {seoComponent}
+      <div className="min-h-screen bg-background">
       <NewYearTheme />
       <Header />
       
@@ -472,6 +474,7 @@ const VpnRussia = () => {
       <Footer />
       <ScrollToTop />
     </div>
+    </>
   );
 };
 

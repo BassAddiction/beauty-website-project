@@ -22,7 +22,7 @@ const Index = () => {
   
   const organizationSchema = createOrganizationSchema();
   
-  useSEO({
+  const seoComponent = useSEO({
     ...pageSEO.home,
     structuredData: organizationSchema
   });
@@ -51,7 +51,9 @@ const Index = () => {
   }, [searchParams, toast]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      {seoComponent}
+      <div className="min-h-screen bg-background">
       <NewYearTheme />
       <Header />
       <HeroSection />
@@ -67,6 +69,7 @@ const Index = () => {
       <Footer />
       <ScrollToTop />
     </div>
+    </>
   );
 };
 

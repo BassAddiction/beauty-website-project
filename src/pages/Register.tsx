@@ -21,7 +21,7 @@ interface Plan {
 }
 
 const Register = () => {
-  useSEO(pageSEO.register);
+  const seoComponent = useSEO(pageSEO.register);
   
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -200,7 +200,9 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background px-4 py-8">
+    <>
+      {seoComponent}
+      <div className="min-h-screen bg-background px-4 py-8">
       <div className="container mx-auto max-w-4xl">
         <div className="text-center mb-8">
           <a href="/" className="inline-block transition-transform hover:scale-105 mb-4">
@@ -407,6 +409,7 @@ const Register = () => {
         />
       </div>
     </div>
+    </>
   );
 };
 

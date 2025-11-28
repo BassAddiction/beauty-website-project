@@ -12,13 +12,15 @@ const VpnInstagramPage = () => {
     url: 'https://speedvpn.io/vpn-instagram'
   });
 
-  useSEO({
+  const seoComponent = useSEO({
     ...pageSEO.vpnInstagram,
     structuredData: webPageSchema
   });
 
   return (
-    <div className="min-h-screen bg-black">
+    <>
+      {seoComponent}
+      <div className="min-h-screen bg-black">
       <Header />
       
       <div className="container mx-auto px-4 py-24 md:py-32">
@@ -204,6 +206,7 @@ const VpnInstagramPage = () => {
 
       <Footer />
     </div>
+    </>
   );
 };
 

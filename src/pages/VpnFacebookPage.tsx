@@ -12,13 +12,15 @@ const VpnFacebookPage = () => {
     url: 'https://speedvpn.io/vpn-facebook'
   });
 
-  useSEO({
+  const seoComponent = useSEO({
     ...pageSEO.vpnFacebook,
     structuredData: webPageSchema
   });
 
   return (
-    <div className="min-h-screen bg-black">
+    <>
+      {seoComponent}
+      <div className="min-h-screen bg-black">
       <Header />
       
       <div className="container mx-auto px-4 py-24 md:py-32">
@@ -245,6 +247,7 @@ const VpnFacebookPage = () => {
 
       <Footer />
     </div>
+    </>
   );
 };
 

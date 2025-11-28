@@ -17,7 +17,7 @@ const VpnChatGPT = () => {
     url: 'https://speedvpn.io/vpn-chatgpt'
   });
 
-  useSEO({
+  const seoComponent = useSEO({
     ...pageSEO.vpnChatGPT,
     structuredData: pageSchema
   });
@@ -28,7 +28,9 @@ const VpnChatGPT = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      {seoComponent}
+      <div className="min-h-screen bg-background">
       <NewYearTheme />
       <Header />
       
@@ -419,6 +421,7 @@ const VpnChatGPT = () => {
       <Footer />
       <ScrollToTop />
     </div>
+    </>
   );
 };
 

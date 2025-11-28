@@ -36,7 +36,7 @@ interface Payment {
 }
 
 const Dashboard = () => {
-  useSEO(pageSEO.dashboard);
+  const seoComponent = useSEO(pageSEO.dashboard);
   
   const navigate = useNavigate();
   const [userData, setUserData] = useState<UserData | null>(null);
@@ -217,7 +217,9 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      {seoComponent}
+      <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <DashboardHeader 
           username={userData.username} 
@@ -262,6 +264,7 @@ const Dashboard = () => {
         />
       </div>
     </div>
+    </>
   );
 };
 
