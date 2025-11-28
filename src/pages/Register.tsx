@@ -407,7 +407,6 @@ const Register = () => {
         />
       </div>
     </div>
-    </>
   );
 };
 

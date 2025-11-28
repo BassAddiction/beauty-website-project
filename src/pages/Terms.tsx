@@ -215,7 +215,6 @@ const Terms = () => {
         </div>
       </footer>
     </div>
-    </>
   );
 };
 

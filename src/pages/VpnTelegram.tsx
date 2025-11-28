@@ -396,7 +396,6 @@ const VpnTelegram = () => {
       <Footer />
       <ScrollToTop />
     </div>
-    </>
   );
 };
 

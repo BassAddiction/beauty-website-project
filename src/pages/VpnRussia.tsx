@@ -472,7 +472,6 @@ const VpnRussia = () => {
       <Footer />
       <ScrollToTop />
     </div>
-    </>
   );
 };
 
