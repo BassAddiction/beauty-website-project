@@ -419,7 +419,6 @@ const VpnChatGPT = () => {
       <Footer />
       <ScrollToTop />
     </div>
-    </>
   );
 };
 

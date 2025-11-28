@@ -245,7 +245,6 @@ const VpnFacebookPage = () => {
 
       <Footer />
     </div>
-    </>
   );
 };
 

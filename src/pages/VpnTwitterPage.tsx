@@ -255,7 +255,6 @@ const VpnTwitterPage = () => {
 
       <Footer />
     </div>
-    </>
   );
 };
 

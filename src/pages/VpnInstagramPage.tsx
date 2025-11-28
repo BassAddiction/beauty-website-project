@@ -204,7 +204,6 @@ const VpnInstagramPage = () => {
 
       <Footer />
     </div>
-    </>
   );
 };
 
