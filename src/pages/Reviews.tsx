@@ -23,7 +23,7 @@ interface Review {
 }
 
 const Reviews = () => {
-  const seoComponent = useSEO(pageSEO.reviews);
+  useSEO(pageSEO.reviews);
   
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -125,7 +125,6 @@ const Reviews = () => {
 
   return (
     <>
-      {seoComponent}
       <Helmet>
         <title>Отзывы клиентов Speed VPN — Реальные отзывы о VPN-сервисе</title>
         <meta name="description" content={`${totalReviews}+ реальных отзывов о Speed VPN. Средняя оценка ${averageRating.toFixed(1)}/5. Читайте мнения пользователей о скорости, стабильности и качестве VPN-сервиса.`} />

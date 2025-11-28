@@ -15,7 +15,7 @@ const ClientsPage = () => {
     url: 'https://speedvpn.io/clients'
   });
 
-  const seoComponent = useSEO({
+  useSEO({
     ...pageSEO.clients,
     structuredData: webPageSchema
   });
@@ -157,9 +157,7 @@ const ClientsPage = () => {
   ];
 
   return (
-    <>
-      {seoComponent}
-      <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-black">
       <Header />
       <div className="container mx-auto px-4 py-24 md:py-32">
         <div className="text-center mb-8 md:mb-12">
@@ -297,7 +295,6 @@ const ClientsPage = () => {
       </div>
       <Footer />
     </div>
-    </>
   );
 };
 

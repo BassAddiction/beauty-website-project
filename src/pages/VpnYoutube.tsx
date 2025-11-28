@@ -18,7 +18,7 @@ const VpnYoutube = () => {
     url: 'https://speedvpn.io/vpn-youtube'
   });
 
-  const seoComponent = useSEO({
+  useSEO({
     ...pageSEO.vpnYoutube,
     structuredData: pageSchema
   });
@@ -29,9 +29,7 @@ const VpnYoutube = () => {
   }, []);
 
   return (
-    <>
-      {seoComponent}
-      <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background">
       <NewYearTheme />
       <Header />
       

@@ -17,7 +17,7 @@ const VpnTelegram = () => {
     url: 'https://speedvpn.io/vpn-telegram'
   });
 
-  const seoComponent = useSEO({
+  useSEO({
     ...pageSEO.vpnTelegram,
     structuredData: pageSchema
   });
@@ -28,9 +28,7 @@ const VpnTelegram = () => {
   }, []);
 
   return (
-    <>
-      {seoComponent}
-      <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background">
       <NewYearTheme />
       <Header />
       

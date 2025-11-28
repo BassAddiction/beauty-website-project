@@ -6,12 +6,10 @@ import Icon from "@/components/ui/icon";
 import { CDN_ASSETS } from '@/config/api';
 
 const Terms = () => {
-  const seoComponent = useSEO(pageSEO.terms);
+  useSEO(pageSEO.terms);
   
   return (
-    <>
-      {seoComponent}
-      <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background">
       <header className="border-b border-border">
         <div className="container mx-auto max-w-6xl px-4 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">

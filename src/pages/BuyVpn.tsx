@@ -18,7 +18,7 @@ const BuyVpn = () => {
     priceCurrency: 'RUB'
   });
 
-  const seoComponent = useSEO({
+  useSEO({
     ...pageSEO.buyVpn,
     structuredData: productSchema
   });
@@ -29,9 +29,7 @@ const BuyVpn = () => {
   }, []);
 
   return (
-    <>
-      {seoComponent}
-      <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background">
       <NewYearTheme />
       <Header />
       

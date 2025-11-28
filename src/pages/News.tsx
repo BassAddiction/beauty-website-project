@@ -15,7 +15,7 @@ interface NewsItem {
 }
 
 const News = () => {
-  const seoComponent = useSEO(pageSEO.news);
+  useSEO(pageSEO.news);
   
   const navigate = useNavigate();
   const [news, setNews] = useState<NewsItem[]>([]);
@@ -59,7 +59,6 @@ const News = () => {
 
   return (
     <>
-      {seoComponent}
       <Helmet>
         <title>Новости Speed VPN — Обновления и новости VPN-сервиса</title>
         <meta name="description" content="Последние новости Speed VPN: обновления сервиса, новые функции, улучшения производительности и важные объявления." />

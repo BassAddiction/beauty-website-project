@@ -12,7 +12,7 @@ import API_ENDPOINTS, { CDN_ASSETS } from '@/config/api';
 const AUTH_CHECK_URL = API_ENDPOINTS.AUTH_CHECK;
 
 const Login = () => {
-  const seoComponent = useSEO(pageSEO.login);
+  useSEO(pageSEO.login);
   
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
@@ -137,9 +137,7 @@ const Login = () => {
   };
 
   return (
-    <>
-      {seoComponent}
-      <div className="min-h-screen bg-background flex items-center justify-center px-4">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
@@ -233,7 +231,6 @@ const Login = () => {
         </CardContent>
       </Card>
     </div>
-    </>
   );
 };
 
