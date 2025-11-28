@@ -14,14 +14,13 @@ interface SEOMetaTags {
   structuredData?: object;
 }
 
-export const useSEO = (meta: SEOMetaTags) => {
+export const useSEO = (meta: SEOMetaTags): JSX.Element => {
   useEffect(() => {
     if (meta.structuredData) {
       addStructuredData(meta.structuredData);
     }
   }, [meta.structuredData]);
   
-  // Используем Helmet для синхронного обновления meta-тегов
   return (
     <Helmet>
       <title>{meta.title}</title>

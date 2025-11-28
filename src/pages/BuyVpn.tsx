@@ -473,6 +473,7 @@ const BuyVpn = () => {
       <Footer />
       <ScrollToTop />
     </div>
+    </>
   );
 };
 
