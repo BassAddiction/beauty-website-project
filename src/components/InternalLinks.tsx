@@ -56,12 +56,6 @@ const links: InternalLink[] = [
     description: 'Выгодные тарифы от 79₽',
     path: '/buy-vpn',
     icon: 'ShoppingCart'
-  },
-  {
-    title: 'Отзывы клиентов',
-    description: 'Более 1000 довольных пользователей',
-    path: '/reviews',
-    icon: 'Star'
   }
 ];
 

@@ -16,7 +16,7 @@ import AdminUsers from "./pages/AdminUsers";
 import TestWebhook from "./pages/TestWebhook";
 import Terms from "./pages/Terms";
 import SubscriptionBuilder from "./pages/SubscriptionBuilder";
-import Reviews from "./pages/Reviews";
+
 import News from "./pages/News";
 import VpnYoutube from "./pages/VpnYoutube";
 import VpnTelegram from "./pages/VpnTelegram";
@@ -51,7 +51,7 @@ const App = () => (
           <Route path="/test-webhook" element={<TestWebhook />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/builder" element={<SubscriptionBuilder />} />
-          <Route path="/reviews" element={<Reviews />} />
+
           <Route path="/news" element={<News />} />
           <Route path="/vpn-youtube" element={<VpnYoutube />} />
           <Route path="/vpn-telegram" element={<VpnTelegram />} />

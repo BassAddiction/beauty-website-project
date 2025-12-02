@@ -42,7 +42,7 @@ const Footer = () => {
               <li><a href="#faq" className="hover:text-primary transition-colors">FAQ</a></li>
               <li><a href="https://t.me/gospeedvpn" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Связаться с нами</a></li>
               <li><a href="/terms" className="hover:text-primary transition-colors">Публичная оферта</a></li>
-              <li><a href="/reviews" className="hover:text-primary transition-colors">Отзывы</a></li>
+
               <li><a href="/news" className="hover:text-primary transition-colors">Новости</a></li>
             </ul>
           </div>

@@ -214,14 +214,6 @@ export const pageSEO = {
     noindex: true
   },
 
-  reviews: {
-    title: 'Отзывы о Speed VPN — Реальные отзывы пользователей',
-    description: 'Читайте честные отзывы пользователей Speed VPN. Более 1000 довольных клиентов. Средняя оценка 4.8/5.',
-    keywords: 'отзывы speed vpn, отзывы vpn, speed vpn отзывы пользователей',
-    canonical: 'https://speedvpn.io/reviews',
-    ogImage: 'https://speedvpn.io/favicon.svg'
-  },
-
   news: {
     title: 'Новости Speed VPN — Обновления и акции',
     description: 'Последние новости Speed VPN: обновления сервиса, новые функции, специальные предложения и акции.',

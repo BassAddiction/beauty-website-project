@@ -2,8 +2,8 @@ import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 
 interface AdminTabsProps {
-  activeTab: 'plans' | 'clients' | 'users' | 'locations' | 'settings' | 'receipts' | 'news' | 'tracking' | 'project' | 'reviews' | 'theme';
-  setActiveTab: (tab: 'plans' | 'clients' | 'users' | 'locations' | 'settings' | 'receipts' | 'news' | 'tracking' | 'project' | 'reviews' | 'theme') => void;
+  activeTab: 'plans' | 'clients' | 'users' | 'locations' | 'settings' | 'receipts' | 'news' | 'tracking' | 'project' | 'theme';
+  setActiveTab: (tab: 'plans' | 'clients' | 'users' | 'locations' | 'settings' | 'receipts' | 'news' | 'tracking' | 'project' | 'theme') => void;
   plansCount: number;
   clientsCount: number;
   locationsCount: number;
@@ -88,13 +88,7 @@ export const AdminTabs = ({ activeTab, setActiveTab, plansCount, clientsCount, l
         <Icon name="Cog" className="w-4 h-4 mr-2" />
         Проект
       </Button>
-      <Button
-        variant={activeTab === 'reviews' ? 'default' : 'outline'}
-        onClick={() => setActiveTab('reviews')}
-      >
-        <Icon name="MessageSquare" className="w-4 h-4 mr-2" />
-        Отзывы
-      </Button>
+
       <Button
         variant={activeTab === 'theme' ? 'default' : 'outline'}
         onClick={() => setActiveTab('theme')}
