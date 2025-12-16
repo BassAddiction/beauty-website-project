@@ -1,0 +1,40 @@
+// Backend function URLs mapping
+// Replace these URLs with your own server endpoints when deploying
+
+export const BACKEND_URLS = {
+  'send-apology-email': 'https://functions.poehali.dev/3c758ff5-54df-4672-94d2-f31215025740',
+  'restore-users': 'https://functions.poehali.dev/dc4e5bd5-cc26-454f-8fbf-eec2ba7b3554',
+  'check-payment-status': 'https://functions.poehali.dev/e9deb528-c2f6-4c74-b99c-04112d649dcf',
+  'manual-complete-payment': 'https://functions.poehali.dev/64349051-38a3-4993-91e2-ad34c054fed4',
+  'payment-callback': 'https://functions.poehali.dev/dce621ec-99e0-44a9-aa7f-5f5bd6509305',
+  'sync-uuids': 'https://functions.poehali.dev/a3d63753-bd5e-4c2b-910d-38daf4569579',
+  'manual-extend': 'https://functions.poehali.dev/47563c2f-3066-4d84-92ca-5d0fa7fe7a1b',
+  'site-settings': 'https://functions.poehali.dev/2237e0c8-e783-4bda-9d28-69c441521c66',
+  'admin-auth': 'https://functions.poehali.dev/db63dc28-8b74-4b2c-9566-9744851e40cf',
+  'restore-access': 'https://functions.poehali.dev/e1fb7940-e783-4ca2-930a-c1f4504b0921',
+  'settings-manager': 'https://functions.poehali.dev/5375b8f5-5979-4f46-b106-9c9ca07e2da6',
+  'fix-mister': 'https://functions.poehali.dev/0e777ae2-2f60-42e6-a96c-aa949fb114f3',
+  'manual-extend-referrer': 'https://functions.poehali.dev/538e5f5a-c872-4fdb-a6fe-69bd507b9b1b',
+  'activate-referral': 'https://functions.poehali.dev/358b9593-075d-4262-9190-984599107ece',
+  'referral': 'https://functions.poehali.dev/c2ba3181-8d0f-4bb5-b0fb-06f7770e8037',
+  'tracking-codes-api': 'https://functions.poehali.dev/7a6acadf-d332-41e0-a309-e41e647fedae',
+  'auth-check': 'https://functions.poehali.dev/833bc0dd-ad44-4b38-b1ac-2ff2f5b265e5',
+  'news': 'https://functions.poehali.dev/3b70872b-40db-4e8a-81e6-228e407e152b',
+  'get-receipts': 'https://functions.poehali.dev/2eb021b7-8d70-47e2-b4ca-6e113a73d436',
+  'sync-locations': 'https://functions.poehali.dev/a93c29cf-6f89-4fe3-a7e6-717e7d5a8112',
+  'locations': 'https://functions.poehali.dev/3271c5a0-f0f4-42e8-b230-c35b772c0024',
+  'plans': 'https://functions.poehali.dev/fbbbfbaf-a8c7-4eec-8f61-5976ed535592',
+  'admin-users': 'https://functions.poehali.dev/e99b698b-6c6b-46cc-9206-1d6dac7e8575',
+  'remnawave': 'https://functions.poehali.dev/4e61ec57-0f83-4c68-83fb-8b3049f711ab',
+  'send-email': 'https://functions.poehali.dev/b7df3121-2214-4658-b0d1-8af63a4ce471',
+  'update-all-users': 'https://functions.poehali.dev/058e87bb-5d15-4a90-8f78-2ab58eeaf5c8',
+  'get-subscription': 'https://functions.poehali.dev/c56efe3d-0219-4eab-a894-5d98f0549ef0',
+  'payment': 'https://functions.poehali.dev/1cd4e8c8-3e41-470f-a824-9c8dd42b6c9c'
+} as const;
+
+export type BackendFunction = keyof typeof BACKEND_URLS;
+
+// Helper function to get backend URL
+export function getBackendUrl(functionName: BackendFunction): string {
+  return BACKEND_URLS[functionName];
+}
